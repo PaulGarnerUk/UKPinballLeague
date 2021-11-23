@@ -1,0 +1,103 @@
+*{
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+#main-menu {
+width: 954px;
+height: 34px;
+margin-bottom: 0px;
+z-index: 100;
+background: #1C3766;
+}
+
+.flexdropdownmenu, .flexdropdownmenu ul{ /*topmost and sub ULs, respectively*/
+font: 11px Arial, sans-serif;
+margin: 0;
+padding: 0;
+position: absolute;
+left: 0;
+top: 0;
+list-style-type: none;
+background: #1C3766;
+border: 0;
+border-bottom-width: 0;
+visibility: hidden;
+display: none; /*collapse all sub menus to begin with*/
+}
+
+.flexdropdownmenu li{
+position: relative;
+}
+
+.flexdropdownmenu li a{
+display: block;
+width: 114px; /*width of menu (not including side paddings)*/
+color: #fff;
+background: #1C3766;
+border-bottom: 2px solid #f7f7f7;
+text-decoration: none;
+padding-top: 9px;
+padding-bottom: 9px;
+text-align: center;
+}
+
+* html .flexdropdownmenu li{ /*IE6 CSS hack*/
+display: inline-block;
+width: 130px; /*width of menu (include side paddings of LI A*/
+}
+
+.flexdropdownmenu li a:hover {
+text-decoration: underline;
+}
+
+.flexdropdownmenu li.selected>a{
+text-decoration: underline;
+}
+
+.rightarrowclass{
+position: absolute;
+top: 11px;
+right: 5px;
+}
+
+a.menu{
+font: 11px Arial, sans-serif;
+display: block;
+width: 117px; /*width of menu (not including side paddings)*/
+color: #f7f7f7;
+text-align: center;
+background: #1C3766;
+border-top: 0;
+border-bottom: 0;
+border-left: 0;
+border-right: 0;
+text-decoration: none;
+padding-top: 9px;
+padding-bottom: 9px;
+position: relative;
+float: left;
+}
+
+a.menu-current{
+font: 11px Arial, sans-serif;
+display: block;
+width: 117px; /*width of menu (not including side paddings)*/
+color: #f7f7f7;
+text-align: center;
+background: #1C3766;
+border-top: 0;
+border-bottom: 0;
+border-left: 0;
+border-right: 0;
+text-decoration: underline;
+padding-top: 9px;
+padding-bottom: 9px;
+position: relative;
+float: left;
+}
+
+.flexdropdownmenu, .menu:hover{
+text-decoration: none;
+}

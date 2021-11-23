@@ -1,0 +1,25 @@
+@charset "UTF-8";
+/* CSS Document */
+
+
+
+/* ================================================================ 
+This copyright notice must be untouched at all times.
+
+The original version of this stylesheet and the associated (x)html
+is available at http://www.cssplay.co.uk/menus/dd_valid.html
+Copyright (c) 2005-2007 Stu Nicholls. All rights reserved.
+This stylesheet and the assocaited (x)html may be modified in any 
+way to fit your requirements.
+=================================================================== */
+.menu ul li a.hide, .menu ul li a:visited.hide {display:none;}
+.menu ul li a:hover ul li a.hide {display:none;}
+
+.menu ul li a:hover {color:#fff; background:#C00;}
+.menu ul li a:hover ul {display:block; position:absolute; top:32px; left:0; width:114px;}
+.menu ul li a:hover ul li a.sub {background:#06c; color:#fff;}
+.menu ul li a:hover ul li a {display:block; background:#06c; color:#fff;}
+.menu ul li a:hover ul li a ul {visibility:hidden;}
+.menu ul li a:hover ul li a:hover {background:#C00; color:#fff;}
+.menu ul li a:hover ul li a:hover ul {visibility:visible; position:absolute; left:116px; top:0; color:#C00;}
+.menu ul li a:hover ul li a:hover ul.left {left:-116px;}

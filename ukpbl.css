@@ -1,0 +1,753 @@
+@charset "UTF-8";
+/* CSS Document */
+
+html, body { 
+height: 100%; 
+margin: 0; 
+padding: 0; 
+}
+
+/* Body */
+
+body {
+	background: #eee;
+}
+
+@media only screen and (max-width: 954px) {
+body {
+	background: #fff;
+}}
+
+/* Container */
+
+#container {
+	width: 954px;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	background: transparent;
+}
+
+@media screen and (max-width: 954px) {
+#container {
+	width: 100%;
+	height: auto;
+	background: #eee;
+}}
+
+/* Banner */
+
+#banner {
+	height: auto;
+	min-height: 80px;
+	height:auto !important; /* for IE as it does not support min-height */
+	height:80px; 
+	width: 100%;
+	background-position: left center;
+	background-repeat: no-repeat;
+	background-color: #1C3766;
+}
+
+img.banner {
+	float: left;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	padding-left: 20px;
+}
+
+/* Switch between menus */
+
+.slicknav_menu {
+	display:none;
+}
+
+#menu {
+	display: none;
+}
+
+@media screen and (max-width: 954px) {
+	.js #main-menu {
+		display:none;
+	}
+	
+	.js .slicknav_menu {
+		display:block;
+	}
+}
+
+#nav-wrapper {
+	margin-top: 0;
+}
+ 
+/* general page styling */
+
+#menu-strip {
+	width: 100%;
+	height: 5px;
+	background-color: #1C3766;
+	margin-top: -5px;
+}
+
+.panel {
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	margin-top: 5px;
+	padding: 5px 0 10px 0;
+}
+
+.panel-copyright {
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	margin-top: 5px;
+	padding: 20px 0 1px 0;
+}
+
+.panel-bottom {
+	width: 100%;
+	height: 5px;
+	background-color: transparent;
+}
+
+.panel-image {
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	margin-top: 5px;
+}
+
+.panel-homepage-left {
+	width: 474px;
+	height: auto;
+	background-color: #fff;
+	margin-top: 5px;
+	padding: 5px 0 10px 0;
+	float: left;
+}
+
+@media screen and (max-width: 954px) {
+.panel-homepage-left {
+	width: 100%;
+	float: none;
+}}
+
+.panel-homepage-right {
+	width: 434px;
+	height: auto;
+	background-color: #fff;
+	margin-top: 5px;
+	padding: 5px 20px 10px 20px;
+	float: right;
+}
+
+@media screen and (max-width: 954px) {
+.panel-homepage-right {
+	width: 100%;
+	float: none;
+	padding: 5px 0 10px 0;
+}}
+
+#homepagetablesleft {
+	width: 212px;
+	float: left;
+}
+
+@media screen and (min-width: 600px) and (max-width: 954px) {
+#homepagetablesleft {
+	width: 45%;
+	padding-left: 20px;
+}}
+
+@media screen and (max-width: 599px) {
+#homepagetablesleft {
+	width: 100%;
+	float: none;
+}}	
+
+#homepagetablesright {
+	width: 212px;
+	float: right;
+}
+
+@media screen and (min-width: 600px) and (max-width: 954px) {
+#homepagetablesright {
+	width: 45%;
+	padding-right: 20px;
+}}
+
+@media screen and (max-width: 599px) {
+#homepagetablesright {
+	width: 100%;
+	float: none;
+}}
+
+.panel-homepage-stats {
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	margin-top: 5px;
+	padding: 5px 0 10px 0;
+}
+
+@media screen and (max-width: 954px) {
+.panel-homepage-stats {
+	display: none;
+}}
+
+/* text */
+
+h1 {
+	font-size: 24px;
+	color: #333;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	margin: 15px 20px 15px 20px;
+}
+
+h2 {
+    font-size: 19px;
+	color: #333;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 5px;
+	margin-top: 10px;
+}
+
+h2.homepage {
+	padding-top: 7px;
+	margin-left: 0;
+}
+
+@media screen and (max-width: 599px) {
+h2.homepage {
+	margin-left: 20px;
+}}
+
+h2.ukcs-title {
+	margin-top: 20px;
+	margin-bottom: 0px;
+}
+	
+h3 {
+	color: #CC0000;
+	font: bold 14px Arial, sans-serif;
+	line-height: 31px;
+}
+
+p {
+	font-size: 14px;
+	color: #333;
+	font-family: Arial, sans-serif;
+	line-height: 22px;
+	margin: auto 20px 15px 20px;
+}
+
+p.firstline {
+	margin-top: 10px;
+}
+
+p.lastline-homepage {
+	font-weight: bold;
+	margin-bottom: 18px;
+}
+
+p.lastline {
+	margin-bottom: 20px;
+}
+
+p.bold {
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+p.copyright {
+    font-size: 11px;
+	line-height: normal;
+	text-align: center;
+}
+
+p.ukcs {
+	margin-bottom: 10px;
+}
+
+p.ukcs-line {
+	padding-bottom: 20px;
+	border-bottom: 1px solid #333;
+	margin-bottom: 20px;
+}
+
+p.menu-text {
+margin-left: 0px;
+margin-right: 0px;
+margin-bottom: 0px;
+line-height: normal;
+font-size: 11px;
+text-align: left;
+}
+
+p.homepage {
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+p.avgscore	{
+	font-family: Arial, Sans-Serif;
+	color: #333;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 50px;
+	text-align: left;
+	padding-left: 0px;
+}
+
+p.allscores {
+	padding-top: 10px;
+}
+
+p.qualifier {
+	margin-top: 10px;
+	line-height: 50px;
+}
+
+.qual {
+	background: #fec171;
+	padding: 8px 10px 8px 10px;
+}
+
+.qual-b {
+	background: #fee0b8;
+	padding: 8px 10px 8px 10px;
+}
+
+h2.toptenscores {
+	margin-top: 35px;
+}
+
+.linkhead {
+	margin-top: 30px;
+}
+
+.bestyf {
+	margin-bottom: 5px;
+}
+
+.news {
+	border-bottom: 1px #333 solid;
+	padding-bottom: 20px;
+}
+
+
+
+.list {
+	line-height: normal;
+	}
+
+.email {
+	line-height: normal;
+	margin-left: 0px;
+}
+
+.email1 {
+	margin-left: 0px;
+}
+
+.email2 {
+	margin-left: 0px;
+	color: #fff;
+}
+
+.rules {
+	font-size: 24px;
+	color: #333;
+	font-style: normal;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	margin-top: 35px;
+	margin-left: 35px;
+	margin-right: 35px;
+	margin-bottom: 25px;
+}
+
+.schedule {
+	font-size: 19px;
+	color: #333;
+	font-style: normal;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	margin-top: 40px;
+	margin-left: 35px;
+	margin-right: 35px;
+	margin-bottom: -5px;
+}
+
+.meettable {
+	font-size: 19px;
+	color: #333;
+	font-style: normal;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	margin-top: 10px;
+	margin-left: 35px;
+	margin-right: 35px;
+	margin-bottom: -12px;
+}
+
+.closewindow {
+	text-align: right;
+}
+
+.alphabet {
+	letter-spacing: 5px;
+}
+
+/* Links */
+
+.hslink {
+	font-size: 14px;
+	color: #333;
+	font-family: Arial, sans-serif;
+	text-decoration: none;
+	padding-top:30px;
+	text-decoration: underline;
+}
+
+.link {
+	font-size: 14px;
+	color: inherit;
+	font-family: Arial, sans-serif;
+	text-decoration: underline;
+}
+
+.link:hover {
+	color: #4F95DB;
+	text-decoration: underline;
+}
+
+a.homepagesmall {
+	font-size: 11px;
+	color: #333;
+	text-decoration: underline;
+}
+
+@media screen and (max-width: 954px) {
+	a.homepagesmall {
+	font-size: 14px;
+	display: block;
+	padding-top: 20px;
+}}
+
+.homepagesmall:hover {
+	color: #4F95DB;
+	text-decoration: underline;
+}
+
+.ticker-link {
+	font-size: 11px;
+	color: #ff6600;
+	font-style: normal;
+	font-family: Arial, sans-serif;
+	text-decoration: none;
+	font-weight: bold;
+	line-height: 30px;
+}
+
+.ticker-link:hover {
+	text-decoration: underline;
+}
+
+
+.allscores {
+	font-size: 14px;
+	color: #333;
+	font-family: Arial, sans-serif;
+	text-decoration: none;
+	padding-top: 10px;
+	margin-left: 35px;
+	background: #ffffff;
+	text-decoration: underline;
+}
+
+.allscores:hover {
+	color: #4F95DB;
+	text-decoration: underline;
+}
+
+a.player-link {
+	font-family: Arial, sans-serif;
+	color: inherit;
+	text-decoration: underline;
+}
+
+a.player-link:hover {
+	color: #4F95DB;
+	text-decoration: underline;
+}
+
+/* Placings */
+
+.space {
+	margin-bottom: 40px;
+}
+
+/** TABLE STYLING **/
+.meet-table-holder {
+	width: 42%;
+	float: left;
+	margin-left: 4%;
+	margin-bottom: 30px;
+}
+
+@media only screen and (min-width: 441px) and (max-width: 860px) {
+.meet-table-holder {
+	margin-top: 20px;
+	width: 400px;
+}}
+
+@media only screen and (max-width: 440px) {
+.meet-table-holder {
+	margin-left: 0;
+	width: 100%;
+}}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table.machines {
+	margin-left: 20px;
+	width: 40%;
+}
+
+@media only screen and (min-width: 745px) and (max-width: 954px) {
+table.machines {
+	margin-left: 20px;
+	width: 50%;
+}}
+
+@media only screen and (min-width: 620px) and (max-width: 744px) {
+table.machines {
+	margin-left: 20px;
+	width: 60%;
+}}
+
+@media only screen and (min-width: 500px) and (max-width: 619px) {
+table.machines {
+	margin-left: 20px;
+	width: 75%;
+}}
+
+@media only screen and (max-width: 499px) {
+table.machines {
+	margin-left: 0;
+	width: 100%;
+}}
+
+table.homepage {
+	margin-left: 0px;
+}
+
+table.rankings {
+	width: 100%;
+}
+
+@media only screen and (max-width: 954px) {
+table.rankings {
+	overflow-x: auto;
+	display: block;
+	width: auto;
+}}
+
+table.player-info {
+	width: 410px;
+	margin-left: 20px;
+}
+
+@media only screen and (max-width: 954px) {
+table.player-info {
+	overflow-x: auto;
+	display: block;
+	margin-left: 0;
+	width: auto;
+}}
+
+table.hi-per-player {
+	width: 300px;
+	margin-left: 20px;
+}
+
+.table-holder {
+	width: 914px;
+	margin-left: 20px;
+}
+
+@media screen and (max-width: 954px) {
+.table-holder {
+	width: 100%;
+	margin-left: 0;
+}}
+
+@media screen and (max-width: 954px) {
+.paddidge {
+	padding-right: 20px;
+}}
+
+td	{
+	font-family: Arial, Sans-Serif;
+	color: #333;
+	font-size: 14px;
+	line-height: 40px;
+	text-align: left;
+	padding-left: 15px;
+}
+
+@media screen and (max-width: 954px) {
+td	{
+	padding-left: 20px;
+}}
+
+th	{
+	font-family: Arial, Sans-Serif;
+	color: #333;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 30px;
+	text-align: left;
+	padding-left: 15px;
+}
+
+@media screen and (max-width: 954px) {
+th	{
+	padding-left: 20px;
+}}
+
+.meetposition	{
+	width: 20px;
+}
+
+.meetplayer	{
+	width: 175px;
+}
+
+.meetfinalscore	{
+	width: 50px;
+}
+
+.meetfinalpoints	{
+	width: 50px;
+}
+
+.highscoreposition {
+	width: 15px;
+}
+
+.highscoreplayer {
+	width: 170px;
+}
+
+.homepage-table {
+	font-size: 11px;
+	line-height: 25px;
+	padding-left: 10px;
+}
+
+@media screen and (min-width: 736px) and (max-width: 954px) {
+.homepage-table {
+	font-size: 14px;
+	line-height: 40px;
+	text-align: left;
+	padding-left: 20px;
+}}
+
+@media screen and (min-width: 650px) and (max-width: 735px) {
+.homepage-table {
+	font-size: 12px;
+	line-height: 35px;
+	text-align: left;
+	padding-left: 20px;
+}}
+
+@media screen and (min-width: 600px) and (max-width: 649px) {
+.homepage-table {
+	font-size: 11px;
+	line-height: 30px;
+	text-align: left;
+	padding-left: 20px;
+}}
+
+@media screen and (max-width: 599px) {
+.homepage-table {
+	font-size: 14px;
+	line-height: 40px;
+	text-align: left;
+	padding-left: 20px;
+}}
+
+td.lastcolumn {
+	padding-right: 10px;
+}
+
+tr:nth-child(odd) {
+    background-color: #f7f7f7;
+}
+
+tr.white {
+	background-color: #fff;
+}
+
+/** END TABLE STYLING **/
+
+
+/* styling for UK Comps */
+
+th.ukcomps	{
+	font-family: Arial, Sans-Serif;
+	color: #333;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 30px;
+	text-align: left;
+	padding-left: 10px;
+	width: 185px;
+}
+
+th.ukcomps-year	{
+	font-family: Arial, Sans-Serif;
+	color: #333;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 30px;
+	text-align: left;
+	padding-left: 10px;
+	width: 75px;
+}
+
+td.ukcomps	{
+	font-family: Arial, Sans-Serif;
+	color: #333;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 30px;
+	text-align: left;
+	padding-left: 10px;
+	width: 150px;
+}
+
+td.ukcomps-year	{
+	font-family: Arial, Sans-Serif;
+	color: #333;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 30px;
+	text-align: left;
+	padding-left: 10px;
+	width: 75px;
+}
+
+h2.ukcomps {
+	margin-top: 30px;
+}
