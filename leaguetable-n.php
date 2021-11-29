@@ -164,7 +164,7 @@ echo "<thead>
 		$meet4 = $row['meet4'];
 		$meet5 = $row['meet5'];
 		//$meet6 = $row['meet6'];
-		$meet6 = is_null($row['meet6']) ? "-", (float)$row['meet6']
+		$meet6 = (is_null($row['meet6']) ? "-" : (float)$row['meet6'])
 		$best4 = $row['best4'];
 		$total = $row['total'];
 	
