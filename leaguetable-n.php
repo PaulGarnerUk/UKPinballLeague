@@ -55,7 +55,7 @@ include("includes/old_menu.inc");
 	INNER JOIN Season on Season.Id = LeagueMeet.SeasonId
 	INNER JOIN Region on Region.Id = LeagueMeet.RegionId
 	INNER JOIN Player ON Player.Id = Result.PlayerId
-	WHERE Season.SeasonNumber = 14
+	WHERE Season.SeasonNumber = $currentseason
 	AND Region.Synonym = 'n'
 ),
 PlayerResults (PlayerId, MeetNumber, Points, Rnk) AS
@@ -71,7 +71,7 @@ PlayerResults (PlayerId, MeetNumber, Points, Rnk) AS
 	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
 	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
 	INNER JOIN Player ON Player.Id = Result.PlayerId
-	WHERE Season.SeasonNumber = 14 --@seasonNumber
+	WHERE Season.SeasonNumber = $currentseason
 	AND Region.Synonym = 'n' --@regionSynonym
 )
 SELECT 
@@ -85,7 +85,7 @@ COALESCE(CONVERT(varchar, MeetTwo.Points), '-') as meet2,
 COALESCE(CONVERT(varchar, MeetThree.Points), '-') as meet3,
 COALESCE(CONVERT(varchar, MeetFour.Points), '-') as meet4,
 COALESCE(CONVERT(varchar, MeetFive.Points), '-') as meet5,
-COALESCE(CONVERT(varchar, MeetSix.Points), '-') as meet6,
+MeetSix.Points as meet6,
 COALESCE(MeetOne.Points,0) + COALESCE(MeetTwo.Points,0) + COALESCE(MeetThree.Points,0) + COALESCE(MeetFour.Points,0) + COALESCE(MeetFive.Points,0) + COALESCE(MeetSix.Points,0) AS total,
 (
 	SELECT 
@@ -107,8 +107,8 @@ ORDER BY best4 DESC, played ASC
 
     if ($result == FALSE)
 	{
-		echo "query bork: ";
-        echo (sqlsrv_errors());
+		echo "query borken.";
+        //echo (sqlsrv_errors());
 	}
 
 //$cxn=mysqli_connect ($host,$user,$password,$dbname) or die ("Couldn't connect to the server");
@@ -124,9 +124,9 @@ echo "<thead>
 				<th>&nbsp;</th>
                 <th>Player</th>
 				<th>Played</th>
-				<th><a href=\"meet.php?scores=N%2014.1&amp;meet=Meet%201,%2012.01.20\" class='link'>Meet 1</a></th>
-				<th><a href=\"meet.php?scores=N%2014.2&amp;meet=Meet%202,%2016.02.20\" class='link'>Meet 2</a></th>
-				<th><a href=\"meet.php?scores=N%2014.3&amp;meet=Meet%203,%2015.03.20\" class='link'>Meet 3</a></th>
+				<th><a href=\"meet.php?scores=N%2015.1&amp;meet=Meet%201,%2012.01.20\" class='link'>Meet 1</a></th>
+				<th>Meet 2</th>
+				<th>Meet 3</th>
 				<th>Meet 4</th>
 				<th>Meet 5</th>
 				<th>Meet 6</th>
@@ -136,56 +136,47 @@ echo "<thead>
 		</thead>";
 
 		
-$counter = 0;
-
+	$counter = 0;
 
 	$total = '';
 	$position = 0;
 	$hiddenPositions = 0;
 	
-	//while ($row = mysqli_fetch_assoc($result))
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
-	
-{
+	{
 
-	if ($best4 != $row['best4']) 
+		if ($best4 != $row['best4']) 
+		{
+			$best4 = $row['best4'];
+			$position = $hiddenPositions + $position + 1;
+			$hiddenPositions = 0;
+		}
+		else
+		{
+			++$hiddenPositions;
+		}
 	
-{
-
-	$best4 = $row['best4'];
-	$position = $hiddenPositions + $position + 1;
-	$hiddenPositions = 0;
+		$player = $row['player'];
+		$played = $row['played'];
+		$meet1 = $row['meet1'];
+		$meet2 = $row['meet2'];
+		$meet3 = $row['meet3'];
+		$meet4 = $row['meet4'];
+		$meet5 = $row['meet5'];
+		//$meet6 = $row['meet6'];
+		$meet6 = is_null($row['meet6']) ? "-", (float)$row['meet6']
+		$best4 = $row['best4'];
+		$total = $row['total'];
 	
-}
-
-else
-
-{
+		$best4 = round($best4,"1");
+		$total = round($total,"1");
 	
-	++$hiddenPositions;
+		$counter++;
+		$bgcolor = ($counter < 6)?"#fec171":
+		$bgcolor = ($counter > 5 && $counter < 10)?"#fee0b8":
+		$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
 	
-}
-	
-	$player = $row['player'];
-	$played = $row['played'];
-	$meet1 = $row['meet1'];
-	$meet2 = $row['meet2'];
-	$meet3 = $row['meet3'];
-	$meet4 = $row['meet4'];
-	$meet5 = $row['meet5'];
-	$meet6 = $row['meet6'];
-	$best4 = $row['best4'];
-	$total = $row['total'];
-	
-	$best4 = round($best4,"1");
-	$total = round($total,"1");
-	
-	$counter++;
-	$bgcolor = ($counter < 6)?"#fec171":
-	$bgcolor = ($counter > 5 && $counter < 10)?"#fee0b8":
-	$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
-	
-	echo "<tr>\n
+		echo "<tr>\n
 		<td bgcolor='".$bgcolor."'>$position</td>\n
 		<td bgcolor='".$bgcolor."'><a href=\"javascript:getplayer(`$player`)\" class='player-link'>$player</a></td>\n
 		<td bgcolor='".$bgcolor."'>$played</td>\n
@@ -198,11 +189,11 @@ else
 		<td bgcolor='".$bgcolor."'>$total</td>\n
 		<td bgcolor='".$bgcolor."'>$best4</td>\n
 		</tr>\n";
-		
-}
-echo "</table>\n";
+	}
 
-sqlsrv_free_stmt($result);
+	echo "</table>\n";
+
+	sqlsrv_free_stmt($result);
 
 ?>
 

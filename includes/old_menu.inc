@@ -13,4 +13,7 @@
 	// And migrate from legacy schema to modern schema in time..
 	$sqldbname_legacy = getenv("mssqldb_legacy"); // sql db with legacy (denormalised) schema
 	$sqldbname = getenv("mssqldb"); // sql db with normalised scheme
+
+	// adhoc config settings
+	$currentseason = getenv("currentseason"); // current season number (not id)
 ?>
