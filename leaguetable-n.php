@@ -22,7 +22,7 @@ function getplayer ( selectedtype )
 
 <div class="panel">
 
-<h1>Northern League <span style="white-space:nowrap">2020/Season 14</span></h1>
+<h1>Northern League <span style="white-space:nowrap">2020/Season 15</span></h1>
 
 <form name="playerform" action="player-info.php" method="get">
 <input type="hidden" name="player" />
@@ -80,11 +80,11 @@ SeasonPlayers.PlayerName as player,
 (
 	SELECT COUNT(*) FROM PlayerResults WHERE PlayerResults.PlayerId = SeasonPlayers.PlayerId
 ) as played,
-COALESCE(CONVERT(varchar, MeetOne.Points), '-') as meet1,
-COALESCE(CONVERT(varchar, MeetTwo.Points), '-') as meet2,
-COALESCE(CONVERT(varchar, MeetThree.Points), '-') as meet3,
-COALESCE(CONVERT(varchar, MeetFour.Points), '-') as meet4,
-COALESCE(CONVERT(varchar, MeetFive.Points), '-') as meet5,
+MeetOne.Points as meet1,
+MeetTwo.Points as meet2,
+MeetThree.Points as meet3,
+MeetFour.Points as meet4,
+MeetFive.Points as meet5,
 MeetSix.Points as meet6,
 COALESCE(MeetOne.Points,0) + COALESCE(MeetTwo.Points,0) + COALESCE(MeetThree.Points,0) + COALESCE(MeetFour.Points,0) + COALESCE(MeetFive.Points,0) + COALESCE(MeetSix.Points,0) AS total,
 (
@@ -110,11 +110,6 @@ ORDER BY best4 DESC, played ASC
 		echo "query borken.";
         //echo (sqlsrv_errors());
 	}
-
-//$cxn=mysqli_connect ($host,$user,$password,$dbname) or die ("Couldn't connect to the server");
-//$query = "SELECT * FROM LeagueTableN14 ORDER BY best4 DESC, player";  
-//$result = mysqli_query($cxn,$query) or die ("Couldn't execute query");
-
 
 echo "<table>";
 echo "<table class='responsive'>";
@@ -158,12 +153,11 @@ echo "<thead>
 	
 		$player = $row['player'];
 		$played = $row['played'];
-		$meet1 = $row['meet1'];
-		$meet2 = $row['meet2'];
-		$meet3 = $row['meet3'];
-		$meet4 = $row['meet4'];
-		$meet5 = $row['meet5'];
-		//$meet6 = $row['meet6'];
+		$meet1 = (is_null($row['meet1']) ? "-" : (float)$row['meet1']);
+		$meet2 = (is_null($row['meet2']) ? "-" : (float)$row['meet2']);
+		$meet3 = (is_null($row['meet3']) ? "-" : (float)$row['meet3']);
+		$meet4 = (is_null($row['meet4']) ? "-" : (float)$row['meet4']);
+		$meet5 = (is_null($row['meet5']) ? "-" : (float)$row['meet5']);
 		$meet6 = (is_null($row['meet6']) ? "-" : (float)$row['meet6']);
 		$best4 = $row['best4'];
 		$total = $row['total'];
