@@ -2,16 +2,13 @@
 	$season = htmlspecialchars($_GET["season"]);
 	$region = htmlspecialchars($_GET["region"]);
 	$meet = htmlspecialchars($_GET["meet"]);
-
-	//echo "  " . $season . $region . $meet;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="description" content="Results of <? echo "$meet"; ?>" />
-<title>UK Pinball League – <? echo "$meet"; ?></title>
+<title>UK Pinball League - League Meet Results.</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
 <script language="JavaScript" type="text/javascript">
@@ -123,7 +120,7 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 		$scoreMachineName = $scoreRow['MachineName'];
 		$scoreRank = $scoreRow['Rank'];
 		$scorePlayerName = $scoreRow['PlayerName'];
-		$scoreGameScore = $scoreRow['GameScore'];
+		$scoreGameScore = number_format($scoreRow['GameScore']);
 
 		// write new table header if this is a new machine
 		if ($scoreMachineName !== $lastMachineName)
