@@ -1,5 +1,9 @@
-<?php $meet = $_GET['meet']; 
-	$meet = htmlspecialchars($meet);
+<?php
+	$season = htmlspecialchars($_GET["season"]);
+	$region = htmlspecialchars($_GET["region"]);
+	$meet = htmlspecialchars($_GET["meet"]);
+
+	//echo "  " . $season . $region . $meet;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -20,168 +24,213 @@
 	-->
 </script>
 
-<?php include("header.inc"); ?>
-
 <!-- Content -->
-
 <div class="panel">
 
-<?php echo "<h1>$meet</h1>"; ?>
+	<?php 
+		include("header.inc"); 
+		include("includes/envvars.inc");
 
-<p>
-	<script>
-		document.write('<a href="' + document.referrer + '" class="link">Back to League Table</a>');
-	</script>
-</p>
+		$connectionOptions = array(
+			"Database" => $sqldbname,
+			"Uid" => $sqluser,
+			"PWD" => $sqlpassword
+		);
 
-<form name="playerform" action="player-info.php" method="get">
-<input type="hidden" name="player" />
+		$conn = sqlsrv_connect($sqlserver, $connectionOptions);
+		if( $conn === false ) 
+		{
+			echo "connection borken.";
+			// die( print_r( sqlsrv_errors(), true));
+		}
 
+		 $tsql= "
+	SELECT
+	Season.SeasonNumber,
+	Region.Name AS RegionName,
+	LeagueMeet.MeetNumber,
+	CONVERT(varchar, LeagueMeet.Date, 103) AS Date,
+	LeagueMeet.Host
+	FROM LeagueMeet
+	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
+	WHERE Region.Synonym = ? -- $region 
+	AND Season.SeasonNumber = ? -- $season 
+	AND LeagueMeet.MeetNumber = ? -- $meet 
+	";
+
+		// Perform query with parameterised values.
+		$result= sqlsrv_query($conn, $tsql, array($region, $season, $meet));
+		if ($result == FALSE)
+		{
+			echo "query borken.";
+		}
+
+		$leagueMeetRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
+		$leagueMeetRegionName = $leagueMeetRow['RegionName'];
+		$leagueMeetHostName = $leagueMeetRow['Host'];
+		$leagueMeetDate = $leagueMeetRow['Date'];
+	?>
+
+	<?php 
+		echo "<h1>$leagueMeetRegionName League, Season $season, Meet #$meet</h1>"; 
+	?>
+
+	<p>
+		<script>
+			document.write('<a href="' + document.referrer + '" class="link">Back to League Table</a>');
+		</script>
+	</p>
+
+	<!--
+	<form name="playerform" action="player-info.php" method="get">
+	<input type="hidden" name="player" />
+	-->
 <?php
 
-	include("includes/old_menu.inc");
+	// Get all scores at meet
+	$tsql="
+SELECT
+RANK() OVER (PARTITION BY MachineId ORDER BY Score DESC) AS Rank,
+Score.PlayerId AS PlayerId,
+Player.Name AS PlayerName,
+Score.MachineId AS MachineId,
+Machine.Name AS MachineName,
+Score.Score AS GameScore
+FROM Score 
+INNER JOIN Player ON Player.Id = Score.PlayerId
+INNER JOIN Machine ON Machine.Id = Score.MachineId
+INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
+INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+WHERE Region.Synonym = ? -- $region 
+AND Season.SeasonNumber = ? -- $season 
+AND LeagueMeet.MeetNumber = ? -- $meet 
+ORDER BY Machine.Name, GameScore desc, PlayerName
+	";
 
-	$cxn=mysqli_connect ($host,$user,$password,$dbname) or die ("Couldn't connect to the server");
+	// Perform query with parameterised values.
+	$result= sqlsrv_query($conn, $tsql, array($region, $season, $meet));
+	if ($result == FALSE)
+	{
+		echo "query borken.";
+	}
 
-	$scores = mysqli_real_escape_string($cxn, $_GET['scores']);
+	$lastMachineName = "";
 
-	$getmachines = mysqli_query($cxn, "SELECT DISTINCT machine FROM LeagueResults1 WHERE meet = '$scores' ORDER BY machine");
-	$machines = mysqli_num_rows($getmachines);
+	while ($scoreRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
+	{
+		$scoreMachineName = $scoreRow['MachineName'];
+		$scoreRank = $scoreRow['Rank'];
+		$scorePlayerName = $scoreRow['PlayerName'];
+		$scoreGameScore = $scoreRow['GameScore'];
 
-    while ($rowmachines = mysqli_fetch_assoc($getmachines)) {
+		// write new table header if this is a new machine
+		if ($scoreMachineName !== $lastMachineName)
+		{
+			// Close off the last table (unless this was the first table)
+			if ($lastMachineName !== "")
+			{
+				echo "</table>";
+				echo "</div>";
+			}
 
-    $machine = $rowmachines['machine'];
+			echo "<div class='meet-table-holder'>";
+        
+			echo "<h2>$scoreMachineName</h2>";
+        
+			echo "<table>";
+        
+			echo "<thead>
+				<tr class='white'>
+					<th class='meetposition'>&nbsp;</th>
+					<th class='meetplayer'>Player</th>
+					<th class='meetscore'>Score</th>
+ 				</tr>
+			</thead>";
 
-    $getmeetresults = mysqli_query($cxn, "SELECT * FROM LeagueResults1 WHERE machine = '$machine' and meet = '$scores' ORDER BY score DESC");
-    $meetresults = mysqli_num_rows($getmeetresults);
+			$lastMachineName = $scoreMachineName;
+			$counter = 0;
+		}
+
+		$counter++;
+		$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
+
+        echo "<tr class='border'>\n
+			<td class='meetposition' bgcolor='".$bgcolor."'>$scoreRank</td>\n
+			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"javascript:getplayer('$scorePlayerName')\" class='player-link'>$scorePlayerName</a></td>\n
+			<td class='meetscore' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n
+        </tr>\n";
+	}
+
+	// Close off the last table
+	echo "</table>";
+	echo "</div>";
+
+
+	// Overall results
+	$tsql="
+SELECT
+Result.Position AS 'Rank',
+Player.Name AS 'PlayerName',
+Result.Score AS 'Score',
+Result.Points AS 'Points'
+from Result
+INNER JOIN LeagueMeet on LeagueMeet.CompetitionId = Result.CompetitionId
+INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
+INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+INNER JOIN Player ON Player.Id = Result.PlayerId
+WHERE Region.Synonym = ? -- $region 
+AND Season.SeasonNumber = ? -- $season 
+AND LeagueMeet.MeetNumber = ? -- $meet 
+ORDER BY Rank, PlayerName
+";
+     
+    // Perform query with parameterised values.
+	$result= sqlsrv_query($conn, $tsql, array($region, $season, $meet));
+	if ($result == FALSE)
+	{
+		echo "query borken.";
+	}
 
 	$counter = 0;
-      
-      	echo "<div class='meet-table-holder'>";
-        
-        echo "<h2>$machine</h2>";
-        
-        echo "<table>";
-        
-        echo "<thead>
-			<tr class='white'>
-				<th class='meetposition'>&nbsp;</th>
-                <th class='meetplayer'>Player</th>
-                <th class='meetscore'>Score</th>
- 			</tr>
-		</thead>";
-        
-        	$n = 1;
-			
-			
-            while ($rowmeetresults = mysqli_fetch_assoc($getmeetresults)) {
 
-            $results_player = $rowmeetresults['player'];
-            $results_score = $rowmeetresults['score'];
-            // all other info you want to pull here
-             
-            $results_score = number_format($results_score);
-            
-            $counter++;
-			$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
+	echo "<div class='meet-table-holder'>";
 
-            echo "<tr class='border'>\n
-            		  <td class='meetposition' bgcolor='".$bgcolor."'>$n</td>\n
-            		  <td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"javascript:getplayer('$results_player')\" class='player-link'>$results_player</a></td>\n
-            		  <td class='meetscore' bgcolor='".$bgcolor."'>$results_score</td>\n
-            </tr>\n";
-			
-			$n = $n + 1;
-            
-            
-            
-            } // end meetresults loop
-            
-            echo "</table>\n";
-            
-            echo "</div>";
-            
-            } // end machines loop
-      
-    
-	
+	echo "<h2>Results</h2>";
+	echo "<table>";
 
+	echo "<thead>
+				<tr class='white'>
+					<th class='meetposition'>&nbsp;</th>
+					<th class='meetplayer'>Player</th>
+					<th class='meetfinalscore'>Score</th>
+					<th class='meetfinalpoints'>Points</th>
+ 				</tr>
+			</thead>";
 
+	while ($resultsRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
+	{
+		$resultRank = $resultsRow['Rank'];
+		$resultPlayerName = $resultsRow['PlayerName'];
+		$resultScore = (float)$resultsRow['Score'];
+		$resultPoints = (float)$resultsRow['Points'];
 
-$query = "SELECT * FROM OverallResults1 WHERE meet='$scores' ORDER BY points DESC, player";
-$result = mysqli_query($cxn,$query) or die ("Couldn't execute query");
+		$counter++;
+		$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
 
-$nrows = mysqli_num_rows($result);
-
-$counter = 0;
-
-echo "<div class='meet-table-holder'>";
-
-echo "<h2>Results</h2>";
-echo "<table>";
-
-echo "<thead>
-			<tr class='white'>
-				<th class='meetposition'>&nbsp;</th>
-                <th class='meetplayer'>Player</th>
-                <th class='meetfinalscore'>Score</th>
-				<th class='meetfinalpoints'>Points</th>
- 			</tr>
-		</thead>";
-		
-
-
-$points = '';
-	$position = 0;
-	$hiddenPositions = 0;
-	
-	while ($row = mysqli_fetch_assoc($result))
-	
-{
-
-	if ($points != $row['points']) 
-	
-{
-
-	$points = $row['points'];
-	$position = $hiddenPositions + $position + 1;
-	$hiddenPositions = 0;
-	
-}
-
-else
-
-{
-	
-	++$hiddenPositions;
-	
-}
-	
-	$results_player = $row['player'];
-	$points = $row['points'];
-	$UKPBpoints = $row['UKPBpoints'];
-	
-	$points = round($points,"1");
-	$UKPBpoints = round($UKPBpoints,"1");
-	
-	$counter++;
-	$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
-	
-	
-	
-	echo "<tr class='border'>\n
-		<td class='meetposition' bgcolor='".$bgcolor."'>$position</td>\n
-		<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"javascript:getplayer('$results_player')\" class='player-link'>$results_player</a></td>\n
-		<td class='meetfinalscore' bgcolor='".$bgcolor."'>$points</td>\n
-		<td class='meetfinalpoints' bgcolor='".$bgcolor."'>$UKPBpoints</td>\n
+		echo "<tr class='border'>\n
+			<td class='meetposition' bgcolor='".$bgcolor."'>$resultRank</td>\n
+			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"javascript:getplayer('$resultPlayerName')\" class='player-link'>$resultPlayerName</a></td>\n
+			<td class='meetfinalscore' bgcolor='".$bgcolor."'>$resultScore</td>\n
+			<td class='meetfinalpoints' bgcolor='".$bgcolor."'>$resultPoints</td>\n
 		</tr>\n";
-	
-}
-echo "</table>\n";
-echo "</div>";
+	}
 
+	echo "</table>\n";
+	echo "</div>";
 
-
+	sqlsrv_free_stmt($result);
 ?>
 
 <div style="clear: both;"></div>

@@ -22,14 +22,14 @@ function getplayer ( selectedtype )
 
 <div class="panel">
 
-<h1>Northern League <span style="white-space:nowrap">2020/Season 15</span></h1>
+<h1>Northern League <span style="white-space:nowrap">2021/Season 15</span></h1>
 
 <form name="playerform" action="player-info.php" method="get">
 <input type="hidden" name="player" />
 
 <?php
 
-include("includes/old_menu.inc");
+	include("includes/old_menu.inc");
 
     $connectionOptions = array(
         "Database" => $sqldbname,
@@ -40,8 +40,8 @@ include("includes/old_menu.inc");
     $conn = sqlsrv_connect($sqlserver, $connectionOptions);
 	if( $conn === false ) 
 	{
-		echo "connection bork: ";
-		die( print_r( sqlsrv_errors(), true));
+		echo "connection borken.";
+		// die( print_r( sqlsrv_errors(), true));
 	}
 
 	// This is a little experimental. Could make a sql function out of this so long as it all works..
@@ -119,7 +119,7 @@ echo "<thead>
 				<th>&nbsp;</th>
                 <th>Player</th>
 				<th>Played</th>
-				<th><a href=\"meet.php?scores=N%2015.1&amp;meet=Meet%201,%2012.01.20\" class='link'>Meet 1</a></th>
+				<th><a href=\"leaguemeet.php?season=15&amp;region=n&amp;meet=1\" class='link'>Meet 1</a></th>
 				<th>Meet 2</th>
 				<th>Meet 3</th>
 				<th>Meet 4</th>
@@ -139,18 +139,6 @@ echo "<thead>
 	
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
 	{
-
-		if ($best4 != $row['best4']) 
-		{
-			$best4 = $row['best4'];
-			$position = $hiddenPositions + $position + 1;
-			$hiddenPositions = 0;
-		}
-		else
-		{
-			++$hiddenPositions;
-		}
-	
 		$player = $row['player'];
 		$played = $row['played'];
 		$meet1 = (is_null($row['meet1']) ? "-" : (float)$row['meet1']);
