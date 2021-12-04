@@ -93,6 +93,7 @@ Score.PlayerId AS PlayerId,
 Player.Name AS PlayerName,
 Score.MachineId AS MachineId,
 Machine.Name AS MachineName,
+Score.CompetitionId AS CompetitionId,
 Score.Score AS GameScore
 FROM Score 
 INNER JOIN Player ON Player.Id = Score.PlayerId
@@ -117,9 +118,12 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 
 	while ($scoreRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
 	{
+		$scorePlayerId = $scoreRow['PlayerId'];
+		$scorePlayerName = $scoreRow['PlayerName'];
+		$scoreMachineId = $scoreRow['MachineId'];
 		$scoreMachineName = $scoreRow['MachineName'];
 		$scoreRank = $scoreRow['Rank'];
-		$scorePlayerName = $scoreRow['PlayerName'];
+		$scoreCompetitionId = $scoreRow['CompetitionId'];
 		$scoreGameScore = number_format($scoreRow['GameScore']);
 
 		// write new table header if this is a new machine
@@ -153,9 +157,11 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 		$counter++;
 		$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
 
+		$scoreLink = "scores.php?playerid=$scorePlayerId&machineid=$scoreMachineId&competitionid=$scoreCompetitionId";
+
         echo "<tr class='border'>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$scoreRank</td>\n
-			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"javascript:getplayer('$scorePlayerName')\" class='player-link'>$scorePlayerName</a></td>\n
+			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$scoreLink\" class='player-link'>$scorePlayerName</a></td>\n
 			<td class='meetscore' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n
         </tr>\n";
 	}

@@ -45,7 +45,8 @@ function getplayer ( selectedtype )
 	}
 
 	// This is a little experimental. Could make a sql function out of this so long as it all works..
-    $tsql= "WITH SeasonPlayers (PlayerId, PlayerName) AS
+    $tsql= "
+WITH SeasonPlayers (PlayerId, PlayerName) AS
 (
 	SELECT DISTINCT
 	Player.Id,
