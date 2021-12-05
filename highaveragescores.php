@@ -16,7 +16,7 @@ function getplayer ( selectedtype )
 -->
 </script>
 
-<?php include("headerbonus.inc"); ?>
+<?php include("includes/header.inc"); ?>
 
 <form name="playerform" action="player-highscores.php" method="get">
 <input type="hidden" name="player" />
@@ -25,12 +25,11 @@ function getplayer ( selectedtype )
 
 <div class="panel">
 
-<h1>UKPL High &amp; Average Scores</h1>
+	<h1>UKPL High &amp; Average Scores</h1>
 
+	<table class="rankings">
 
-<table class="rankings">
-
-<thead>
+		<thead>
 			<tr class="white">
 				<th>Machine</th>
 				<th>High Score</th>
@@ -39,87 +38,109 @@ function getplayer ( selectedtype )
 				<th>UKPL average</th>
  			</tr>
 		</thead>
-		
+
 
 <?php
 
-include("includes/old_menu.inc");
+include("includes/sql.inc");
 
-$cxn=mysqli_connect ($host,$user,$password,$dbname) or die ("Couldn't connect to the server");
+$tsql ="
+WITH AverageScore AS
+(
+	SELECT 
+	MachineId,
+	AVG(Score.Score) AS 'Average'
+	FROM Score
+	GROUP BY MachineId
+)
+SELECT 
+MaxScore.MachineId, 
+Machine.Name AS 'MachineName',
+MaxScore.Score AS HighScore, 
+AverageScore.Average AS AverageScore,
+MaxScore.PlayerId,
+Player.Name AS 'PlayerName',
+MaxScore.CompetitionId,
+Season.Year AS 'SeasonYear',
+Season.SeasonNumber AS 'SeasonNumber',
+Region.Name AS 'RegionName',
+Region.Synonym AS 'RegionSynonym',
+LeagueMeet.MeetNumber AS 'LeagueMeetNumber',
+LeagueFinal.Description AS 'LeagueFinalDescription'
+FROM 
+(
+	SELECT
+	CompetitionId,
+	MachineId, 
+	Score, 
+	PlayerId,
+    ROW_NUMBER() OVER (PARTITION BY MachineId ORDER BY Score DESC) Rank
+    FROM Score
+) MaxScore
+INNER JOIN AverageScore on AverageScore.MachineId = MaxScore.MachineId
+INNER JOIN Machine ON Machine.Id = MaxScore.MachineId
+INNER JOIN Player ON Player.Id = PlayerId
+LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = MaxScore.CompetitionId
+LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = MaxScore.CompetitionId
+INNER JOIN Season ON Season.Id = (COALESCE(LeagueMeet.SeasonId, LeagueFinal.SeasonId))
+LEFT OUTER JOIN Region ON Region.Id = LeagueMeet.RegionId
+WHERE MaxScore.Rank = 1 
+ORDER BY Machine.Name
+";
 
-
-$query = "SELECT f.machine, f.player, f.score, f.meet FROM (SELECT machine, MAX(score) AS maxscore FROM LeagueResults1 GROUP BY machine) AS x INNER JOIN LeagueResults1 AS f ON f.machine = x.machine AND f.score = x.maxscore GROUP BY machine";
-
-$results = mysqli_query($cxn,$query) or die ("Couldn't execute query1");
-
-$nbows = mysqli_num_rows($results);
-
-
-
-$query = "SELECT machine,AVG(score) AS avgscore FROM LeagueResults1 WHERE score > 0 GROUP BY machine";  
-	 
-$result = mysqli_query($cxn,$query) or die ("Couldn't execute query2");
-
-$nrows = mysqli_num_rows($result);
-
-
-
-for ($i=0;$i<$nrows;$i++)
-
+// Perform query.
+$result= sqlsrv_query($sqlConnection, $tsql);
+if ($result == FALSE)
 {
-	$bow = mysqli_fetch_assoc($results);
-	extract($bow);
-
-	$row = mysqli_fetch_assoc($result);
-	extract($row);
-	
-	$avgscore = number_format($avgscore);
-	$score = number_format($score);
-	
-	$counter++;
-	$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
-	
-	echo "<tr>\n
-		<td bgcolor='".$bgcolor."'><span style='white-space:nowrap'>$machine</span></td>\n
-		
-		<td bgcolor='".$bgcolor."'><span style='white-space:nowrap'>$score</span></td>\n
-		<td bgcolor='".$bgcolor."'><span style='white-space:nowrap'><a href=\"javascript:getplayer('$player')\" class='player-link'>$player</a></span></td>\n
-		<td bgcolor='".$bgcolor."'><span style='white-space:nowrap'>$meet</span></td>\n
-		<td class='lastcolumn' bgcolor='".$bgcolor."'><span style='white-space:nowrap'>$avgscore</span></td>\n
-		</tr>\n";
-	
+	echo "query borken.";
 }
+
+while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
+{
+	$machine = $row['MachineName'];
+	$highscore = number_format($row['HighScore']);
+	$player = $row['PlayerName'];
+	$avgscore = number_format($row['AverageScore']);
+
+	$scoreSeasonNumber = $row['SeasonNumber'];
+	$scoreSeasonYear = $row['SeasonYear'];
+	$scoreRegion = $row['RegionName'];
+	$scoreRegionSynonym = $row['RegionSynonym'];
+	$scoreLeagueMeetNumber = $row['LeagueMeetNumber'];
+
+	$leagueFinal = $row['LeagueFinalDescription'];
+	if (is_null($leagueFinal))
+	{
+		$event = "<a href=\"leaguemeet.php?season=$scoreSeasonNumber&region=$scoreRegionSynonym&meet=$scoreLeagueMeetNumber\" class='player-link'>$scoreSeasonYear $scoreRegion League - Meet $scoreLeagueMeetNumber</a>";
+	}
+	else if (str_starts_with($leagueFinal, 'League Final'))
+	{
+		$event = "$scoreSeasonYear $leagueFinal";
+	}
+	else 
+	{
+		$event = "$scoreSeasonYear League Final, $leagueFinal";
+	}
+
+
+	echo "<tr>\n
+		<td><span style='white-space:nowrap'>$machine</span></td>\n		
+		<td><span style='white-space:nowrap'>$highscore</span></td>\n
+		<td><span style='white-space:nowrap'><a href=\"javascript:getplayer('$player')\" class='player-link'>$player</a></span></td>\n
+		<td><span style='white-space:nowrap'>$event</span></td>\n
+		<td class='lastcolumn'><span style='white-space:nowrap'>$avgscore</span></td>\n
+	</tr>\n";
+}
+
 echo "</table>\n";
 
-
+sqlsrv_free_stmt($result);
 ?>
 
 </div>
 
-<!-- Footer -->
-
-<div class="panel-copyright">
-
-<p class="copyright">&copy; UK Pinball League 2010-<?=date("Y");?></p>
-
-</div>
-
-<div class="panel-bottom"></div>
-
-</div> <!-- End Container -->
-
-<!-- SlickNav start -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="jquery.slicknav.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-	$('#menu').slicknav({
-	prependTo:'#nav-wrapper',
-    closeOnClick:'true' // Close menu when a link is clicked.	
-	});
-});
-</script>
-<!-- SlickNav end -->
+<!-- footer -->
+<?php include("includes/footer.inc"); ?>
 
 </body>
   </html>

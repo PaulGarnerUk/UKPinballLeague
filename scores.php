@@ -179,6 +179,7 @@ ORDER BY Rank, Player.Name
 			$scorePlayerName = $scoreRow['PlayerName'];
 			$score = number_format($scoreRow['Score']);
 			
+
 			$scoreSeasonNumber = $scoreRow['SeasonNumber'];
 			$scoreSeasonYear = $scoreRow['SeasonYear'];
 			$scoreRegion = $scoreRow['RegionName'];
