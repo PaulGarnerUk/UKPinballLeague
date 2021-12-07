@@ -40,9 +40,7 @@ function getplayer ( selectedtype )
 		</thead>
 
 
-<?php
-
-include("includes/sql.inc");
+<?php include("includes/sql.inc");
 
 $tsql ="
 WITH AverageScore AS

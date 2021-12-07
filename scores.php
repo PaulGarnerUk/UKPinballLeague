@@ -1,7 +1,7 @@
 <?php
 	$playerid = htmlspecialchars($_GET["playerid"]);
 	$machineid = htmlspecialchars($_GET["machineid"]);
-	$competitionid = htmlspecialchars($_GET["competitionid"]);
+	$competitionid = htmlspecialchars($_GET["competitionid"] ?? null);
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -20,26 +20,6 @@ Joker Poker
 
 League Average Score : 56,340
 Paul Garner's Average : 112,320
-
--- Machine and average
-SELECT
-Machine.Name,
-AVG(Score)
-FROM Score
-INNER JOIN Machine ON Machine.Id = Score.MachineId
-WHERE MachineId = 89
-GROUP BY Machine.Name
-
--- Player and average
-SELECT
-Player.Name,
-AVG(Score)
-FROM Score
-INNER JOIN Player on Player.Id = Score.PlayerId
-WHERE MachineId = 89 
-AND PlayerId = 25
-GROUP BY Player.Name
-
 
 See all of Paul Garner's scores
 See all scores for Joker Poker
@@ -208,7 +188,7 @@ ORDER BY Rank, Player.Name
 				<td>$scoreRank</td>\n
 				<td>$scorePlayerName</td>\n
 				<td>$score</td>\n
-				<td>$event</td>\n
+				<td class=\"paddidge\">$event</td>\n
 			</tr>\n";
 		}
 
