@@ -596,7 +596,17 @@ table.hi-per-player {
 	padding-right: 20px;
 }}
 
+tr.strikeout td:before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 0;
+	border-bottom: 1px solid #911;
+	width: 100%;
+}
+
 td	{
+	position: relative;
 	font-family: Arial, Sans-Serif;
 	color: #333;
 	font-size: 14px;
