@@ -360,13 +360,13 @@
         <td class="paddidge">David Dutton</td>
 		  </tr>
 
-      <tr>
-				<td>16.01.2022</td>
-        <td>10:00–12:00</td>
-        <td>13:00–16:00</td>
+      <tr class="strikeout">
+	<td>16.01.2022</td>
+        <td>Cancelled.</td>
+        <td>Cancelled</td>
         <td>Arcade Hub, Hull</td>
-        <td class="paddidge"><a href="https://arcadehubhull.co.uk/">Arcade Hub</a></td>
-		  </tr>
+        <td class="paddidge">Arcade Hub</td>
+        </tr>
 
       <tr>
         <td>13.02.2022</td>
@@ -426,7 +426,7 @@
 		<tbody>
 
       <tr>
-        <td>15.01.2022</td>
+        <td>05.02.2022</td>
         <td>11:00–13:00</td>
         <td>13:30–18:00</td>
         <td>Cumbernauld</td>
