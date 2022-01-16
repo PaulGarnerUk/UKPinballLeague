@@ -50,10 +50,10 @@
 	
 	$info = GetLeagueInfo($region, $season);
 
-	echo "<h1>$regionName League $seasonYear</h1>";
+	echo "<h1>$regionName League $seasonYear ";
 
 	// Display a drop down to allow user to change season that is displayed.
-	echo "<div class='dropdown'>
+	echo "<span class='dropdown'>
   <h1 class='dropbtn'>Season $season</h1>
   <div class='dropdown-content'>";
 $seasonLoop=$currentseason;
@@ -62,7 +62,7 @@ while ($seasonLoop > 0)
 	echo "<a href='league.php?region=$region&season=$seasonLoop'>Season $seasonLoop</a>";
 	$seasonLoop--;
 }
-	echo "</div></div>";
+	echo "</span></div></h1>";
 
 	echo "<p>$info->note</p>";
 ?>
@@ -88,7 +88,7 @@ while ($seasonLoop > 0)
 -->
 <?php
 	$tsql= "
-DECLARE @region NCHAR = ?; -- $region
+DECLARE @region NVARCHAR(3) = ?; -- $region
 DECLARE @season INTEGER = ?; -- $season
 DECLARE @qualifyingMeets INTEGER = ?; -- $info->numberOfQualifyingMeets
 

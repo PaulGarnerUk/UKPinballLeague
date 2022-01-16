@@ -25,7 +25,7 @@
 <div class="panel">
 
 	<?php 
-		include("header.inc"); 
+		include("includes/header.inc"); 
 		include("includes/envvars.inc");
 
 		$connectionOptions = array(

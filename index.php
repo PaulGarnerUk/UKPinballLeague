@@ -88,12 +88,12 @@ function getplayer ( selectedtype )
 
 <!--HTML for League Results-->
 <ul id="league-results" class="flexdropdownmenu">
-<li><a href="leaguetable-sw.php">SOUTH WEST</a></li>
-<li><a href="leaguetable-m.php">MIDLANDS</a></li>
-<li><a href="leaguetable-se.php">LONDON &amp; SE</a></li>
-<li><a href="leaguetable-n.php">NORTHERN</a></li>
-<li><a href="leaguetable-sc.php">SCOTTISH</a></li>
-<li><a href="leaguetable-ir.php">IRISH</a></li>
+<li><a href="league.php?region=sw">SOUTH WEST</a></li>
+<li><a href="league.php?region=m">MIDLANDS</a></li>
+<li><a href="league.php?region=lse">LONDON &amp; SE</a></li>
+<li><a href="league.php?region=n">NORTHERN</a></li>
+<li><a href="league.php?region=s">SCOTTISH</a></li>
+<li><a href="league.php?region=i">IRISH</a></li>
 <li><a href="finals.php">FINALS</a></li>
 <li><a href="placings.php">MEET WINNERS</a></li>
 <li><a href="winners.php">LEAGUE WINNERS</a></li>
