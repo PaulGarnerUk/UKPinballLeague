@@ -1,14 +1,15 @@
 <?php
-	$region = htmlspecialchars($_GET["region"] ?? null);
-	$season = htmlspecialchars($_GET['season'] ?? null); 
-
 	// First, validate region and season# 
 	include("includes/sql.inc"); 
+
+	$region = htmlspecialchars($_GET["region"] ?? null);
+	$season = htmlspecialchars($_GET['season'] ?? $currentseason); // default to current season if not specified.
 
 	$tsql="
 	SELECT
 	Region.Name AS 'RegionName',
-	Season.Name AS 'SeasonName'
+	Season.Name AS 'SeasonName',
+	(SELECT COUNT(*) FROM LeagueMeet WHERE LeagueMeet.SeasonId = Season.Id AND LeagueMeet.RegionId = Region.Id) AS 'TotalMeets'
 	FROM Season, Region
 	WHERE Region.Synonym = ? -- $region
 	AND Season.SeasonNumber = ? -- $season";
@@ -22,6 +23,7 @@
 	$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
 	$regionName = $row['RegionName'];
 	$seasonName = $row['SeasonName'];
+	$totalMeets = $row['TotalMeets'];
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -49,19 +51,14 @@
 	$info = GetLeagueInfo($region, $season);
 
 	echo "<h1>$regionName League $seasonName</h1>";
-	echo "<p>In season $season there were $info->aQualifyingPlaces a qualifying places in the $region region.</p>";
+	echo "<p>$info->note</p>";
 ?>
-
-	<!--
-	<h1><?=$regionName;?> League <?=$seasonName;?></h1>
-	<p>Additional text from new table? eg 'Season cancelled due to Covid 19'.</p>
-
-	-->
 
 <?php
 	$tsql= "
 DECLARE @region NCHAR = ?; -- $region
 DECLARE @season INTEGER = ?; -- $season
+DECLARE @qualifyingMeets INTEGER = ?; -- $info->numberOfQualifyingMeets
 
 WITH SeasonPlayers (PlayerId, PlayerName) AS
 (
@@ -109,7 +106,7 @@ COALESCE(MeetOne.Points,0) + COALESCE(MeetTwo.Points,0) + COALESCE(MeetThree.Poi
 	SELECT 
 	SUM(PlayerResults.Points)
 	FROM PlayerResults
-	WHERE PlayerResults.PlayerId = SeasonPlayers.PlayerId AND PlayerResults.Rnk <= 4
+	WHERE PlayerResults.PlayerId = SeasonPlayers.PlayerId AND PlayerResults.Rnk <= @qualifyingMeets
 ) AS best4
 FROM SeasonPlayers 
 LEFT OUTER JOIN PlayerResults AS MeetOne ON MeetOne.PlayerId = SeasonPlayers.PlayerId AND MeetOne.MeetNumber = 1
@@ -121,7 +118,7 @@ LEFT OUTER JOIN PlayerResults AS MeetSix ON MeetSix.PlayerId = SeasonPlayers.Pla
 ORDER BY best4 DESC, played ASC
 ";
 
-	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season));
+	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season, $info->numberOfQualifyingMeets));
 
 	if ($result == FALSE)
 	{
@@ -136,15 +133,17 @@ echo "<thead>
 			<tr class='white'>
 				<th>&nbsp;</th>
 				<th>Player</th>
-				<th>Played</th>
-				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=1\" class='link'>Meet 1</a></th>
-				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=2\" class='link'>Meet 2</a></th>
-				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=3\" class='link'>Meet 3</a></th>
-				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=4\" class='link'>Meet 4</a></th>
-				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=5\" class='link'>Meet 5</a></th>
-				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=6\" class='link'>Meet 6</a></th>
-				<th>Total</th>
-				<th class='paddidge'>Best 4</th>
+				<th>Played</th>";
+
+$meetNumber = 1;
+while ($meetNumber <= $totalMeets)
+{
+	echo "<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=$meetNumber\" class='link'>Meet $meetNumber</a></th>";
+	$meetNumber++;
+}
+
+		echo "<th>Total</th>
+				<th class='paddidge'>Best $info->numberOfQualifyingMeets</th>
 			</tr>
 		</thead>";
 
@@ -195,19 +194,31 @@ echo "<thead>
 		echo "<tr bgcolor='".$bgcolor."'>\n
 		<td bgcolor='".$bgcolor."'>$position</td>\n
 		<td bgcolor='".$bgcolor."'><a href=\"javascript:getplayer(`$player`)\" class='player-link'>$player</a></td>\n
-		<td bgcolor='".$bgcolor."'>$played</td>\n
-		<td bgcolor='".$bgcolor."'>$meet1</td>\n
-		<td bgcolor='".$bgcolor."'>$meet2</td>\n
-		<td bgcolor='".$bgcolor."'>$meet3</td>\n
-		<td bgcolor='".$bgcolor."'>$meet4</td>\n
-		<td bgcolor='".$bgcolor."'>$meet5</td>\n
-		<td bgcolor='".$bgcolor."'>$meet6</td>\n
-		<td bgcolor='".$bgcolor."'>$total</td>\n
+		<td bgcolor='".$bgcolor."'>$played</td>\n";
+		if ($totalMeets >= 1) echo "<td bgcolor='".$bgcolor."'>$meet1</td>\n";
+		if ($totalMeets >= 2) echo "<td bgcolor='".$bgcolor."'>$meet2</td>\n";
+		if ($totalMeets >= 3) echo "<td bgcolor='".$bgcolor."'>$meet3</td>\n";
+		if ($totalMeets >= 4) echo "<td bgcolor='".$bgcolor."'>$meet4</td>\n";
+		if ($totalMeets >= 5) echo "<td bgcolor='".$bgcolor."'>$meet5</td>\n";
+		if ($totalMeets >= 6) echo "<td bgcolor='".$bgcolor."'>$meet6</td>\n";
+		echo "<td bgcolor='".$bgcolor."'>$total</td>\n
 		<td bgcolor='".$bgcolor."'>$best4</td>\n
 		</tr>\n";
 	}
 
 	echo "</table>\n";
+
+	// Qualifying places descriptions.
+	echo "<p class='qualifier'>"; 
+	if ($info->aQualifyingPlaces > 0)
+	{
+		echo	"<span class='qual'>$info->aQualifyingDescription</span>";
+	}
+	if ($info->bQualifyingPlaces > 0)
+	{
+		echo 	" &nbsp; &nbsp;<span style='white-space:nowrap'><span class='qual-b'>$info->bQualifyingDescription</span>";
+	}
+	echo "</p>";
 
 	sqlsrv_free_stmt($result);
 
