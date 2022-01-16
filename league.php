@@ -2,26 +2,26 @@
 	$region = htmlspecialchars($_GET["region"] ?? null);
 	$season = htmlspecialchars($_GET['season'] ?? null); 
 
-    // First, validate region and season# 
-    include("includes/sql.inc"); 
+	// First, validate region and season# 
+	include("includes/sql.inc"); 
 
-    $tsql="
-SELECT
-Region.Name AS 'RegionName',
-Season.Name AS 'SeasonName'
-FROM Season, Region
-WHERE Region.Synonym = ? -- $region
-AND Season.SeasonNumber = ? -- $season";
+	$tsql="
+	SELECT
+	Region.Name AS 'RegionName',
+	Season.Name AS 'SeasonName'
+	FROM Season, Region
+	WHERE Region.Synonym = ? -- $region
+	AND Season.SeasonNumber = ? -- $season";
 
-$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season));
-if ($result == FALSE)
-{
-	echo "query borken.";
-}
+	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season));
+	if ($result == FALSE)
+	{
+		echo "query borken.";
+	}
 
-$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-$regionName = $row['RegionName'];
-$seasonName = $row['SeasonName'];
+	$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
+	$regionName = $row['RegionName'];
+	$seasonName = $row['SeasonName'];
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -38,20 +38,29 @@ $seasonName = $row['SeasonName'];
 
 <div class="panel">
 <?php
-    if (is_null($regionName))
-    {
-        echo '<p>Unexpected region or season number.</p>';
-        exit;
-    }
-?>
-    <h1><?=$regionName;?> League <?=$seasonName;?></h1>
+	if (is_null($regionName))
+	{
+		echo '<p>Unexpected region or season number.</p>';
+		exit;
+	}
 
-    <p class="firstline">First line of content.</p>
-    <p>Additional text.</p>
+	include("functions/leagueinfo.inc");
+	
+	$info = GetLeagueInfo($region, $season);
+
+	echo "<h1>$regionName League $seasonName</h1>";
+	echo "<p>In season $season there were $info->aQualifyingPlaces a qualifying places in the $region region.</p>";
+?>
+
+	<!--
+	<h1><?=$regionName;?> League <?=$seasonName;?></h1>
+	<p>Additional text from new table? eg 'Season cancelled due to Covid 19'.</p>
+
+	-->
 
 <?php
-    $tsql= "
-DECLARE @region INTEGER = ?; -- $region
+	$tsql= "
+DECLARE @region NCHAR = ?; -- $region
 DECLARE @season INTEGER = ?; -- $season
 
 WITH SeasonPlayers (PlayerId, PlayerName) AS
@@ -114,10 +123,10 @@ ORDER BY best4 DESC, played ASC
 
 	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season));
 
-    if ($result == FALSE)
+	if ($result == FALSE)
 	{
 		//echo "query borken.";
-        echo (sqlsrv_errors());
+		echo (sqlsrv_errors());
 	}
 
 echo "<table>";
@@ -126,17 +135,17 @@ echo "<table class='responsive'>";
 echo "<thead>
 			<tr class='white'>
 				<th>&nbsp;</th>
-                <th>Player</th>
+				<th>Player</th>
 				<th>Played</th>
-				<th><a href=\"leaguemeet.php?season=15&amp;region=n&amp;meet=1\" class='link'>Meet 1</a></th>
-				<th>Meet 2</th>
-				<th>Meet 3</th>
-				<th>Meet 4</th>
-				<th>Meet 5</th>
-				<th>Meet 6</th>
+				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=1\" class='link'>Meet 1</a></th>
+				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=2\" class='link'>Meet 2</a></th>
+				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=3\" class='link'>Meet 3</a></th>
+				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=4\" class='link'>Meet 4</a></th>
+				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=5\" class='link'>Meet 5</a></th>
+				<th><a href=\"leaguemeet.php?season=$season&amp;region=$region&amp;meet=6\" class='link'>Meet 6</a></th>
 				<th>Total</th>
 				<th class='paddidge'>Best 4</th>
- 			</tr>
+			</tr>
 		</thead>";
 
 		
@@ -144,6 +153,7 @@ echo "<thead>
 
 	$total = '';
 	$position = 0;
+	$previousRowBest4 = 0;
 	$hiddenPositions = 0;
 	
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
@@ -162,12 +172,27 @@ echo "<thead>
 		$best4 = round($best4,"1");
 		$total = round($total,"1");
 	
+		// Calculate rank
+		if ($best4 == $previousRowBest4)
+		{
+			$hiddenPositions++;
+		}
+		else 
+		{
+			$position = $position + $hiddenPositions;
+			$hiddenPositions = 0;
+
+			$previousRowBest4 = $best4;
+			$position++;
+		}
+
+		// Calculate row highlighting
 		$counter++;
-		$bgcolor = ($counter < 6)?"#fec171":
-		$bgcolor = ($counter > 5 && $counter < 10)?"#fee0b8":
-		$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
-	
-		echo "<tr>\n
+		if ($counter <= $info->aQualifyingPlaces) $bgcolor = "#fec171";
+		else if ($counter <= ($info->aQualifyingPlaces + $info->bQualifyingPlaces)) $bgcolor = "#fee0b8";
+		else $bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
+
+		echo "<tr bgcolor='".$bgcolor."'>\n
 		<td bgcolor='".$bgcolor."'>$position</td>\n
 		<td bgcolor='".$bgcolor."'><a href=\"javascript:getplayer(`$player`)\" class='player-link'>$player</a></td>\n
 		<td bgcolor='".$bgcolor."'>$played</td>\n
@@ -188,37 +213,6 @@ echo "<thead>
 
 ?>
 
-?>
-
-</div>
-
-<div class="panel">
-
-    <h2>Panel title</h2>
-    <p>Content within panel</p>
-	
-    <div class="table-holder">
-        <table class="responsive">
-            <thead>
-                <tr class="white">
-                    <th scope="col" width="150px">Date</th>
-                    <th scope="col" width="100px">Practice</th>
-                    <th scope="col" width="100px">Competition</th>
-                    <th scope="col" width="230px">Location</th>
-                    <th scope="col" width="170px">Host</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>TBC</td>
-                    <td>TBC</td>
-                    <td>TBC</td>
-                    <td>TBC</td>
-                    <td class="paddidge">TBC</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 </div>
 
 <!-- Header and menu -->
