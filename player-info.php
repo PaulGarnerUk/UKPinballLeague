@@ -92,10 +92,10 @@ $machinesPlayed = $row['MachinesPlayed'];
     <p>Click on any machine for a breakdown of all of <?=$playername?>'s recorded scores.</p>
 	
     <div class="table-holder">
-        <table class="responsive">
+        <table>
             <thead>
                 <tr class="white">
-                    <th width="400px">Machine</th>
+                    <th width="200px">Machine</th>
                     <th width="50px">Played</th>
                     <th width="100px" class="paddidge" style="text-align:right">Best</th>
                     <!-- Add LeagueRank to this table too, then allow column sorting? -->
