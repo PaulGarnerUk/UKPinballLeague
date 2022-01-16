@@ -8,7 +8,7 @@
 	$tsql="
 	SELECT
 	Region.Name AS 'RegionName',
-	Season.Name AS 'SeasonName',
+	Season.Year AS 'SeasonYear',
 	(SELECT COUNT(*) FROM LeagueMeet WHERE LeagueMeet.SeasonId = Season.Id AND LeagueMeet.RegionId = Region.Id) AS 'TotalMeets'
 	FROM Season, Region
 	WHERE Region.Synonym = ? -- $region
@@ -22,7 +22,7 @@
 
 	$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
 	$regionName = $row['RegionName'];
-	$seasonName = $row['SeasonName'];
+	$seasonYear = $row['SeasonYear'];
 	$totalMeets = $row['TotalMeets'];
 ?>
 
@@ -31,7 +31,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="description" content="UK Pinball League Table" />
-<title>UK Pinball League - <?=$regionName;?> League <?=$seasonName;?></title>
+<title>UK Pinball League - <?=$regionName;?> League <?=$seasonYear;?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
 <!-- Header and menu -->
@@ -50,10 +50,42 @@
 	
 	$info = GetLeagueInfo($region, $season);
 
-	echo "<h1>$regionName League $seasonName</h1>";
+	echo "<h1>$regionName League $seasonYear</h1>";
+
+	// Display a drop down to allow user to change season that is displayed.
+	echo "<div class='dropdown'>
+  <h1 class='dropbtn'>Season $season</h1>
+  <div class='dropdown-content'>";
+$seasonLoop=$currentseason;
+while ($seasonLoop > 0)
+{
+	echo "<a href='league.php?region=$region&season=$seasonLoop'>Season $seasonLoop</a>";
+	$seasonLoop--;
+}
+	echo "</div></div>";
+
 	echo "<p>$info->note</p>";
 ?>
-
+<!--
+<div class="dropdown">
+  <h1 class="dropbtn">Season 14</h1>
+  <div class="dropdown-content">
+    <a href="league.php?region=m&season=13">Season 13</a>
+	<a href="league.php?region=m&season=12">Season 12</a>
+	<a href="league.php?region=m&season=11">Season 11</a>
+	<a href="league.php?region=m&season=10">Season 10</a>
+	<a href="league.php?region=m&season=9">Season 9</a>
+	<a href="league.php?region=m&season=8">Season 8</a>	
+	<a href="league.php?region=m&season=7">Season 7</a>
+	<a href="league.php?region=m&season=6">Season 6</a>
+	<a href="league.php?region=m&season=5">Season 5</a>
+	<a href="league.php?region=m&season=4">Season 4</a>
+	<a href="league.php?region=m&season=3">Season 3</a>
+	<a href="league.php?region=m&season=2">Season 2</a>
+	<a href="league.php?region=m&season=1">Season 1</a>
+  </div>
+</div>
+-->
 <?php
 	$tsql= "
 DECLARE @region NCHAR = ?; -- $region
