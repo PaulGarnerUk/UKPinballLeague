@@ -66,26 +66,7 @@ while ($seasonLoop > 0)
 
 	echo "<p>$info->note</p>";
 ?>
-<!--
-<div class="dropdown">
-  <h1 class="dropbtn">Season 14</h1>
-  <div class="dropdown-content">
-    <a href="league.php?region=m&season=13">Season 13</a>
-	<a href="league.php?region=m&season=12">Season 12</a>
-	<a href="league.php?region=m&season=11">Season 11</a>
-	<a href="league.php?region=m&season=10">Season 10</a>
-	<a href="league.php?region=m&season=9">Season 9</a>
-	<a href="league.php?region=m&season=8">Season 8</a>	
-	<a href="league.php?region=m&season=7">Season 7</a>
-	<a href="league.php?region=m&season=6">Season 6</a>
-	<a href="league.php?region=m&season=5">Season 5</a>
-	<a href="league.php?region=m&season=4">Season 4</a>
-	<a href="league.php?region=m&season=3">Season 3</a>
-	<a href="league.php?region=m&season=2">Season 2</a>
-	<a href="league.php?region=m&season=1">Season 1</a>
-  </div>
-</div>
--->
+
 <?php
 	$tsql= "
 DECLARE @region NVARCHAR(3) = ?; -- $region
@@ -122,7 +103,7 @@ PlayerResults (PlayerId, MeetNumber, Points, Rnk) AS
 	AND Region.Synonym = @region
 )
 SELECT 
-SeasonPlayers.PlayerId,
+SeasonPlayers.PlayerId as playerid,
 SeasonPlayers.PlayerName as player,
 (
 	SELECT COUNT(*) FROM PlayerResults WHERE PlayerResults.PlayerId = SeasonPlayers.PlayerId
@@ -190,6 +171,7 @@ while ($meetNumber <= $totalMeets)
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
 	{
 		$player = $row['player'];
+		$playerid = $row['playerid'];
 		$played = $row['played'];
 		$meet1 = (is_null($row['meet1']) ? "-" : (float)$row['meet1']);
 		$meet2 = (is_null($row['meet2']) ? "-" : (float)$row['meet2']);
@@ -225,7 +207,7 @@ while ($meetNumber <= $totalMeets)
 
 		echo "<tr bgcolor='".$bgcolor."'>\n
 		<td bgcolor='".$bgcolor."'>$position</td>\n
-		<td bgcolor='".$bgcolor."'><a href=\"javascript:getplayer(`$player`)\" class='player-link'>$player</a></td>\n
+		<td bgcolor='".$bgcolor."'><a href=\"player-info.php?playerid=$playerid\" class='player-link'>$player</a></td>\n
 		<td bgcolor='".$bgcolor."'>$played</td>\n";
 		if ($totalMeets >= 1) echo "<td bgcolor='".$bgcolor."'>$meet1</td>\n";
 		if ($totalMeets >= 2) echo "<td bgcolor='".$bgcolor."'>$meet2</td>\n";
