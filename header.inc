@@ -47,7 +47,7 @@
 
 <!-- Navigation -->
 <div id="nav-wrapper">
-<?php include("responsive-menu.inc"); ?>
+<?php include("includes/responsive-menu.inc"); ?>
 </div>
 </div>
 
