@@ -9,7 +9,7 @@
 	SELECT
 	Region.Name AS 'RegionName',
 	Season.Year AS 'SeasonYear',
-	(SELECT COUNT(*) FROM LeagueMeet WHERE LeagueMeet.SeasonId = Season.Id AND LeagueMeet.RegionId = Region.Id) AS 'TotalMeets'
+	(SELECT COUNT(*) FROM LeagueMeet WHERE LeagueMeet.SeasonId = Season.Id AND LeagueMeet.RegionId = Region.Id AND LeagueMeet.Status = 3) AS 'TotalMeets'
 	FROM Season, Region
 	WHERE Region.Synonym = ? -- $region
 	AND Season.SeasonNumber = ? -- $season";
