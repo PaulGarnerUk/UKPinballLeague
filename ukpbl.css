@@ -770,6 +770,7 @@ h2.ukcomps {
 	color: #333333;
 	padding: 4px 8px;
 	border: none;
+	border-radius: 15px;
 	cursor: pointer;
 	margin: 0;
 }
