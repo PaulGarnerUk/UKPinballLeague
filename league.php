@@ -73,41 +73,58 @@ DECLARE @region NVARCHAR(3) = ?; -- $region
 DECLARE @season INTEGER = ?; -- $season
 DECLARE @qualifyingMeets INTEGER = ?; -- $info->numberOfQualifyingMeets
 
-WITH SeasonPlayers (PlayerId, PlayerName) AS
+-- Simplify the region and season into id values
+WITH Query (RegionId, SeasonId) AS
+(
+  SELECT 
+  Region.Id AS RegionId,
+  Season.Id AS SeasonId
+  FROM Region, Season
+  WHERE Region.Synonym = @region
+  AND Season.SeasonNumber = @season
+),
+-- Select completed league meets for this region/season
+LeagueMeets (Id, MeetNumber, CompetitionId) AS
+(
+  SELECT
+  Id,
+  MeetNumber,
+  CompetitionId
+  FROM LeagueMeet
+  INNER JOIN Query on LeagueMeet.RegionId = Query.RegionId AND LeagueMeet.SeasonId = Query.SeasonId
+  WHERE LeagueMeet.Status = 3
+),
+-- Select results for this region/season
+Results (MeetNumber, CompetitionId, PlayerId, Score, Points, Position, Rnk) AS
+(
+  SELECT
+  LeagueMeets.MeetNumber,
+  LeagueMeets.CompetitionId,
+  Result.PlayerId,
+  Result.Score, 
+  Result.Points,
+  Result.Position,
+  ROW_NUMBER() OVER (PARTITION BY PlayerId ORDER BY Points DESC) AS Rnk
+  FROM Result
+  INNER JOIN LeagueMeets ON Result.CompetitionId = LeagueMeets.CompetitionId
+),
+-- Select players for this region/season
+SeasonPlayers (PlayerId, PlayerName) AS
 (
 	SELECT DISTINCT
 	Player.Id,
 	Player.Name
 	FROM Result 
-	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Result.CompetitionId
-	INNER JOIN Season on Season.Id = LeagueMeet.SeasonId
-	INNER JOIN Region on Region.Id = LeagueMeet.RegionId
+	INNER JOIN LeagueMeets ON Result.CompetitionId = LeagueMeets.CompetitionId
 	INNER JOIN Player ON Player.Id = Result.PlayerId
-	WHERE Season.SeasonNumber = @season
-	AND Region.Synonym = @region
-),
-PlayerResults (PlayerId, MeetNumber, Points, Rnk) AS
-(
-	SELECT 
-	Player.Id AS PlayerId,
-	--LeagueMeet.Id AS LeagueMeetId,
-	LeagueMeet.MeetNumber,
-	Result.Points,
-	ROW_NUMBER() OVER (PARTITION BY Player.Id ORDER BY Result.Points DESC) AS Rnk
-	FROM Result 
-	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Result.CompetitionId
-	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
-	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
-	INNER JOIN Player ON Player.Id = Result.PlayerId
-	WHERE Season.SeasonNumber = @season
-	AND Region.Synonym = @region
 )
+
 SELECT 
-SeasonPlayers.PlayerId as playerid,
-SeasonPlayers.PlayerName as player,
+SeasonPlayers.PlayerId AS playerid,
+SeasonPlayers.PlayerName AS player,
 (
-	SELECT COUNT(*) FROM PlayerResults WHERE PlayerResults.PlayerId = SeasonPlayers.PlayerId
-) as played,
+	SELECT COUNT(*) FROM Results WHERE Results.PlayerId = SeasonPlayers.PlayerId
+) AS played,
 MeetOne.Points as meet1,
 MeetTwo.Points as meet2,
 MeetThree.Points as meet3,
@@ -117,19 +134,18 @@ MeetSix.Points as meet6,
 COALESCE(MeetOne.Points,0) + COALESCE(MeetTwo.Points,0) + COALESCE(MeetThree.Points,0) + COALESCE(MeetFour.Points,0) + COALESCE(MeetFive.Points,0) + COALESCE(MeetSix.Points,0) AS total,
 (
 	SELECT 
-	SUM(PlayerResults.Points)
-	FROM PlayerResults
-	WHERE PlayerResults.PlayerId = SeasonPlayers.PlayerId AND PlayerResults.Rnk <= @qualifyingMeets
+	SUM(Results.Points)
+	FROM Results
+	WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= @qualifyingMeets
 ) AS best4
 FROM SeasonPlayers 
-LEFT OUTER JOIN PlayerResults AS MeetOne ON MeetOne.PlayerId = SeasonPlayers.PlayerId AND MeetOne.MeetNumber = 1
-LEFT OUTER JOIN PlayerResults AS MeetTwo ON MeetTwo.PlayerId = SeasonPlayers.PlayerId AND MeetTwo.MeetNumber = 2
-LEFT OUTER JOIN PlayerResults AS MeetThree ON MeetThree.PlayerId = SeasonPlayers.PlayerId AND MeetThree.MeetNumber = 3
-LEFT OUTER JOIN PlayerResults AS MeetFour ON MeetFour.PlayerId = SeasonPlayers.PlayerId AND MeetFour.MeetNumber = 4
-LEFT OUTER JOIN PlayerResults AS MeetFive ON MeetFive.PlayerId = SeasonPlayers.PlayerId AND MeetFive.MeetNumber = 5
-LEFT OUTER JOIN PlayerResults AS MeetSix ON MeetSix.PlayerId = SeasonPlayers.PlayerId AND MeetSix.MeetNumber = 6
-ORDER BY best4 DESC, played ASC
-";
+LEFT OUTER JOIN Results AS MeetOne ON MeetOne.MeetNumber = 1 AND MeetOne.PlayerId = SeasonPlayers.PlayerId
+LEFT OUTER JOIN Results AS MeetTwo ON MeetTwo.MeetNumber = 2 AND MeetTwo.PlayerId = SeasonPlayers.PlayerId
+LEFT OUTER JOIN Results AS MeetThree ON MeetThree.MeetNumber = 3 AND MeetThree.PlayerId = SeasonPlayers.PlayerId
+LEFT OUTER JOIN Results AS MeetFour ON MeetFour.PlayerId = SeasonPlayers.PlayerId AND MeetFour.MeetNumber = 4
+LEFT OUTER JOIN Results AS MeetFive ON MeetFive.PlayerId = SeasonPlayers.PlayerId AND MeetFive.MeetNumber = 5
+LEFT OUTER JOIN Results AS MeetSix ON MeetSix.PlayerId = SeasonPlayers.PlayerId AND MeetSix.MeetNumber = 6
+ORDER BY best4 DESC, played ASC";
 
 	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season, $info->numberOfQualifyingMeets));
 
