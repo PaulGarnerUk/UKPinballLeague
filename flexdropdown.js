@@ -17,7 +17,7 @@
 jQuery.noConflict()
 
 var flexdropdownmenu={
-	arrowpath: 'arrow.gif', //full URL or path to arrow image
+	arrowpath: 'images/arrow.gif', //full URL or path to arrow image
 	animspeed: 200, //reveal animation speed (in milliseconds)
 	showhidedelay: [150, 150], //delay before menu appears and disappears when mouse rolls over it, in milliseconds
 

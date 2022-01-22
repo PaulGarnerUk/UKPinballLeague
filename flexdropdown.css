@@ -80,10 +80,15 @@ position: relative;
 float: left;
 }
 
+/* 
+	sort of accidentally made redundant when I standardised to use header.inc
+	Might need a rethink if we want to support a highlighted menu option with that design.
+	(This design adds underline to menu item)
+
 a.menu-current{
 font: 11px Arial, sans-serif;
 display: block;
-width: 117px; /*width of menu (not including side paddings)*/
+width: 117px; 
 color: #f7f7f7;
 text-align: center;
 background: #1C3766;
@@ -97,6 +102,7 @@ padding-bottom: 9px;
 position: relative;
 float: left;
 }
+*/
 
 .flexdropdownmenu, .menu:hover{
 text-decoration: none;

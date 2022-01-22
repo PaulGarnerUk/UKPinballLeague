@@ -72,7 +72,7 @@
 <a href="#" class="menu" data-flexmenu="scores">HI SCORES</a>
  
 <a href="#" class="menu" data-flexmenu="rules-faqs">RULES/FAQ</a> 
-<a href="links.php" class="menu-current">LINKS</a> 
+<a href="links.php" class="menu">LINKS</a> 
 <a href="contacts.php" class="menu">CONTACTS</a>
 </p>
 

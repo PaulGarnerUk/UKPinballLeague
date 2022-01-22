@@ -16,7 +16,7 @@ function getplayer ( selectedtype )
 -->
 </script>
 
-<?php include("headerbonus.inc"); ?>
+<?php include("includes/header.inc"); ?>
 
 <!-- Content -->
 

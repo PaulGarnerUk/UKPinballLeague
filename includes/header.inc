@@ -56,7 +56,7 @@
 <p class="menu-text">
 <a href="index.php" class="menu">HOME</a> 
 <a href="schedule.php" class="menu">SCHEDULE</a> 
-<a href="#" class="menu-current" data-flexmenu="league-results">RESULTS</a>
+<a href="#" class="menu" data-flexmenu="league-results">RESULTS</a>
 <a href="rankings.php" class="menu">RANKINGS</a>
 <a href="#" class="menu" data-flexmenu="scores">HI SCORES</a>
  

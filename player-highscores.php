@@ -69,7 +69,7 @@
 <a href="schedule.php" class="menu">SCHEDULE</a> 
 <a href="#" class="menu" data-flexmenu="league-results">RESULTS</a>
 <a href="rankings.php" class="menu">RANKINGS</a>
-<a href="#" class="menu-current" data-flexmenu="scores">HI SCORES</a>
+<a href="#" class="menu" data-flexmenu="scores">HI SCORES</a>
  
 <a href="#" class="menu" data-flexmenu="rules-faqs">RULES/FAQ</a> 
 <a href="links.php" class="menu">LINKS</a> 

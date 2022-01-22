@@ -73,7 +73,7 @@
   
 <a href="#" class="menu" data-flexmenu="rules-faqs">RULES/FAQ</a> 
 <a href="links.php" class="menu">LINKS</a> 
-<a href="contacts.php" class="menu-current">CONTACTS</a>
+<a href="contacts.php" class="menu">CONTACTS</a>
 </p>
 
 <!--HTML for League Results-->

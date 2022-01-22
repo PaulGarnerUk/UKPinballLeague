@@ -66,7 +66,7 @@ function getplayer ( selectedtype )
 
 <!-- Navigation -->
 <div id="nav-wrapper">
-<?php include("responsive-menu.inc"); ?>
+<?php include("includes/responsive-menu.inc"); ?>
 </div>
 </div>
 
@@ -76,7 +76,7 @@ function getplayer ( selectedtype )
 <a href="index.php" class="menu">HOME</a> 
 <a href="schedule.php" class="menu">SCHEDULE</a> 
 <a href="#" class="menu" data-flexmenu="league-results">RESULTS</a>
-<a href="rankings.php" class="menu-current">RANKINGS</a>
+<a href="rankings.php" class="menu">RANKINGS</a>
 <a href="#" class="menu" data-flexmenu="scores">HI SCORES</a>
   
 <a href="#" class="menu" data-flexmenu="rules-faqs">RULES/FAQ</a> 
@@ -86,12 +86,12 @@ function getplayer ( selectedtype )
 
 <!--HTML for League Results-->
 <ul id="league-results" class="flexdropdownmenu">
-<li><a href="leaguetable-sw.php">SOUTH WEST</a></li>
-<li><a href="leaguetable-m.php">MIDLANDS</a></li>
-<li><a href="leaguetable-se.php">LONDON &amp; SE</a></li>
-<li><a href="leaguetable-n.php">NORTHERN</a></li>
-<li><a href="leaguetable-sc.php">SCOTTISH</a></li>
-<li><a href="leaguetable-ir.php">IRISH</a></li>
+<li><a href="league.php?region=sw">SOUTH WEST</a></li>
+<li><a href="league.php?region=m">MIDLANDS</a></li>
+<li><a href="league.php?region=lse">LONDON &amp; SE</a></li>
+<li><a href="league.php?region=n">NORTHERN</a></li>
+<li><a href="league.php?region=s">SCOTTISH</a></li>
+<li><a href="league.php?region=i">IRISH</a></li>
 <li><a href="finals.php">FINALS</a></li>
 <li><a href="placings.php">MEET WINNERS</a></li>
 <li><a href="winners.php">LEAGUE WINNERS</a></li>
@@ -173,9 +173,10 @@ $nrows = mysqli_num_rows($result);
 <?php
 		
 
-$UKPBpoints1 = '';
+	$UKPBpoints1 = '';
 	$position = 0;
 	$hiddenPositions = 0;
+	$counter = 0;
 	
 	while ($row = mysqli_fetch_assoc($result))
 	

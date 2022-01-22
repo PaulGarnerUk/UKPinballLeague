@@ -75,7 +75,7 @@ function getplayer ( selectedtype )
 <div id="main-menu">
 
 <p class="menu-text">
-<a href="index.php" class="menu-current">HOME</a> 
+<a href="index.php" class="menu">HOME</a> 
 <a href="schedule.php" class="menu">SCHEDULE</a> 
 <a href="#" class="menu" data-flexmenu="league-results">RESULTS</a>
 <a href="rankings.php" class="menu">RANKINGS</a>
@@ -171,9 +171,10 @@ echo "<thead>
 		
 
 
-$UKPBpoints = '';
+	$UKPBpoints = '';
 	$position = 0;
 	$hiddenPositions = 0;
+	$counter = 0;
 	
 	while ($row = mysqli_fetch_assoc($result))
 	
