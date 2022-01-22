@@ -16,7 +16,7 @@ function getplayer ( selectedtype )
 -->
 </script>
 
-<?php include("header.inc"); ?>
+<?php include("includes/header.inc"); ?>
 
 <form name="playerform" action="player-info.php" method="get">
 <input type="hidden" name="player" />
