@@ -74,13 +74,13 @@ function getplayer ( selectedtype )
 
 <div id="main-menu">
 
+<!-- todo: reintroduce menu-current using techniques from : https://css-tricks.com/id-your-body-for-greater-css-control-and-specificity/ -->
 <p class="menu-text">
 <a href="index.php" class="menu">HOME</a> 
 <a href="schedule.php" class="menu">SCHEDULE</a> 
 <a href="#" class="menu" data-flexmenu="league-results">RESULTS</a>
 <a href="rankings.php" class="menu">RANKINGS</a>
 <a href="#" class="menu" data-flexmenu="scores">HI SCORES</a>
- 
 <a href="#" class="menu" data-flexmenu="rules-faqs">RULES/FAQ</a> 
 <a href="links.php" class="menu">LINKS</a> 
 <a href="contacts.php" class="menu">CONTACTS</a>
