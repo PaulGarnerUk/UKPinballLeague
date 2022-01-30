@@ -11,18 +11,7 @@
 <title>UK Pinball League - League Meet Results.</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-<script language="JavaScript" type="text/javascript">
-	<!--
-	function getplayer ( selectedtype )
-	{
-	  document.playerform.player.value = selectedtype ;
-	  document.playerform.submit() ;
-	}
-	-->
-</script>
-
 <!-- Content -->
-<div class="panel">
 
 	<?php 
 		include("includes/header.inc"); 
@@ -69,20 +58,12 @@
 		$leagueMeetDate = $leagueMeetRow['Date'];
 	?>
 
+	
+
 	<?php 
 		echo "<h1>$leagueMeetRegionName League, Season $season, Meet #$meet</h1>"; 
 	?>
 
-	<p>
-		<script>
-			document.write('<a href="' + document.referrer + '" class="link">Back to League Table</a>');
-		</script>
-	</p>
-
-	<!--
-	<form name="playerform" action="player-info.php" method="get">
-	<input type="hidden" name="player" />
-	-->
 <?php
 
 	// Get all scores at meet
@@ -175,6 +156,7 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 	$tsql="
 SELECT
 Result.Position AS 'Rank',
+Player.Id AS 'PlayerId',
 Player.Name AS 'PlayerName',
 Result.Score AS 'Score',
 Result.Points AS 'Points'
@@ -218,13 +200,16 @@ ORDER BY Rank, PlayerName
 		$resultPlayerName = $resultsRow['PlayerName'];
 		$resultScore = (float)$resultsRow['Score'];
 		$resultPoints = (float)$resultsRow['Points'];
+		$playerId = $resultsRow['PlayerId'];
+
+		$playerLink = "player-info.php?playerid=$playerId";
 
 		$counter++;
 		$bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
 
 		echo "<tr class='border'>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$resultRank</td>\n
-			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"javascript:getplayer('$resultPlayerName')\" class='player-link'>$resultPlayerName</a></td>\n
+			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$playerLink\" class='player-link'>$resultPlayerName</a></td>\n
 			<td class='meetfinalscore' bgcolor='".$bgcolor."'>$resultScore</td>\n
 			<td class='meetfinalpoints' bgcolor='".$bgcolor."'>$resultPoints</td>\n
 		</tr>\n";
@@ -236,40 +221,7 @@ ORDER BY Rank, PlayerName
 	sqlsrv_free_stmt($result);
 ?>
 
-<div style="clear: both;"></div>
-
-<p>
-<script>
-    document.write('<a href="' + document.referrer + '" class="link">Back to League Table</a>');
-</script>
-</p>
-
-</div>
-
 <!-- Footer -->
-
-<div class="panel-copyright">
-
-<p class="copyright">&copy; UK Pinball League 2015-<?=date("Y");?></p>
-
-</div>
-
-<div class="panel-bottom"></div>
-
-</div> <!-- Root container -->
-
-<!-- SlickNav start -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="jquery.slicknav.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-	$('#menu').slicknav({
-	prependTo:'#nav-wrapper',
-    closeOnClick:'true' // Close menu when a link is clicked.	
-	});
-});
-</script>
-<!-- SlickNav end -->
 
 </body>
   </html>
