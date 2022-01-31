@@ -14,17 +14,7 @@
 <!-- Header and menu -->
 <?php include("includes/header.inc"); ?>
 
-<!-- Content 
 
-Joker Poker
-
-League Average Score : 56,340
-Paul Garner's Average : 112,320
-
-See all of Paul Garner's scores
-See all scores for Joker Poker
-
--->
 <div class="panel">
 
 	<?php 
@@ -48,7 +38,8 @@ See all scores for Joker Poker
 		 $tsql= "
 SELECT
 Machine.Name AS 'MachineName',
-AVG(Score) AS 'LeagueAverage'
+AVG(Score) AS 'LeagueAverage',
+COUNT(Score) AS 'LeagueCount'
 FROM Score
 INNER JOIN Machine ON Machine.Id = Score.MachineId
 WHERE MachineId = ? -- $machineid
@@ -64,6 +55,7 @@ GROUP BY Machine.Name
 		$machineRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
 		$machineName = $machineRow['MachineName'];
 		$leagueAverage = number_format($machineRow['LeagueAverage']);
+		$leagueCount = number_format($machineRow['LeagueCount']);
 
 		// Player info and league average score
 		$tsql="
@@ -88,12 +80,12 @@ GROUP BY Player.Name
 		$playerAverage = number_format($playerRow['PlayerAverage']);
 	?>
 
-	<div class="panel">
+	
+	<h1><?=$machineName?></h1>
 
-		<h1><?=$machineName?></h1>
-
-		<p>League average score : <?=$leagueAverage?></p>
-		<p><?=$playerName?>'s average score : <?=$playerAverage?></p>
+	<p>Total league games played : <?=$leagueCount?></p>
+	<p>League average score : <?=$leagueAverage?></p>
+	<p><a href="player-info.php?playerid=<?=$playerid?>" class='player-link'><?=$playerName?>'s</a> average score : <?=$playerAverage?></p>
 
 	</div>
 
@@ -137,6 +129,7 @@ ORDER BY Rank, Player.Name
 			echo "query borken.";
 		}
 
+		echo "<div class='panel'>";
 		echo "<div class='table-holder'>"; // new divname reqd?
 
 		// Table header
@@ -199,15 +192,9 @@ ORDER BY Rank, Player.Name
 		// Tidy up sql resources
 		sqlsrv_free_stmt($result);
 	?>
-	<br>
-	<p>
-		<script>
-			document.write('<a href="' + document.referrer + '" class="link">Back</a>');
-		</script>
-	</p>
 
 </div> 
-</div>
+
 
 <!-- footer -->
 <?php include("includes/footer.inc"); ?>
