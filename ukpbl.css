@@ -816,3 +816,20 @@ h2.ukcomps {
 .dropdown:hover .dropbtn {
 	background-color: #fec171;
 }
+
+/* Allows table rows to have a surrounding border */
+.show-border td {
+	border-top: 2px solid;
+	border-bottom: 2px solid;
+	border-color: #fee0b8;
+}
+
+.show-border td:first-child {
+	border-left: 2px solid;
+	border-color: #fee0b8;
+}
+
+.show-border td:last-child {
+	border-right: 2px solid;
+	border-color: #fee0b8;
+}

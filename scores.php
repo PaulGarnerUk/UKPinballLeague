@@ -150,8 +150,8 @@ ORDER BY Rank, Player.Name
 			$scoreCompetitionId = $scoreRow['CompetitionId'];
 			$scoreRank = $scoreRow['ScoreRank'];
 			$scorePlayerName = $scoreRow['PlayerName'];
+			$scorePlayerId = $scoreRow['PlayerId'];
 			$score = number_format($scoreRow['Score']);
-			
 
 			$scoreSeasonNumber = $scoreRow['SeasonNumber'];
 			$scoreSeasonYear = $scoreRow['SeasonYear'];
@@ -173,12 +173,16 @@ ORDER BY Rank, Player.Name
 				$event = "$scoreSeasonYear League Final, $leagueFinal";
 			}
 
-			//if ($scoreCompetitionId === $competitionid)
-//			{
-//				$bgcolor = "#ecf6ff";
+			if ($scoreCompetitionId == $competitionid and $scorePlayerId == $playerid)
+			{
+				echo "<tr class='show-border'>\n";
+			}
+			else 
+			{
+				echo "<tr>\n";
+			}
 
-			echo "<tr>\n
-				<td>$scoreRank</td>\n
+			echo "<td>$scoreRank</td>\n
 				<td>$scorePlayerName</td>\n
 				<td>$score</td>\n
 				<td class=\"paddidge\">$event</td>\n
