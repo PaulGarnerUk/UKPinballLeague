@@ -779,6 +779,16 @@ tr.white {
 	background-color: #fff;
 }
 
+th.score {
+	text-align: right;
+	padding-right: 20px;
+}
+
+td.score {
+	text-align: right;
+	padding-right: 20px;
+}
+
 /* Style The Dropdown Button */
 .dropbtn {
 	background-color: #fee0b8;

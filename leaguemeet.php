@@ -127,7 +127,7 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 				<tr class='white'>
 					<th class='meetposition'>&nbsp;</th>
 					<th class='meetplayer'>Player</th>
-					<th class='meetscore'>Score</th>
+					<th class='score'>Score</th>
  				</tr>
 			</thead>";
 
@@ -143,7 +143,7 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
         echo "<tr class='border'>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$scoreRank</td>\n
 			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$scoreLink\" class='player-link'>$scorePlayerName</a></td>\n
-			<td class='meetscore' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n
+			<td class='score' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n
         </tr>\n";
 	}
 

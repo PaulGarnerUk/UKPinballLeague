@@ -97,7 +97,7 @@ $machinesPlayed = $row['MachinesPlayed'];
                 <tr class="white">
                     <th width="200px">Machine</th>
                     <th width="50px">Played</th>
-                    <th width="100px" class="paddidge" style="text-align:right">Best</th>
+                    <th width="100px" class="score">Best</th>
                     <!-- Add LeagueRank to this table too, then allow column sorting? -->
                 </tr>
             </thead>
@@ -144,7 +144,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
     			echo "<tr>
     				<td><a href=\"$link\" class=\"player-link\">$machineName</a></td>
     				<td>$gamesPlayed</td>
-    				<td class='paddidge' style=\"text-align:right\">$bestScore</td>
+    				<td class='score'>$bestScore</td>
     			</tr>\n";
 }
 

@@ -139,7 +139,7 @@ ORDER BY Rank, Player.Name
 			<tr class='white'>
 				<th>Rank</th>
 				<th>Player</th>
-				<th>Score</th>
+				<th class='score'>Score</th>
 				<th>Event</th>
 			</tr>
 		</thead>";
@@ -183,7 +183,7 @@ ORDER BY Rank, Player.Name
 
 			echo "<td>$scoreRank</td>\n
 				<td>$scorePlayerName</td>\n
-				<td>$score</td>\n
+				<td class='score'>$score</td>\n
 				<td class=\"paddidge\">$event</td>\n
 			</tr>\n";
 		}
