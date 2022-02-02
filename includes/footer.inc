@@ -19,6 +19,8 @@ $(document).ready(function(){
 </script>
 <!-- SlickNav end -->
 
-<!-- Responsive tables -->
+<!-- Responsive tables 
+
 <link type="text/css" media="screen" rel="stylesheet" href="responsive-tables.css" />
 <script type="text/javascript" src="responsive-tables.js"></script>
+-->

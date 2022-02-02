@@ -494,6 +494,7 @@ a.player-link:hover {
 }
 
 /** TABLE STYLING **/
+/*
 .meet-table-holder {
 	width: 42%;
 	float: left;
@@ -512,7 +513,7 @@ a.player-link:hover {
 	margin-left: 0;
 	width: 100%;
 }}
-
+	*/
 table {
 	border-collapse: collapse;
 	width: 100%;
@@ -581,6 +582,7 @@ table.hi-per-player {
 	margin-left: 20px;
 }
 
+/*
 .table-holder {
 	width: 914px;
 	margin-left: 20px;
@@ -591,7 +593,7 @@ table.hi-per-player {
 	width: 100%;
 	margin-left: 0;
 	overflow-x: auto;
-}}
+}}*/
 
 @media screen and (max-width: 954px) {
 .paddidge {
@@ -766,6 +768,39 @@ h2.ukcomps {
  *
  */
 
+.table-holder {
+	width: 914px;
+	margin-left: 20px;
+}
+
+@media screen and (max-width: 954px) {
+.table-holder {
+		width: 100%;
+		margin-left: 0;
+		overflow-x: auto;
+	}
+}
+
+.meet-table-holder {
+	width: 42%;
+	float: left;
+	margin-left: 4%;
+	margin-bottom: 30px;
+}
+
+@media only screen and (min-width: 441px) and (max-width: 860px) {
+	.meet-table-holder {
+		margin-top: 20px;
+		width: 400px;
+	}
+}
+
+@media only screen and (max-width: 440px) {
+	.meet-table-holder {
+		margin-left: 0;
+		width: 100%;
+	}
+}
 
 tr {
 	white-space: nowrap; /* Bit brave. Adapt later */

@@ -58,12 +58,10 @@
 		$leagueMeetDate = $leagueMeetRow['Date'];
 	?>
 
-	
-
+	<div class="panel">
 	<?php 
 		echo "<h1>$leagueMeetRegionName League, Season $season, Meet #$meet</h1>"; 
 	?>
-
 <?php
 
 	// Get all scores at meet
@@ -140,7 +138,7 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 
 		$scoreLink = "scores.php?playerid=$scorePlayerId&machineid=$scoreMachineId&competitionid=$scoreCompetitionId";
 
-        echo "<tr class='border'>\n
+        echo "<tr>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$scoreRank</td>\n
 			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$scoreLink\" class='player-link'>$scorePlayerName</a></td>\n
 			<td class='score' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n
@@ -221,7 +219,10 @@ ORDER BY Rank, PlayerName
 	sqlsrv_free_stmt($result);
 ?>
 
+<div style="clear: both;"></div>
+
 <!-- Footer -->
+<?php include("includes/footer.inc"); ?>
 
 </body>
   </html>
