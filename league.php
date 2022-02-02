@@ -155,8 +155,9 @@ ORDER BY best4 DESC, played ASC";
 		echo (sqlsrv_errors());
 	}
 
+//echo "<table>";
+echo "<div class='table-holder'>";
 echo "<table>";
-echo "<table class='responsive'>";
 
 echo "<thead>
 			<tr class='white'>
@@ -237,6 +238,7 @@ while ($meetNumber <= $totalMeets)
 	}
 
 	echo "</table>\n";
+	echo "</div>";
 
 	// Qualifying places descriptions.
 	echo "<p class='qualifier'>"; 

@@ -130,11 +130,10 @@ ORDER BY Rank, Player.Name
 		}
 
 		echo "<div class='panel'>";
-		echo "<div class='table-holder'>"; // new divname reqd?
+		echo "<div class='table-holder'>";
 
 		// Table header
 		echo "<table>";
-		echo "<table class='responsive'>";
 
 		echo "<thead>
 			<tr class='white'>

@@ -556,10 +556,11 @@ table.rankings {
 }
 
 @media only screen and (max-width: 954px) {
-table.rankings {
+table.nowrap {
 	overflow-x: auto;
-	display: block;
-	width: auto;
+	white-space: nowrap;
+	/*display: block;
+width: auto;*/
 }}
 
 table.player-info {
@@ -589,11 +590,12 @@ table.hi-per-player {
 .table-holder {
 	width: 100%;
 	margin-left: 0;
+	overflow-x: auto;
 }}
 
 @media screen and (max-width: 954px) {
 .paddidge {
-	padding-right: 20px;
+	padding-right: 10px;
 }}
 
 tr.strikeout td:before {
@@ -614,6 +616,7 @@ td	{
 	text-align: left;
 	padding-left: 15px;
 }
+
 
 @media screen and (max-width: 954px) {
 td	{
@@ -701,13 +704,7 @@ td.lastcolumn {
 	padding-right: 10px;
 }
 
-tr:nth-child(odd) {
-    background-color: #f7f7f7;
-}
 
-tr.white {
-	background-color: #fff;
-}
 
 /** END TABLE STYLING **/
 
@@ -762,7 +759,25 @@ h2.ukcomps {
 	margin-top: 30px;
 }
 
-/* 2021 migration */
+/* 
+ *	
+ *	2021 migration 
+ *
+ *
+ */
+
+
+tr {
+	white-space: nowrap; /* Bit brave. Adapt later */
+}
+
+tr:nth-child(odd) {
+	background-color: #f7f7f7;
+}
+
+tr.white {
+	background-color: #fff;
+}
 
 /* Style The Dropdown Button */
 .dropbtn {

@@ -24,7 +24,7 @@
 <h2>South West Region</h2>
 
 <div class="table-holder">
-<table class="responsive">
+<table>
   <thead>
 	  <tr class="white">
 		<th scope="col" width="150px">Date</th>
@@ -97,7 +97,7 @@
 <h2>Midlands Region</h2>
 
 <div class="table-holder">
-<table class="responsive">
+<table>
 	<thead>
 		<tr class="white">
 		<th scope="col" width="150px">Date</th>
@@ -170,7 +170,7 @@
 <h2>London &amp; South East Region</h2>
 
 <div class="table-holder">
-<table class="responsive">
+<table>
 	<thead>
 		<tr class="white">
 		<th scope="col" width="150px">Date</th>
@@ -243,7 +243,7 @@
 <h2>Northern Region</h2>
 
 <div class="table-holder">
-<table class="responsive">
+<table>
 	<thead>
 			<tr class="white">
 				<th scope="col" width="150px">Date</th>
@@ -316,7 +316,7 @@
 <h2>Scottish Region</h2>
 
 <div class="table-holder">
-<table class="responsive">
+<table>
 	<thead>
 			<tr class="white">
 				<th scope="col" width="150px">Date</th>
@@ -374,7 +374,7 @@
 <h2>Irish Region</h2>
 
 <div class="table-holder">
-<table class="responsive">
+<table>
 	<thead>
 			<tr class="white">
 				<th scope="col" width="150px">Date</th>
