@@ -73,7 +73,24 @@ Player.Name AS PlayerName,
 Score.MachineId AS MachineId,
 Machine.Name AS MachineName,
 Score.CompetitionId AS CompetitionId,
-Score.Score AS GameScore
+Score.Score AS GameScore,
+(
+	SELECT TOP 1 PBScore.Score
+	FROM Score PBScore
+	WHERE PBScore.PlayerId = Score.PlayerId AND PBScore.MachineId = Score.MachineId 
+	ORDER BY PBScore.Score DESC
+) AS PersonalBestScore,
+(
+	SELECT TOP 1 HighScore.Score
+	FROM Score HighScore
+	WHERE HighScore.MachineId = Score.MachineId 
+	ORDER BY HighScore.Score DESC
+) AS LeagueHighScore,
+(
+	SELECT COUNT(PlayCount.Score)
+	FROM Score PlayCount
+	WHERE PlayCount.PlayerId = Score.PlayerId AND PlayCount.MachineId = Score.MachineId 
+) AS PlayCount
 FROM Score 
 INNER JOIN Player ON Player.Id = Score.PlayerId
 INNER JOIN Machine ON Machine.Id = Score.MachineId
@@ -104,6 +121,9 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 		$scoreRank = $scoreRow['Rank'];
 		$scoreCompetitionId = $scoreRow['CompetitionId'];
 		$scoreGameScore = number_format($scoreRow['GameScore']);
+		$pbScore = number_format($scoreRow['PersonalBestScore']);
+		$hsScore = number_format($scoreRow['LeagueHighScore']);
+		$playCount = $scoreRow['PlayCount'];
 
 		// write new table header if this is a new machine
 		if ($scoreMachineName !== $lastMachineName)
@@ -126,6 +146,7 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 					<th class='meetposition'>&nbsp;</th>
 					<th class='meetplayer'>Player</th>
 					<th class='score'>Score</th>
+					<th>&nbsp;</th>
  				</tr>
 			</thead>";
 
@@ -141,8 +162,25 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
         echo "<tr>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$scoreRank</td>\n
 			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$scoreLink\" class='player-link'>$scorePlayerName</a></td>\n
-			<td class='score' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n
-        </tr>\n";
+			<td class='score' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n";
+
+		// Awards.
+		if ($scoreGameScore === $hsScore)
+		{
+			// HS = New league high score.
+			echo "<td class='padright'><b>HS</b></td>";
+		}
+		else if ($scoreGameScore === $pbScore AND $playCount > 1)
+		{
+			// PB = Personal Best. Only shown if player has played this game at least once before.
+			echo "<td class='padright'>PB</td>";
+		}
+		else 
+		{
+			echo "<td>&nbsp;</td>";
+		}
+
+        echo "</tr>\n";
 	}
 
 	// Close off the last table
@@ -187,8 +225,8 @@ ORDER BY Rank, PlayerName
 				<tr class='white'>
 					<th class='meetposition'>&nbsp;</th>
 					<th class='meetplayer'>Player</th>
-					<th class='meetfinalscore'>Score</th>
-					<th class='meetfinalpoints'>Points</th>
+					<th class='score'>Score</th>
+					<th class='score padright'>Points</th>
  				</tr>
 			</thead>";
 
@@ -208,8 +246,8 @@ ORDER BY Rank, PlayerName
 		echo "<tr class='border'>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$resultRank</td>\n
 			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$playerLink\" class='player-link'>$resultPlayerName</a></td>\n
-			<td class='meetfinalscore' bgcolor='".$bgcolor."'>$resultScore</td>\n
-			<td class='meetfinalpoints' bgcolor='".$bgcolor."'>$resultPoints</td>\n
+			<td class='score' bgcolor='".$bgcolor."'>$resultScore</td>\n
+			<td class='score padright' bgcolor='".$bgcolor."'>$resultPoints</td>\n
 		</tr>\n";
 	}
 

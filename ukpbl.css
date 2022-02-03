@@ -816,11 +816,17 @@ tr.white {
 
 th.score {
 	text-align: right;
+}
+
+th.padright {
 	padding-right: 20px;
 }
 
 td.score {
 	text-align: right;
+}
+
+td.padright {
 	padding-right: 20px;
 }
 
