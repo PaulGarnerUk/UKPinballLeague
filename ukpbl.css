@@ -859,7 +859,7 @@ td.score {
 	text-align: right;
 }
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-device-width: 900px) {
 	.mobilehide {
 		display: none;
 	}
@@ -937,9 +937,4 @@ a.padright {
 .show-border td:last-child {
 	border-right: 2px solid;
 	border-color: #fee0b8;
-}
-
-/* Bastard schedule page */
-.schedule-date {
-
 }
