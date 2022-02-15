@@ -161,3 +161,24 @@ sqlsrv_free_stmt($result);
 
 </body>
 </html>
+
+
+<!-- Too messy now. Add this to select 'Best finish: 1st (36 times) Most recent: _Northern League 2020 Meet 4_
+But do it in a function that returns an object of 'player info' or something that runs numerous queries and then returns an object to use on the page.
+
+SELECT 
+* 
+FROM Result
+INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Result.CompetitionId 
+WHERE Position IN
+(
+  -- select single best position for this player in a league meet
+  SELECT MIN(Position) 
+  FROM Result
+  INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Result.CompetitionId 
+  WHERE PlayerId = 125
+)
+AND PlayerId = 125
+ORDER BY Position ASC, LeagueMeet.SeasonId DESC, LeagueMeet.MeetNumber DESC
+
+-->

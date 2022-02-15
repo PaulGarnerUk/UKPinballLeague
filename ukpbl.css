@@ -768,6 +768,30 @@ h2.ukcomps {
  *
  */
 
+h2.schedule {
+	font-size: 19px;
+	color: #333;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	margin-right: 20px;
+	margin-bottom: 5px;
+	margin-top: 10px;
+	margin-left: 20px;
+}
+
+@media screen and (max-width: 599px) {
+	h2.schedule {
+		font-size: 19px;
+		color: #333;
+		font-weight: bold;
+		font-family: Arial, sans-serif;
+		margin-right: 20px;
+		margin-bottom: 5px;
+		margin-top: 10px;
+		margin-left: 10px;
+	}
+}
+
 .table-holder {
 	width: 914px;
 	margin-left: 20px;
@@ -802,6 +826,11 @@ h2.ukcomps {
 	}
 }
 
+.schedule-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
 tr {
 	white-space: nowrap; /* Bit brave. Adapt later */
 }
@@ -822,11 +851,21 @@ th.padright {
 	padding-right: 20px;
 }
 
+td.padright {
+	padding-right: 20px;
+}
+
 td.score {
 	text-align: right;
 }
 
-td.padright {
+@media only screen and (max-width: 900px) {
+	.mobilehide {
+		display: none;
+	}
+}
+
+a.padright {
 	padding-right: 20px;
 }
 
@@ -857,21 +896,21 @@ td.padright {
 	z-index: 1;
 }
 
-/* Links inside the dropdown */
-.dropdown-content a {
-	color: #333333;
-	padding: 12px 16px;
-	text-decoration: none;
-	display: block;
-	font-family: Arial, sans-serif;
-	font-weight: normal;
-	font-size: 16px;
-}
+	/* Links inside the dropdown */
+	.dropdown-content a {
+		color: #333333;
+		padding: 12px 16px;
+		text-decoration: none;
+		display: block;
+		font-family: Arial, sans-serif;
+		font-weight: normal;
+		font-size: 16px;
+	}
 
-/* Change color of dropdown links on hover */
-.dropdown-content a:hover {
-	background-color: #f1f1f1
-}
+		/* Change color of dropdown links on hover */
+		.dropdown-content a:hover {
+			background-color: #f1f1f1
+		}
 
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
@@ -898,4 +937,9 @@ td.padright {
 .show-border td:last-child {
 	border-right: 2px solid;
 	border-color: #fee0b8;
+}
+
+/* Bastard schedule page */
+.schedule-date {
+
 }
