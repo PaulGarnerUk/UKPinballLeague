@@ -826,6 +826,7 @@ h2.schedule {
 	}
 }
 
+/* Schedule page */
 .schedule-table {
 	table-layout: fixed;
 	width: 100%;
@@ -859,7 +860,7 @@ td.score {
 	text-align: right;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 500px) {
 	.mobilehide {
 		display: none;
 	}

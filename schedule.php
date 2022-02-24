@@ -80,6 +80,7 @@ ORDER BY Region.SortOrder, MeetNumber
 		$leagueMeetLocation = $row['LeagueMeetLocation'];
 
 		$resultsLink = "leaguemeet.php?season=$currentseason&region=$regionSynonym&meet=$leagueMeetNumber";
+		$infoLink = "schedule-info.php?season=$currentseason&region=$regionSynonym&meet=$leagueMeetNumber";
 		//echo "$regionName  -  $leagueMeetNumber <br>"; //  -  $leagueMeetDate";
 
 		// If region changed..
@@ -101,18 +102,18 @@ ORDER BY Region.SortOrder, MeetNumber
 			// Start a table and write header
 			echo "<div class='table-holder'>";
 			echo "<table class='schedule-table'>";
-			//echo "<col style='width:30%'>";
-			//echo "<col style='width:10%'>";
-			//echo "<col style='width:30%'>";
-			//echo "<col style='width:20%'>";
-			//echo "<col style='width:10%'>";
+			echo "<col style='width:15%'>";
+			echo "<col style='width:10%'>"; // 
+			echo "<col style='width:40%' class='mobilehide'>"; // location
+			echo "<col style='width:20%'>";
+			echo "<col style='width:15%'>";
 			echo "<thead>";
 			echo "<tr class='white'>";
-			echo "<th width='120px'>Date</th>";
+			echo "<th>Date</th>";
 			echo "<th></th>"; // 'Rescheduled' or 'Cancelled' where applicable.
-			echo "<th width='200px' class='mobilehide'>Location</th>"; // Does not appear on mobile
-			echo "<th width='120px'>Host</th>";
-			echo "<th width='50px' class='padright'>&nbsp;</th>"; // 'More Info' or 'Results'
+			echo "<th class='mobilehide'>Location</th>"; // Does not appear on mobile
+			echo "<th>Host</th>";
+			echo "<th class='padright'>&nbsp;</th>"; // 'More Info' or 'Results'
 			echo "</tr>";
 			echo "</thead>";
 
@@ -133,7 +134,7 @@ ORDER BY Region.SortOrder, MeetNumber
 		}
 		else 
 		{
-			echo "<td class='padright'>Info</td>";
+			echo "<td><a href='$infoLink' class='player-link padright'>Info</a></td>";
 		}
 
 		echo "</tr>";

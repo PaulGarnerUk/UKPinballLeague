@@ -3,7 +3,7 @@
 <?php include("favicons.php"); ?>
 
 <link rel="stylesheet" type="text/css" href="flexdropdown.css" />
-<link rel="stylesheet" type="text/css" href="ukpbl.css" />
+<link rel="stylesheet" type="text/css" href="ukpbl.css?v=1" />
 
 <!-- SlickNav -->
 <link rel="stylesheet" href="slicknav.css">
