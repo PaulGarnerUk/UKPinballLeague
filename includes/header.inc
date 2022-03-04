@@ -2,11 +2,11 @@
 
 <?php include("favicons.php"); ?>
 
-<link rel="stylesheet" type="text/css" href="flexdropdown.css" />
-<link rel="stylesheet" type="text/css" href="ukpbl.css?v=1" />
+<link rel="stylesheet" type="text/css" href="css/flexdropdown.css" />
+<link rel="stylesheet" type="text/css" href="css/ukpbl.css?v=2" />
 
 <!-- SlickNav -->
-<link rel="stylesheet" href="slicknav.css">
+<link rel="stylesheet" href="css/slicknav.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 <!-- Flex dropdown -->

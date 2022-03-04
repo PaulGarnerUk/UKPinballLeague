@@ -118,6 +118,7 @@ img.banner {
 	margin-top: 5px;
 }
 
+/*
 .panel-homepage-left {
 	width: 474px;
 	height: auto;
@@ -182,19 +183,8 @@ img.banner {
 	width: 100%;
 	float: none;
 }}
+	*/
 
-.panel-homepage-stats {
-	width: 100%;
-	height: auto;
-	background-color: #fff;
-	margin-top: 5px;
-	padding: 5px 0 10px 0;
-}
-
-@media screen and (max-width: 954px) {
-.panel-homepage-stats {
-	display: none;
-}}
 
 /* text */
 
@@ -219,7 +209,7 @@ h2 {
 
 h2.homepage {
 	padding-top: 7px;
-	margin-left: 0;
+	margin-left: 10px;
 }
 
 @media screen and (max-width: 599px) {
@@ -427,24 +417,6 @@ h2.toptenscores {
 	text-decoration: underline;
 }
 
-a.homepagesmall {
-	font-size: 11px;
-	color: #333;
-	text-decoration: underline;
-}
-
-@media screen and (max-width: 954px) {
-	a.homepagesmall {
-	font-size: 14px;
-	display: block;
-	padding-top: 20px;
-}}
-
-.homepagesmall:hover {
-	color: #4F95DB;
-	text-decoration: underline;
-}
-
 .ticker-link {
 	font-size: 11px;
 	color: #ff6600;
@@ -494,26 +466,7 @@ a.player-link:hover {
 }
 
 /** TABLE STYLING **/
-/*
-.meet-table-holder {
-	width: 42%;
-	float: left;
-	margin-left: 4%;
-	margin-bottom: 30px;
-}
 
-@media only screen and (min-width: 441px) and (max-width: 860px) {
-.meet-table-holder {
-	margin-top: 20px;
-	width: 400px;
-}}
-
-@media only screen and (max-width: 440px) {
-.meet-table-holder {
-	margin-left: 0;
-	width: 100%;
-}}
-	*/
 table {
 	border-collapse: collapse;
 	width: 100%;
@@ -560,8 +513,6 @@ table.rankings {
 table.nowrap {
 	overflow-x: auto;
 	white-space: nowrap;
-	/*display: block;
-width: auto;*/
 }}
 
 table.player-info {
@@ -581,19 +532,6 @@ table.hi-per-player {
 	width: 300px;
 	margin-left: 20px;
 }
-
-/*
-.table-holder {
-	width: 914px;
-	margin-left: 20px;
-}
-
-@media screen and (max-width: 954px) {
-.table-holder {
-	width: 100%;
-	margin-left: 0;
-	overflow-x: auto;
-}}*/
 
 @media screen and (max-width: 954px) {
 .paddidge {
@@ -664,44 +602,6 @@ th	{
 	width: 170px;
 }
 
-.homepage-table {
-	font-size: 11px;
-	line-height: 25px;
-	padding-left: 10px;
-}
-
-@media screen and (min-width: 736px) and (max-width: 954px) {
-.homepage-table {
-	font-size: 14px;
-	line-height: 40px;
-	text-align: left;
-	padding-left: 20px;
-}}
-
-@media screen and (min-width: 650px) and (max-width: 735px) {
-.homepage-table {
-	font-size: 12px;
-	line-height: 35px;
-	text-align: left;
-	padding-left: 20px;
-}}
-
-@media screen and (min-width: 600px) and (max-width: 649px) {
-.homepage-table {
-	font-size: 11px;
-	line-height: 30px;
-	text-align: left;
-	padding-left: 20px;
-}}
-
-@media screen and (max-width: 599px) {
-.homepage-table {
-	font-size: 14px;
-	line-height: 40px;
-	text-align: left;
-	padding-left: 20px;
-}}
-
 td.lastcolumn {
 	padding-right: 10px;
 }
@@ -761,12 +661,79 @@ h2.ukcomps {
 	margin-top: 30px;
 }
 
-/* 
+/********************************************************
  *	
  *	2021 migration 
  *
- *
- */
+ ********************************************************/
+
+.homepage-flex-container {
+	padding: 5px 0 0 0;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	flex-grow: 1;
+	gap: 5px;
+}
+
+@media (max-width: 954px) {
+	.homepage-flex-container {
+		flex-direction: column;
+	}
+}
+
+.homepage-flex-panel {
+	background-color: #fff;
+	min-width: 50%;
+}
+
+.homepage-table {
+	font-size: 11px;
+	line-height: 25px;
+	padding-left: 10px;
+}
+
+@media screen and (max-width: 954px) {
+	.homepage-table {
+		font-size: 14px;
+		line-height: 40px;
+		text-align: left;
+		padding-left: 20px;
+	}
+}
+
+a.homepagesmall {
+	font-size: 11px;
+	color: #333;
+	text-decoration: underline;
+}
+
+@media screen and (max-width: 954px) {
+	a.homepagesmall {
+		font-size: 14px;
+		display: block;
+		padding-top: 20px;
+	}
+}
+
+.homepagesmall:hover {
+	color: #4F95DB;
+	text-decoration: underline;
+}
+
+.panel-homepage-stats {
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	margin-top: 5px;
+	padding: 5px 0 10px 0;
+}
+
+@media screen and (max-width: 954px) {
+	.panel-homepage-stats {
+		display: none;
+	}
+}
 
 h2.schedule {
 	font-size: 19px;

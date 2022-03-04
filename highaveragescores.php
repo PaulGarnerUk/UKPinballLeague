@@ -120,6 +120,8 @@
 	echo "</h2><p></p>";
 
 	$filterClause = "";
+	$tsqlParams = "";
+
 	if ($region !== "all") {
 		$filterClause = "WHERE LeagueMeet.RegionId = @RegionId"; 
 		$tsqlParams = "DECLARE @RegionId INT = $regionId;"; // bit non-standard, but still fine.
