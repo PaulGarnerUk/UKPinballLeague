@@ -541,9 +541,10 @@ table.hi-per-player {
 tr.strikeout td:before {
 	content: "";
 	position: absolute;
-	top: 50%;
 	left: 0;
-	border-bottom: 1px solid #911;
+	top: 45%;
+	border-bottom: 5px solid #d50000;
+	opacity: 0.25;
 	width: 100%;
 }
 

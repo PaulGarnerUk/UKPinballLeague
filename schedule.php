@@ -122,9 +122,25 @@ ORDER BY Region.SortOrder, MeetNumber
 		}
 
 		// Meet info
-		echo "<tr>";
+		if ($leagueMeetStatus == 4)
+		{
+			echo "<tr class='strikeout'>";
+		}
+		else
+		{
+			echo "<tr>";
+		}
+
 		echo "<td>$leagueMeetDate</td>";
-		echo "<td></td>";
+
+		if ($leagueMeetStatus == 5)
+		{
+			echo "<td>(Rescheduled)</td>";
+		}
+		else
+		{
+			echo "<td></td>";
+		}
 		echo "<td class='mobilehide'>$leagueMeetLocation</td>";
 		echo "<td>$leagueMeetHost</td>";
 
@@ -132,7 +148,11 @@ ORDER BY Region.SortOrder, MeetNumber
 		{
 			echo "<td><a href='$resultsLink' class='player-link padright'>Results</a></td>";
 		}
-		else 
+		else if ($leagueMeetStatus == 4)
+		{
+			echo "<td><b>Cancelled</b></td>";
+		}
+		else
 		{
 			echo "<td><a href='$infoLink' class='player-link padright'>Info</a></td>";
 		}
