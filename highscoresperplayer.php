@@ -38,6 +38,10 @@ $result = mysqli_query($cxn,$query) or die ("Couldn't execute query");
 $nrows = mysqli_num_rows($result);
 
 echo "<h1>UKPL Highscores Per Player</h1>";
+echo "<h2>
+Please note. This table currently only shows accurate data up to the 14th Season (2020)<br>
+This table will soon be relocated into a list of all league players and stats
+</h2>";
 
 echo "<table class='hi-per-player'>";
 
