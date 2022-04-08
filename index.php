@@ -41,13 +41,13 @@ include("includes/sql.inc");
 
 $tsql = "
 SELECT TOP(20)
-Machine.Name AS 'Machine',
-COUNT(MachineId) AS 'GamesPlayed'
+Score.MachineId AS 'MachineId',
+Machine.Name AS 'MachineName',
+COUNT(Score.Score) AS 'GamesPlayed'
 FROM Score
 INNER JOIN Machine ON Machine.Id = Score.MachineId
-INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
-GROUP BY Machine.Name
-ORDER BY COUNT(MachineId) DESC
+GROUP BY MachineId, Machine.Name
+ORDER BY COUNT(Score.Score) DESC, Machine.Name ASC
 ";
 
 // Perform query.
@@ -78,7 +78,8 @@ $lastGamesPlayed = 0;
 while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
 {
 	$gamesPlayed = $row['GamesPlayed'];
-	$machineName = $row['Machine'];
+	$machineId = $row['MachineId'];
+	$machineName = $row['MachineName'];
 
 	if ($gamesPlayed != $lastGamesPlayed) 
 	{
@@ -91,7 +92,9 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
 		++$hiddenPositions;
 	}
 	
-	echo "<tr><td class='homepage-table'>$position</td><td class='homepage-table'>$machineName</td><td class='homepage-table'>$gamesPlayed</td></tr>\n";
+	echo "<tr><td class='homepage-table'>$position</td>
+	<td class='homepage-table'><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a></td>
+	<td class='homepage-table'>$gamesPlayed</td></tr>\n";
 }
 echo "</table>\n";
 

@@ -1,47 +1,27 @@
 <?php
-	include("includes/sql.inc");
+	require_once("includes/sql.inc");
+	require_once("functions/regioninfo.inc");
+    require_once("functions/seasoninfo.inc");
 
 	$sort = htmlspecialchars($_GET["sort"] ?? "machine"); // sortby 'plays', 'machine', 'meets', 'player', 'score'
 	$dir = htmlspecialchars($_GET["dir"] ?? "asc"); // sort direction ('asc' or 'desc')
-	$region = htmlspecialchars($_GET["region"] ?? "all"); // region synonym ('n', 'm' etc) or 'all' for all regions.
-	$season = htmlspecialchars($_GET["season"] ?? "all"); // season number, or 'all' for all seasons.
+	$regionParam = htmlspecialchars($_GET["region"] ?? "all"); // region synonym ('n', 'm' etc) or 'all' for all regions.
+	$seasonParam = htmlspecialchars($_GET["season"] ?? "all"); // season number, or 'all' for all seasons.
 
-	// Validate parameters
-	if ($region !== "all") {
-		$tsql="
-		SELECT
-		Region.Id AS 'RegionId',
-		Region.Name AS 'RegionName'
-		FROM Region
-		WHERE Region.Synonym = ? -- $region";
-
-		$result = sqlsrv_query($sqlConnection, $tsql, array($region));
-		if ($result == FALSE) {
-			echo "query borken.";
-		}
-
-		$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-		$regionName = $row['RegionName'] . " League";
-		$regionId = $row['RegionId'];
-
-		if (is_null($regionName)) {
-			echo '<p>Unexpected region.</p>';
-			exit;
-		}
-	} else {
-		$regionName = "All Leagues";
+	// Validate region
+	$region = ValidateRegionSynonym($regionParam, $sqlConnection);
+	if (is_null($region)) {
+		echo '<p>Unexpected region.</p>';
+		exit;
 	}
 
-	if ($season !== "all") 	{
-		if ((int)$season < 1 || (int)$season > $currentseason) {
-			echo "<p>Unexpected season.</p>";
-			exit;
-		}
-		$seasonName = "Season $season";
-		$seasonId = $season; // todo: Ok for now, but.
-	} else {
-		$seasonName = "All Seasons";
-	}
+    // Validate season
+    $season = ValidateSeasonNumber($seasonParam, $sqlConnection);
+    if (is_null($season)) {
+        echo '<p>Unexpected season.</p>';
+		exit;
+    }
+
 
 	if ($dir === "desc") {
 		$sortdir = "DESC";
@@ -85,33 +65,34 @@
 
 <div class="panel">
 
-	<h1>High and Average Scores</h1>
-	<p>Use the buttons to filter the data, and click on column headings to sort.</p>
+	<h1>Machines - Full List</h1>
+	<p>All machines played to date in the UK Pinball League.<br>
+	Use the buttons to filter the data, and click on column headings to sort.</p>
 
 <?php 
 
 	echo "<h2>Filter: ";
 
 	echo "<span class='dropdown'>
-  <h2 class='dropbtn'>$regionName</h2>
+  <h2 class='dropbtn'>$region->leagueName</h2>
   <div class='dropdown-content'>";
-	echo "<a href='highaveragescores.php?region=all&season=$season&sort=$sort&dir=$dir'>All Leagues</a>";
-	echo "<a href='highaveragescores.php?region=sw&season=$season&sort=$sort&dir=$dir'>South West</a>";
-	echo "<a href='highaveragescores.php?region=m&season=$season&sort=$sort&dir=$dir'>Midlands</a>";
-	echo "<a href='highaveragescores.php?region=lse&season=$season&sort=$sort&dir=$dir'>London and South East</a>";
-	echo "<a href='highaveragescores.php?region=n&season=$season&sort=$sort&dir=$dir'>Northern</a>";
-	echo "<a href='highaveragescores.php?region=s&season=$season&sort=$sort&dir=$dir'>Scottish</a>";
-	echo "<a href='highaveragescores.php?region=i&season=$season&sort=$sort&dir=$dir'>Irish</a>";
+	echo "<a href='highaveragescores.php?region=all&season=$seasonParam&sort=$sort&dir=$dir'>All Leagues</a>";
+	echo "<a href='highaveragescores.php?region=sw&season=$seasonParam&sort=$sort&dir=$dir'>South West</a>";
+	echo "<a href='highaveragescores.php?region=m&season=$seasonParam&sort=$sort&dir=$dir'>Midlands</a>";
+	echo "<a href='highaveragescores.php?region=lse&season=$seasonParam&sort=$sort&dir=$dir'>London and South East</a>";
+	echo "<a href='highaveragescores.php?region=n&season=$seasonParam&sort=$sort&dir=$dir'>Northern</a>";
+	echo "<a href='highaveragescores.php?region=s&season=$seasonParam&sort=$sort&dir=$dir'>Scottish</a>";
+	echo "<a href='highaveragescores.php?region=i&season=$seasonParam&sort=$sort&dir=$dir'>Irish</a>";
 	echo "</div></span>";
 	
 	echo " <span class='dropdown'>
-  <h2 class='dropbtn'>$seasonName</h2>
+  <h2 class='dropbtn'>$season->seasonName</h2>
   <div class='dropdown-content'>";
-	echo "<a href='highaveragescores.php?region=$region&season=all&sort=$sort&dir=$dir'>All Seasons</a>";
+	echo "<a href='highaveragescores.php?region=$regionParam&season=all&sort=$sort&dir=$dir'>All Seasons</a>";
 	$seasonLoop=$currentseason;
 	while ($seasonLoop > 0)
 	{
-		echo "<a href='highaveragescores.php?region=$region&season=$seasonLoop&sort=$sort&dir=$dir'>Season $seasonLoop</a>";
+		echo "<a href='highaveragescores.php?region=$regionParam&season=$seasonLoop&sort=$sort&dir=$dir'>Season $seasonLoop</a>";
 		$seasonLoop--;
 	}
 
@@ -122,18 +103,18 @@
 	$filterClause = "";
 	$tsqlParams = "";
 
-	if ($region !== "all") {
-		$filterClause = "WHERE LeagueMeet.RegionId = @RegionId"; 
-		$tsqlParams = "DECLARE @RegionId INT = $regionId;"; // bit non-standard, but still fine.
+	if ($region->regionId > 0) {
+		$filterClause = "WHERE (LeagueMeet.RegionId = @RegionId OR LeagueFinal.Id > 0)"; 
+		$tsqlParams = "DECLARE @RegionId INT = $region->regionId;";
 	}
 
-	if ($season !== "all") {
-		if ($region !== "all") {
-			$filterClause .= "\r\nAND LeagueMeet.SeasonId= @SeasonId";
-			$tsqlParams .= "\r\nDECLARE @SeasonId INT = $seasonId;";
+	if ($season->seasonId > 0) {
+		if ($region->regionId > 0) {
+			$filterClause .= "\r\nAND (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)";
+			$tsqlParams .= "\r\nDECLARE @SeasonId INT = $season->seasonId;";
 		} else {
-			$filterClause = "WHERE LeagueMeet.SeasonId= @SeasonId"; 
-			$tsqlParams = "DECLARE @SeasonId INT = $seasonId;";
+			$filterClause = "WHERE (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)"; 
+			$tsqlParams = "DECLARE @SeasonId INT = $season->seasonId;";
 		}
 	}
 
@@ -150,7 +131,8 @@ WITH AverageScore AS
 	MachineId,
 	AVG(Score.Score) AS 'Average'
 	FROM Score
-	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+	LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+	LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
 	$filterClause
 	GROUP BY MachineId
 ),
@@ -159,9 +141,10 @@ GamesPlayed AS
 	SELECT
 	MachineId,
 	COUNT(DISTINCT(Score.CompetitionId)) AS 'Appearances',
-	COUNT(Score.MachineId) AS 'GamesPlayed'
+	COUNT(Score.Score) AS 'GamesPlayed'
 	FROM Score
-	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+	LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+	LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
 	$filterClause
 	GROUP BY MachineId
 ),
@@ -174,12 +157,13 @@ MaxScore AS
 	PlayerId,
     ROW_NUMBER() OVER (PARTITION BY MachineId ORDER BY Score DESC) Rank
     FROM Score
-	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+	LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+	LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
 	$filterClause
 )
 
 SELECT 
-MaxScore.MachineId, 
+MaxScore.MachineId AS 'MachineId', 
 Machine.Name AS 'MachineName',
 GamesPlayed.Appearances AS 'Appearances',
 GamesPlayed.GamesPlayed AS 'GamesPlayed',
@@ -193,7 +177,8 @@ INNER JOIN AverageScore on AverageScore.MachineId = MaxScore.MachineId
 INNER JOIN GamesPlayed ON GamesPlayed.MachineId = MaxScore.MachineId
 INNER JOIN Machine ON Machine.Id = MaxScore.MachineId
 INNER JOIN Player ON Player.Id = MaxScore.PlayerId
-INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = MaxScore.CompetitionId
+LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = MaxScore.CompetitionId
+LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = MaxScore.CompetitionId
 WHERE MaxScore.Rank = 1 
 $finalFilterClause
 $orderby
@@ -215,21 +200,21 @@ echo "<thead>
 
 // machine sortable column header
 if ($sort === "machine") {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=machine&dir=$oppositesortdir' class='player-link'>Machine $sortchar</a></th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=machine&dir=$oppositesortdir' class='player-link'>Machine $sortchar</a></th>";
 } else {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=machine&dir=asc' class='player-link'>Machine</a></th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=machine&dir=asc' class='player-link'>Machine</a></th>";
 }
 
 if ($sort === "meets") {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=meets&dir=$oppositesortdir' class='player-link'>Meets $sortchar</a></th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=meets&dir=$oppositesortdir' class='player-link'>Appearances $sortchar</a></th>";
 } else  {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=meets&dir=desc' class='player-link'>Meets</a></th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=meets&dir=desc' class='player-link'>Appearances</a></th>";
 }
 
 if ($sort === "plays") {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=plays&dir=$oppositesortdir' class='player-link'>Plays $sortchar</a></th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=plays&dir=$oppositesortdir' class='player-link'>Plays $sortchar</a></th>";
 } else  {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=plays&dir=desc' class='player-link'>Plays</a></th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=plays&dir=desc' class='player-link'>Plays</a></th>";
 }
 
 // Non sortable columns
@@ -237,9 +222,9 @@ echo "<th class='score'>Average Score</th>
 		<th class='score'>High Score</th>";
 
 if ($sort === "player") {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=player&dir=$oppositesortdir' class='player-link'>Player $sortchar</a></th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=player&dir=$oppositesortdir' class='player-link'>Player $sortchar</a></th>";
 } else {
-	echo "<th><a href='highaveragescores.php?region=$region&season=$season&sort=player&dir=asc' class='player-link'>Player</th>";
+	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=player&dir=asc' class='player-link'>Player</th>";
 }
 
 	echo "</tr></thead>\n";
@@ -252,6 +237,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
 {
 	$gamesPlayed = $row['GamesPlayed'];
 	$appearances = $row['Appearances'];
+	$machineId = $row['MachineId'];
 	$machineName = $row['MachineName'];
 	$averagescore = number_format($row['AverageScore']);
 	$highscore = number_format($row['HighScore']);
@@ -273,7 +259,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
 
 	echo "<tr>
 			<td>$position</td>
-			<td>$machineName</td>
+			<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a></td>
 			<td class='score'>$appearances</td>
 			<td class='score padright'>$gamesPlayed</td>
 
@@ -290,8 +276,9 @@ sqlsrv_free_stmt($result);
 
 	<p></p>
 	<p>
-	<b>'Meets'</b> is the number of league meets the game has appeared in.<br>
-	<b>'Plays'</b> is the number of games played across those meets (eg if Twilight Zone appeared at one meet with 12 players, then we would expect Plays to be 12).
+	<b>'Appearances'</b> is the number of league meets or league finals the game has appeared in.<br>
+	<b>'Plays'</b> is the number of games played across those events.<br>
+	For example, if Twilight Zone appeared at one meet with 12 players, then we would expect Appearances to be 1 and Plays to be 12.
 	</p>
 
 </div>

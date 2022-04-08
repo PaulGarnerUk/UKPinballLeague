@@ -25,7 +25,7 @@ function getplayer ( selectedtype )
 <h1>UKPL Highscores</span></h1>
 <h2>
 Please note. These tables currently only show accurate data up to the 14th Season (2020)<br>
-High scores for individual machines will soon be listed on a separate page
+High scores for individual machines are now listed on individual machine pages
 </h2>
 
 <form name="playerform" action="player-info.php" method="get">

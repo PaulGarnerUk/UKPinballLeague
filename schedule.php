@@ -135,7 +135,7 @@ ORDER BY Region.SortOrder, MeetNumber
 
 		if ($leagueMeetStatus == 5)
 		{
-			echo "<td>(Rescheduled)</td>";
+			echo "<td>(R)</td>";
 		}
 		else
 		{

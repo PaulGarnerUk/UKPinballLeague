@@ -137,7 +137,7 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 
 			echo "<div class='meet-table-holder'>";
         
-			echo "<h2>$scoreMachineName</h2>";
+			echo "<h2><a href='machine-info.php?machineid=$scoreMachineId' class='player-link'>$scoreMachineName</a></h2>";
         
 			echo "<table>";
         

@@ -82,14 +82,14 @@ $machinesPlayed = $row['MachinesPlayed'];
 
     <h1><?=$playername?></h1>
 
-    <p><?=$playername?> has played <?=$totalGamesPlayed?> unique games across <?=$machinesPlayed?> different machines.</p>
+    <p><?=$playername?> has played <?=$totalGamesPlayed?> games across <?=$machinesPlayed?> different machines.</p>
 
 </div>
 
 <div class="panel">
 
     <h2>Machines played.</h2>
-    <p>Click on any machine for a breakdown of all of <?=$playername?>'s recorded scores.</p>
+    <p>Click on the played count for a breakdown of all of <?=$playername?>'s recorded scores on that machine.</p>
 	
     <div class="table-holder">
         <table>
@@ -139,11 +139,12 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
     $machineName = $row['MachineName'];
     $gamesPlayed = $row['GamesPlayed'];
     $bestScore = number_format($row['BestScore']);
-    $link="scores.php?playerid=$playerid&machineid=$machineId";
+    $machineLink = "machine-info.php?machineid=$machineId";
+    $scoresLink = "scores.php?playerid=$playerid&machineid=$machineId";
 
     			echo "<tr>
-    				<td><a href=\"$link\" class=\"player-link\">$machineName</a></td>
-    				<td>$gamesPlayed</td>
+    				<td><a href='$machineLink' class='player-link'>$machineName</a></td>
+    				<td><a href='$scoresLink' class='player-link'>$gamesPlayed</a></td>
     				<td class='score padright'>$bestScore</td>
     			</tr>\n";
 }

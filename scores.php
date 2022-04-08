@@ -83,8 +83,8 @@ GROUP BY Player.Name
 	
 	<h1><?=$machineName?></h1>
 
-	<p>Total league games played : <?=$leagueCount?></p>
-	<p>League average score : <?=$leagueAverage?></p>
+	<p>Total games played : <?=$leagueCount?></p>
+	<p>Average score : <?=$leagueAverage?></p>
 	<p><a href="player-info.php?playerid=<?=$playerid?>" class='player-link'><?=$playerName?>'s</a> average score : <?=$playerAverage?></p>
 
 	</div>
