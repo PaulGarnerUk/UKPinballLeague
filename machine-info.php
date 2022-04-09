@@ -6,7 +6,8 @@
 	$machineIdParam = htmlspecialchars($_GET["machineid"] ?? null);
     $regionParam = htmlspecialchars($_GET["region"] ?? "all"); // region synonym ('n', 'm' etc) or 'all' for all regions. Filters scores
     $seasonParam = htmlspecialchars($_GET["season"] ?? "all"); // season number, or 'all' for all seasons.
-    $competitionIdParam = htmlspecialchars($_GET["competitionid"] ?? null); // Highlights score made at specified competition
+    $competitionIdParam = htmlspecialchars($_GET["competitionid"] ?? null); // Highlights score made by playerid at specified competitionid
+    $playerIdParam = htmlspecialchars($_GET["playerid"] ?? null); // Highlights score made by playerid at specified competitionid
 
     // Validate region
 	$region = ValidateRegionSynonym($regionParam, $sqlConnection);
@@ -27,7 +28,7 @@
     $tsqlParams = "";
 
     if ($region->regionId > 0) {
-	    $filterClause = "AND (LeagueMeet.RegionId = @RegionId OR LeagueFinal.Id > 0)\r\n"; 
+	    $filterClause = "AND (LeagueMeet.RegionId = @RegionId)\r\n"; 
 	    $tsqlParams = "DECLARE @RegionId INT = $region->regionId;\r\n";
     }
 
@@ -35,6 +36,26 @@
 	    $filterClause .= "AND (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)\r\n";
 	    $tsqlParams .= "DECLARE @SeasonId INT = $season->seasonId;\r\n";
     }
+
+    // First query to obtain machine info and basic info
+    $tsql = "
+DECLARE @MachineId INT = ?;
+SELECT
+Machine.Name AS 'MachineName'
+FROM Machine WHERE Machine.Id = @MachineId
+";
+    $result= sqlsrv_query($sqlConnection, $tsql, array($machineIdParam));
+    if ($result == FALSE) { echo "query borken."; }
+    
+    $machineRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
+
+    if ($machineRow != true)
+    {
+        echo "<p>Unexpected machine id.</p>";
+        exit;
+    }
+
+    $machineName = $machineRow['MachineName'];
 
     $tsql = "
 DECLARE @MachineId INT = ?;
@@ -57,23 +78,9 @@ GROUP BY Machine.Name
 ";
 
 $result= sqlsrv_query($sqlConnection, $tsql, array($machineIdParam));
-if ($result == FALSE)
-{
-	echo "query borken.";
-}
+if ($result == FALSE) { echo "query borken."; }
 
-$machineRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-if ($machineRow != true)
-{
-    echo "Unexpected machine id";
-}
-
-$machineName = $machineRow['MachineName'];
-$averageScore = number_format($machineRow['AverageScore']);
-$gamesPlayed = number_format($machineRow['GamesPlayed']);
-$meetsCount = number_format($machineRow['MeetsCount']);
-$finalsCount = number_format($machineRow['FinalsCount']);
-$appearances = number_format($machineRow['Appearances']);
+$countsRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -84,15 +91,65 @@ $appearances = number_format($machineRow['Appearances']);
 <title>UK Pinball League - <?=$machineName;?></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-<?php include("includes/header.inc"); ?>
+<?php include("includes/header.inc"); 
+
+?>
+
+<div class="panel">
+    <h1><?=$machineName;?></h1>
+    <!-- Links to ipdb etc can go here-->
+</div>
 
 <div class="panel">
 
-    <h1><?=$machineName;?></h1>
+<?php 
+	echo "<h2>Filter: ";
 
-    <p>Appearances : <?=$appearances?> (<?=$meetsCount?> league meets, and <?=$finalsCount?> league finals)</p>
-    <p>Total games played : <?=$gamesPlayed?></p>
-	<p>Average score : <?=$averageScore?></p>
+	echo "<span class='dropdown'>
+  <h2 class='dropbtn'>$region->leagueName</h2>
+  <div class='dropdown-content'>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=all&season=$seasonParam'>All Leagues</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=sw&season=$seasonParam'>South West</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=m&season=$seasonParam'>Midlands</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=lse&season=$seasonParam'>London and South East</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=n&season=$seasonParam'>Northern</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=s&season=$seasonParam'>Scottish</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=i&season=$seasonParam'>Irish</a>";
+	echo "</div></span>";
+	
+	echo " <span class='dropdown'>
+  <h2 class='dropbtn'>$season->seasonName</h2>
+  <div class='dropdown-content'>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=$regionParam&season=all'>All Seasons</a>";
+	$seasonLoop=$currentseason;
+	while ($seasonLoop > 0)
+	{
+		echo "<a href='machine-info.php?machineid=$machineIdParam&region=$regionParam&season=$seasonLoop'>Season $seasonLoop</a>";
+		$seasonLoop--;
+	}
+
+	echo "</div></span>";
+	
+	echo "</h2><p></p>";
+
+
+    if ($countsRow != true)
+    {
+        echo "<p>No scores recorded for the criteria specified.<br>Please change the filter to try again.</p>";
+    }
+    else
+    {
+        $averageScore = number_format($countsRow['AverageScore']);
+        $gamesPlayed = number_format($countsRow['GamesPlayed']);
+        $meetsCount = number_format($countsRow['MeetsCount']);
+        $finalsCount = number_format($countsRow['FinalsCount']);
+        $appearances = number_format($countsRow['Appearances']);
+
+        echo "<p>Appearances : $appearances ($meetsCount league meets, and $finalsCount league finals)</p>";
+        echo "<p>Total games played : $gamesPlayed</p>";
+        echo "<p>Average score : $averageScore</p>";
+    }
+?>
 
 </div>
 
@@ -154,14 +211,23 @@ while ($scoreRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
     $eventName = $scoreRow['EventName'];
     $playerId = $scoreRow['PlayerId'];
     $playerName = $scoreRow['PlayerName'];
-    $playerLink = "player-info.php?playerid=$playerId";
     $seasonNumber = $scoreRow['SeasonNumber'];
     $regionSynonym = $scoreRow['RegionSynonym'];
     $meetNumber = $scoreRow['MeetNumber'];
+
+    $playerLink = "scores.php?machineid=$machineIdParam&playerid=$playerId&competitionid=$competitionId";
     $eventLink = "leaguemeet.php?season=$seasonNumber&region=$regionSynonym&meet=$meetNumber";
 
-    echo "<tr>
-        <td>$rank</td>
+    if ($competitionId == $competitionIdParam && $playerId == $playerIdParam)
+    {
+        echo "<tr class='show-border'>";
+    }
+    else 
+    {
+	    echo "<tr>";
+    }
+
+    echo "<td>$rank</td>
         <td>$score</td>
         <td><a href=\"$playerLink\" class=\"player-link\">$playerName</a></td>";
         if ($meetNumber > 0)

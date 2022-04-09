@@ -78,6 +78,8 @@ GROUP BY Player.Name
 		$playerRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
 		$playerName = $playerRow['PlayerName'];
 		$playerAverage = number_format($playerRow['PlayerAverage']);
+
+		$topScoresLink = "machine-info.php?machineid=$machineid&competitionid=$competitionid&playerid=$playerid";
 	?>
 
 	
@@ -86,7 +88,7 @@ GROUP BY Player.Name
 	<p>Total games played : <?=$leagueCount?></p>
 	<p>Average score : <?=$leagueAverage?></p>
 	<p><a href="player-info.php?playerid=<?=$playerid?>" class='player-link'><?=$playerName?>'s</a> average score : <?=$playerAverage?></p>
-
+	<p>View <a href="<?=$topScoresLink?>" class='player-link'>Top Scores</a> for <?=$machineName?></p>
 	</div>
 
 	<?php

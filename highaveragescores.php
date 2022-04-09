@@ -104,7 +104,7 @@
 	$tsqlParams = "";
 
 	if ($region->regionId > 0) {
-		$filterClause = "WHERE (LeagueMeet.RegionId = @RegionId OR LeagueFinal.Id > 0)"; 
+		$filterClause = "WHERE (LeagueMeet.RegionId = @RegionId)"; 
 		$tsqlParams = "DECLARE @RegionId INT = $region->regionId;";
 	}
 
@@ -259,7 +259,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
 
 	echo "<tr>
 			<td>$position</td>
-			<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a></td>
+			<td><a href='machine-info.php?machineid=$machineId&region=$regionParam&season=$seasonParam' class='player-link'>$machineName</a></td>
 			<td class='score'>$appearances</td>
 			<td class='score padright'>$gamesPlayed</td>
 
@@ -276,6 +276,7 @@ sqlsrv_free_stmt($result);
 
 	<p></p>
 	<p>
+	When filtered by region, only scores achieved at league meets (within specified region) are considered.<br><br>
 	<b>'Appearances'</b> is the number of league meets or league finals the game has appeared in.<br>
 	<b>'Plays'</b> is the number of games played across those events.<br>
 	For example, if Twilight Zone appeared at one meet with 12 players, then we would expect Appearances to be 1 and Plays to be 12.
