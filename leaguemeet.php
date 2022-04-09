@@ -13,24 +13,12 @@
 
 <!-- Content -->
 
-	<?php 
-		include("includes/header.inc"); 
-		include("includes/envvars.inc");
+<?php 
+	require_once("includes/header.inc"); 
+	require_once("includes/envvars.inc");
+	require_once("includes/sql.inc");
 
-		$connectionOptions = array(
-			"Database" => $sqldbname,
-			"Uid" => $sqluser,
-			"PWD" => $sqlpassword
-		);
-
-		$conn = sqlsrv_connect($sqlserver, $connectionOptions);
-		if( $conn === false ) 
-		{
-			echo "connection borken.";
-			// die( print_r( sqlsrv_errors(), true));
-		}
-
-		 $tsql= "
+	$tsql= "
 	SELECT
 	Season.SeasonNumber,
 	Region.Name AS RegionName,
@@ -45,66 +33,64 @@
 	AND LeagueMeet.MeetNumber = ? -- $meet 
 	";
 
-		// Perform query with parameterised values.
-		$result= sqlsrv_query($conn, $tsql, array($region, $season, $meet));
-		if ($result == FALSE)
-		{
-			echo "query borken.";
-		}
+	// Perform query with parameterised values.
+	$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet));
+	if ($result == FALSE)
+	{
+		echo "query borken.";
+	}
 
-		$leagueMeetRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-		$leagueMeetRegionName = $leagueMeetRow['RegionName'];
-		$leagueMeetHostName = $leagueMeetRow['Host'];
-		$leagueMeetDate = $leagueMeetRow['Date'];
-	?>
+	$leagueMeetRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
+	$leagueMeetRegionName = $leagueMeetRow['RegionName'];
+	$leagueMeetHostName = $leagueMeetRow['Host'];
+	$leagueMeetDate = $leagueMeetRow['Date'];
+?>
 
 	<div class="panel">
 	<?php 
 		echo "<h1>$leagueMeetRegionName League, Season $season, Meet #$meet</h1>"; 
-	?>
-<?php
 
 	// Get all scores at meet
 	$tsql="
-SELECT
-RANK() OVER (PARTITION BY MachineId ORDER BY Score DESC) AS Rank,
-Score.PlayerId AS PlayerId,
-Player.Name AS PlayerName,
-Score.MachineId AS MachineId,
-Machine.Name AS MachineName,
-Score.CompetitionId AS CompetitionId,
-Score.Score AS GameScore,
-(
-	SELECT TOP 1 PBScore.Score
-	FROM Score PBScore
-	WHERE PBScore.PlayerId = Score.PlayerId AND PBScore.MachineId = Score.MachineId 
-	ORDER BY PBScore.Score DESC
-) AS PersonalBestScore,
-(
-	SELECT TOP 1 HighScore.Score
-	FROM Score HighScore
-	WHERE HighScore.MachineId = Score.MachineId 
-	ORDER BY HighScore.Score DESC
-) AS LeagueHighScore,
-(
-	SELECT COUNT(PlayCount.Score)
-	FROM Score PlayCount
-	WHERE PlayCount.PlayerId = Score.PlayerId AND PlayCount.MachineId = Score.MachineId 
-) AS PlayCount
-FROM Score 
-INNER JOIN Player ON Player.Id = Score.PlayerId
-INNER JOIN Machine ON Machine.Id = Score.MachineId
-INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
-INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
-INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
-WHERE Region.Synonym = ? -- $region 
-AND Season.SeasonNumber = ? -- $season 
-AND LeagueMeet.MeetNumber = ? -- $meet 
-ORDER BY Machine.Name, GameScore desc, PlayerName
+	SELECT
+	RANK() OVER (PARTITION BY MachineId ORDER BY Score DESC) AS Rank,
+	Score.PlayerId AS PlayerId,
+	Player.Name AS PlayerName,
+	Score.MachineId AS MachineId,
+	Machine.Name AS MachineName,
+	Score.CompetitionId AS CompetitionId,
+	Score.Score AS GameScore,
+	(
+		SELECT TOP 1 PBScore.Score
+		FROM Score PBScore
+		WHERE PBScore.PlayerId = Score.PlayerId AND PBScore.MachineId = Score.MachineId 
+		ORDER BY PBScore.Score DESC
+	) AS PersonalBestScore,
+	(
+		SELECT TOP 1 HighScore.Score
+		FROM Score HighScore
+		WHERE HighScore.MachineId = Score.MachineId 
+		ORDER BY HighScore.Score DESC
+	) AS LeagueHighScore,
+	(
+		SELECT COUNT(PlayCount.Score)
+		FROM Score PlayCount
+		WHERE PlayCount.PlayerId = Score.PlayerId AND PlayCount.MachineId = Score.MachineId 
+	) AS PlayCount
+	FROM Score 
+	INNER JOIN Player ON Player.Id = Score.PlayerId
+	INNER JOIN Machine ON Machine.Id = Score.MachineId
+	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
+	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+	WHERE Region.Synonym = ? -- $region 
+	AND Season.SeasonNumber = ? -- $season 
+	AND LeagueMeet.MeetNumber = ? -- $meet 
+	ORDER BY Machine.Name, GameScore desc, PlayerName
 	";
 
 	// Perform query with parameterised values.
-	$result= sqlsrv_query($conn, $tsql, array($region, $season, $meet));
+	$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet));
 	if ($result == FALSE)
 	{
 		echo "query borken.";
@@ -190,25 +176,25 @@ ORDER BY Machine.Name, GameScore desc, PlayerName
 
 	// Overall results
 	$tsql="
-SELECT
-Result.Position AS 'Rank',
-Player.Id AS 'PlayerId',
-Player.Name AS 'PlayerName',
-Result.Score AS 'Score',
-Result.Points AS 'Points'
-from Result
-INNER JOIN LeagueMeet on LeagueMeet.CompetitionId = Result.CompetitionId
-INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
-INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
-INNER JOIN Player ON Player.Id = Result.PlayerId
-WHERE Region.Synonym = ? -- $region 
-AND Season.SeasonNumber = ? -- $season 
-AND LeagueMeet.MeetNumber = ? -- $meet 
-ORDER BY Rank, PlayerName
-";
+	SELECT
+	Result.Position AS 'Rank',
+	Player.Id AS 'PlayerId',
+	Player.Name AS 'PlayerName',
+	Result.Score AS 'Score',
+	Result.Points AS 'Points'
+	from Result
+	INNER JOIN LeagueMeet on LeagueMeet.CompetitionId = Result.CompetitionId
+	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
+	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+	INNER JOIN Player ON Player.Id = Result.PlayerId
+	WHERE Region.Synonym = ? -- $region 
+	AND Season.SeasonNumber = ? -- $season 
+	AND LeagueMeet.MeetNumber = ? -- $meet 
+	ORDER BY Rank, PlayerName
+	";
      
     // Perform query with parameterised values.
-	$result= sqlsrv_query($conn, $tsql, array($region, $season, $meet));
+	$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet));
 	if ($result == FALSE)
 	{
 		echo "query borken.";
@@ -263,4 +249,4 @@ ORDER BY Rank, PlayerName
 <?php include("includes/footer.inc"); ?>
 
 </body>
-  </html>
+</html>
