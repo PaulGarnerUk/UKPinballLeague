@@ -21,7 +21,7 @@
 <!-- SlickNav stuff end -->
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script type="text/javascript" src="flexdropdown.js">
+<script type="text/javascript" src="js/flexdropdown.js">
 /***********************************************
 * Flex Level Drop Down Menu- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
 * This notice MUST stay intact for legal use
@@ -313,7 +313,7 @@ document.write('&#117;&#107;&#112;&#105;&#110;&#98;&#97;&#108;&#108;&#46;&#99;&#
 
 <!-- SlickNav start -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="jquery.slicknav.js"></script>
+<script src="js/jquery.slicknav.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#menu').slicknav({

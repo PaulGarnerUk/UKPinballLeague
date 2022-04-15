@@ -1133,7 +1133,7 @@ function getplayer ( selectedtype )
 
 <!-- SlickNav start -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script src="jquery.slicknav.js"></script>
+<script src="js/jquery.slicknav.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#menu').slicknav({

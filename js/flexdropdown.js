@@ -1,3 +1,5 @@
+// Flexdropdown serves the menu on desktop views.
+
 /* Flex Level Drop Down Menu v1.1
 * Created: Jan 5th, 2010 by DynamicDrive.com. This notice must stay intact for usage 
 * Author: Dynamic Drive at http://www.dynamicdrive.com/

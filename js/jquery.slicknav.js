@@ -1,3 +1,5 @@
+// Slicknav serves the menu on mobile views.
+
 /*!
     SlickNav Responsive Mobile Menu v1.0.1
     (c) 2014 Josh Cope
