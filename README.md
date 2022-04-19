@@ -2,6 +2,28 @@
 
 This is a public repository of the UK Pinball League site, originally created and maintained by Nick Hill until 2021 where the maintenance was passed on to a new group of enthusiasts!
 
+## Development Environment Setup
+
+[XAMPP](https://www.apachefriends.org/index.html) is recommended for installing Apache and PHP onto the development environment. Once installed it is recommended to update the PATH to include a direct path to php.exe (by default installed to C:\xampp\php\)  
+
+The following environment variables are required to run the php site locally (and examples show setting these with Powershell). It is assumed the developer is running the site on a local instance of SQL Server, and so should be able to configure the host/username/password.  
+
+**New-Item Env:/currentseason -Value "15"** # Current season number  
+**New-Item Env:/mssqlservername -Value "dbhost.database.windows.net"** # sql server database host name  
+**New-Item Env:/mssqldb -Value "dbname"** # sql db name  
+**New-Item Env:/mssqluser -Value "readonlylogin"** # username for sql db  
+**New-Item Env:/mssqlpassword -Value "sqlpassword"** # password for sql db  
+
+The following and temporarily required for some legacy pages which use the old/denormalised database scheme, hosted in MySQL  
+**New-Item Env:/sqlhost -Value "legacydbhost.mysql.database.azure.com"** # legacy mysql db host name   
+**New-Item Env:/dbname -Value "legacydbname"** # legacy mysql db name  
+**New-Item Env:/sqluser -Value "legacyuser"** # username for legacy mysql db  
+**New-Item Env:/sqlpassword -Value "legacypassword"** # password for legacy mysql db  
+
+Script can then launch the site by ensuring we are in the root folder and running php:  
+**cd C:\site-folder**  
+**php -S 127.0.0.1:9876**  
+
 ## Database Schema
 
 ### `Region`
