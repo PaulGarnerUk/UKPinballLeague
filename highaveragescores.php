@@ -98,6 +98,9 @@
 
 	echo "</div></span>";
 	
+	/* Coming soon*.
+	echo "<input class='search' type='text' size='30' placeholder='Search..'>";
+	*/
 	echo "</h2><p></p>";
 
 	$filterClause = "";

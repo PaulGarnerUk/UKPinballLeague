@@ -907,3 +907,10 @@ a.padright {
 	border-right: 2px solid;
 	border-color: #fee0b8;
 }
+
+.search {
+	float: right;
+	padding: 4px;
+	outline: solid;
+	font-size: 14px;
+}
