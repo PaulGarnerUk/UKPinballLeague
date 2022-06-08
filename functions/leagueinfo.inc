@@ -232,7 +232,7 @@ function GetMidlandsLeagueInfo($season)
 			$info->bQualifyingDescription = "League finals B qualifying place.";
 			break;
 		case 15:
-			$info->aQualifyingPlaces = 4;
+			$info->aQualifyingPlaces = 5;
 			$info->aQualifyingDescription = "League finals A qualifying place.";
 			$info->bQualifyingPlaces = 4;
 			$info->bQualifyingDescription = "League finals B qualifying place.";

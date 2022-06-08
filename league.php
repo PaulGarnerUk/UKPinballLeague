@@ -139,7 +139,19 @@ COALESCE(MeetOne.Points,0) + COALESCE(MeetTwo.Points,0) + COALESCE(MeetThree.Poi
 	SUM(Results.Points)
 	FROM Results
 	WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= @qualifyingMeets
-) AS best4
+) AS best4,
+(
+	SELECT 
+	SUM(Results.Points)
+	FROM Results
+	WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= (@qualifyingMeets + 1)
+) AS best5,
+(
+	SELECT 
+	SUM(Results.Points)
+	FROM Results
+	WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= (@qualifyingMeets + 2)
+) AS best6
 FROM SeasonPlayers 
 LEFT OUTER JOIN Results AS MeetOne ON MeetOne.MeetNumber = 1 AND MeetOne.PlayerId = SeasonPlayers.PlayerId
 LEFT OUTER JOIN Results AS MeetTwo ON MeetTwo.MeetNumber = 2 AND MeetTwo.PlayerId = SeasonPlayers.PlayerId
@@ -147,7 +159,7 @@ LEFT OUTER JOIN Results AS MeetThree ON MeetThree.MeetNumber = 3 AND MeetThree.P
 LEFT OUTER JOIN Results AS MeetFour ON MeetFour.PlayerId = SeasonPlayers.PlayerId AND MeetFour.MeetNumber = 4
 LEFT OUTER JOIN Results AS MeetFive ON MeetFive.PlayerId = SeasonPlayers.PlayerId AND MeetFive.MeetNumber = 5
 LEFT OUTER JOIN Results AS MeetSix ON MeetSix.PlayerId = SeasonPlayers.PlayerId AND MeetSix.MeetNumber = 6
-ORDER BY best4 DESC, played ASC";
+ORDER BY best4 DESC, best5 DESC, best6 DESC, played ASC";
 
 	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season, $info->numberOfQualifyingMeets));
 
