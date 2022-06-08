@@ -196,7 +196,7 @@ while ($meetNumber <= $totalMeets)
 
 	$total = '';
 	$position = 0;
-	$previousRowBest4 = 0;
+	$previousRowBest = 0;
 	$hiddenPositions = 0;
 	
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
@@ -211,13 +211,17 @@ while ($meetNumber <= $totalMeets)
 		$meet5 = (is_null($row['meet5']) ? "-" : (float)$row['meet5']);
 		$meet6 = (is_null($row['meet6']) ? "-" : (float)$row['meet6']);
 		$best4 = $row['best4'];
+		$best5 = $row['best5'];
+		$best6 = $row['best6'];
 		$total = $row['total'];
 	
 		$best4 = round($best4,"1");
+		$best5 = round($best5,"1");
+		$best6 = round($best6,"1");
 		$total = round($total,"1");
 	
-		// Calculate rank
-		if ($best4 == $previousRowBest4)
+		// Calculate rank. Ties on best4 are split by best5 and then best6.  This is a non-optimal way of doing that..
+		if ($best4 + $best5 + $best6 == $previousRowBest)
 		{
 			$hiddenPositions++;
 		}
@@ -226,7 +230,7 @@ while ($meetNumber <= $totalMeets)
 			$position = $position + $hiddenPositions;
 			$hiddenPositions = 0;
 
-			$previousRowBest4 = $best4;
+			$previousRowBest = $best4 + $best5 + $best6;
 			$position++;
 		}
 
