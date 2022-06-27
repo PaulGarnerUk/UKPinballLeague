@@ -98,7 +98,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
 }
 echo "</table>\n";
 
-echo "<p><a href='highaveragescores.php?region=all&season=all&sort=plays&dir=desc' class='homepagesmall'>See full list</a></p>";
+echo "<p><a href='machines.php?region=all&season=all&sort=plays&dir=desc' class='homepagesmall'>See full list</a></p>";
 
 echo "</div>";
 

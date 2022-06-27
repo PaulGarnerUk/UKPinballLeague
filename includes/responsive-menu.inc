@@ -15,13 +15,7 @@
         </ul>
     </li>
     <li><a href="rankings.php">RANKINGS</a></li>
-    <li>HI SCORES
-        <ul>
-            <li><a href="highaveragescores.php">HI/AVG SCORES</a></li>
-            <li><a href="highscores10.php">HI SCORES 10</a></li>
-            <li><a href="highscoresperplayer.php">HI PER PLAYER</a></li>
-        </ul>
-    </li>
+    <li><a href="machines.php">MACHINES</a></li>
     
     <li>RULES/FAQ
         <ul>

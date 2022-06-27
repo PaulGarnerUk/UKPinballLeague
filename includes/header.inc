@@ -58,8 +58,7 @@
 <a href="schedule.php" class="menu">SCHEDULE</a> 
 <a href="#" class="menu" data-flexmenu="league-results">RESULTS</a>
 <a href="rankings.php" class="menu">RANKINGS</a>
-<a href="#" class="menu" data-flexmenu="scores">HI SCORES</a>
- 
+<a href="machines.php" class="menu">MACHINES</a>
 <a href="#" class="menu" data-flexmenu="rules-faqs">RULES/FAQ</a> 
 <a href="links.php" class="menu">LINKS</a> 
 <a href="contacts.php" class="menu">CONTACTS</a>
@@ -76,13 +75,6 @@
 <li><a href="finals.php">FINALS</a></li>
 <li><a href="placings.php">MEET WINNERS</a></li>
 <li><a href="winners.php">LEAGUE WINNERS</a></li>
-</ul>
-
-<!--HTML for Scores-->
-<ul id="scores" class="flexdropdownmenu">
-<li><a href="highaveragescores.php">HI / AVG SCORES</a></li>
-<li><a href="highscores10.php">HI SCORES 10</a></li>
-<li><a href="highscoresperplayer.php">HI PER PLAYER</a></li>
 </ul>
 
 <!--HTML for Rules/FAQs-->
