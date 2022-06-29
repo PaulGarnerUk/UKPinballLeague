@@ -21,7 +21,7 @@ The following environment variables are required to run the php site locally (an
 **New-Item Env:/mssqluser -Value "readonlylogin"** # username for sql db  
 **New-Item Env:/mssqlpassword -Value "sqlpassword"** # password for sql db  
 
-The following and temporarily required for some legacy pages which use the old/denormalised database scheme, hosted in MySQL  
+The following are temporarily required for some legacy pages which use the old/denormalised database scheme, hosted in MySQL  
 **New-Item Env:/sqlhost -Value "legacydbhost.mysql.database.azure.com"** # legacy mysql db host name   
 **New-Item Env:/dbname -Value "legacydbname"** # legacy mysql db name  
 **New-Item Env:/sqluser -Value "legacyuser"** # username for legacy mysql db  
@@ -38,5 +38,5 @@ The SQL database is backed up infrequently and stored to the repository in bacpa
 
 Database schema is documented [here](docs/sql-schema.md)
 
-At the time of writing, maintenance on the database is performed manually. Example queries can be seen [here](sql-queries.md)
+At the time of writing, maintenance on the database is performed manually. Example queries can be seen [here](docs/sql-queries.md)
 
