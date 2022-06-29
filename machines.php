@@ -76,23 +76,23 @@
 	echo "<span class='dropdown'>
   <h2 class='dropbtn'>$region->leagueName</h2>
   <div class='dropdown-content'>";
-	echo "<a href='highaveragescores.php?region=all&season=$seasonParam&sort=$sort&dir=$dir'>All Leagues</a>";
-	echo "<a href='highaveragescores.php?region=sw&season=$seasonParam&sort=$sort&dir=$dir'>South West</a>";
-	echo "<a href='highaveragescores.php?region=m&season=$seasonParam&sort=$sort&dir=$dir'>Midlands</a>";
-	echo "<a href='highaveragescores.php?region=lse&season=$seasonParam&sort=$sort&dir=$dir'>London and South East</a>";
-	echo "<a href='highaveragescores.php?region=n&season=$seasonParam&sort=$sort&dir=$dir'>Northern</a>";
-	echo "<a href='highaveragescores.php?region=s&season=$seasonParam&sort=$sort&dir=$dir'>Scottish</a>";
-	echo "<a href='highaveragescores.php?region=i&season=$seasonParam&sort=$sort&dir=$dir'>Irish</a>";
+	echo "<a href='machines.php?region=all&season=$seasonParam&sort=$sort&dir=$dir'>All Leagues</a>";
+	echo "<a href='machines.php?region=sw&season=$seasonParam&sort=$sort&dir=$dir'>South West</a>";
+	echo "<a href='machines.php?region=m&season=$seasonParam&sort=$sort&dir=$dir'>Midlands</a>";
+	echo "<a href='machines.php?region=lse&season=$seasonParam&sort=$sort&dir=$dir'>London and South East</a>";
+	echo "<a href='machines.php?region=n&season=$seasonParam&sort=$sort&dir=$dir'>Northern</a>";
+	echo "<a href='machines.php?region=s&season=$seasonParam&sort=$sort&dir=$dir'>Scottish</a>";
+	echo "<a href='machines.php?region=i&season=$seasonParam&sort=$sort&dir=$dir'>Irish</a>";
 	echo "</div></span>";
 	
 	echo " <span class='dropdown'>
   <h2 class='dropbtn'>$season->seasonName</h2>
   <div class='dropdown-content'>";
-	echo "<a href='highaveragescores.php?region=$regionParam&season=all&sort=$sort&dir=$dir'>All Seasons</a>";
+	echo "<a href='machines.php?region=$regionParam&season=all&sort=$sort&dir=$dir'>All Seasons</a>";
 	$seasonLoop=$currentseason;
 	while ($seasonLoop > 0)
 	{
-		echo "<a href='highaveragescores.php?region=$regionParam&season=$seasonLoop&sort=$sort&dir=$dir'>Season $seasonLoop</a>";
+		echo "<a href='machines.php?region=$regionParam&season=$seasonLoop&sort=$sort&dir=$dir'>Season $seasonLoop</a>";
 		$seasonLoop--;
 	}
 
@@ -203,21 +203,21 @@ echo "<thead>
 
 // machine sortable column header
 if ($sort === "machine") {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=machine&dir=$oppositesortdir' class='player-link'>Machine $sortchar</a></th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=machine&dir=$oppositesortdir' class='player-link'>Machine $sortchar</a></th>";
 } else {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=machine&dir=asc' class='player-link'>Machine</a></th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=machine&dir=asc' class='player-link'>Machine</a></th>";
 }
 
 if ($sort === "meets") {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=meets&dir=$oppositesortdir' class='player-link'>Appearances $sortchar</a></th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=meets&dir=$oppositesortdir' class='player-link'>Appearances $sortchar</a></th>";
 } else  {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=meets&dir=desc' class='player-link'>Appearances</a></th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=meets&dir=desc' class='player-link'>Appearances</a></th>";
 }
 
 if ($sort === "plays") {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=plays&dir=$oppositesortdir' class='player-link'>Plays $sortchar</a></th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=plays&dir=$oppositesortdir' class='player-link'>Plays $sortchar</a></th>";
 } else  {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=plays&dir=desc' class='player-link'>Plays</a></th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=plays&dir=desc' class='player-link'>Plays</a></th>";
 }
 
 // Non sortable columns
@@ -225,9 +225,9 @@ echo "<th class='score'>Average Score</th>
 		<th class='score'>High Score</th>";
 
 if ($sort === "player") {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=player&dir=$oppositesortdir' class='player-link'>Player $sortchar</a></th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=player&dir=$oppositesortdir' class='player-link'>Player $sortchar</a></th>";
 } else {
-	echo "<th><a href='highaveragescores.php?region=$regionParam&season=$seasonParam&sort=player&dir=asc' class='player-link'>Player</th>";
+	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=player&dir=asc' class='player-link'>Player</th>";
 }
 
 	echo "</tr></thead>\n";
