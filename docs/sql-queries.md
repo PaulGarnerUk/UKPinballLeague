@@ -147,3 +147,10 @@ LEFT OUTER JOIN BonusPoints on BonusPoints.PlayerId = TotalPoints.PlayerId
 INNER JOIN Player on Player.Id = TotalPoints.PlayerId
 ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) DESC
 ```
+
+## Add results
+Add results from the query above, being mindful that the query above does not handle ties very well and may need manually correcting. (Once results are calculated entirely in software this can be fixed)
+```
+insert into Result (CompetitionId, PlayerId, Score, Position, Points) values
+(...etc)
+```
