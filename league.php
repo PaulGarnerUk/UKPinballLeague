@@ -67,6 +67,11 @@ while ($seasonLoop > 0)
 	echo "</span></div></h1>";
 
 	echo "<p>$info->note</p>";
+
+	if ($totalMeets < 1 && $season == $currentseason)
+	{
+		echo "<p>No results have been submitted for the current season yet.  You can view previous seasons using the button above.</p>";
+	}
 ?>
 
 <?php
@@ -169,7 +174,6 @@ ORDER BY best4 DESC, best5 DESC, best6 DESC, played ASC";
 		echo (sqlsrv_errors());
 	}
 
-//echo "<table>";
 echo "<div class='table-holder'>";
 echo "<table>";
 
