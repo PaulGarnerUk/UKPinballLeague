@@ -151,6 +151,16 @@ ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) DESC
 ## Add results
 Add results from the query above, being mindful that the query above does not handle ties very well and may need manually correcting. (Once results are calculated entirely in software this can be fixed)
 ```
-insert into Result (CompetitionId, PlayerId, Score, Position, Points) values
+INSERT INTO Result (CompetitionId, PlayerId, Score, Position, Points) VALUES
 (...etc)
 ```
+
+
+# New Season Preparation
+
+Start by adding a new Season  
+```
+INSERT INTO Season (SeasonNumber, Name, Year) VALUES (16, '2023/Season 16', 2023)
+```
+The app should be configured to use an environment variable named `currentseason` containing the latest season number (16 in this example). This is initialized in the `envvars.inc` include.
+
