@@ -94,7 +94,7 @@ img.banner {
 	height: auto;
 	background-color: #fff;
 	margin-top: 5px;
-	padding: 5px 0 10px 0;
+	padding: 5px 0 5px 0;
 }
 
 .panel-copyright {
@@ -533,6 +533,12 @@ table.hi-per-player {
 	margin-left: 20px;
 }
 
+.table-scores {
+	border-collapse: collapse;
+	width: 95%; /* space between this table and flex flow'd tables left or right */
+	margin-bottom: 20px; /* space between this table and one below */
+}
+
 @media screen and (max-width: 954px) {
 .paddidge {
 	padding-right: 10px;
@@ -555,7 +561,7 @@ td	{
 	font-size: 14px;
 	line-height: 40px;
 	text-align: left;
-	padding-left: 15px;
+	padding-left: 20px;
 }
 
 
@@ -778,6 +784,7 @@ h2.schedule {
 	float: left;
 	margin-left: 4%;
 	margin-bottom: 30px;
+	background: #fff;
 }
 
 @media only screen and (min-width: 441px) and (max-width: 860px) {
@@ -913,4 +920,19 @@ a.padright {
 	padding: 4px;
 	outline: solid;
 	font-size: 14px;
+}
+
+.div-scores {
+	display: flex;
+	flex-flow: row wrap;
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.flex-column {
+	min-width: 50%;
 }

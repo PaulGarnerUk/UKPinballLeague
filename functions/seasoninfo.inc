@@ -53,4 +53,5 @@ function ValidateSeasonNumber($seasonNumber = "all", $sqlConnection)
 	return $info;
 }
 
+
 ?>
