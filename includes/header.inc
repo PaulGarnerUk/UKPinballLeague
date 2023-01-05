@@ -31,6 +31,13 @@
   gtag('config', 'G-LXSR53EX1K');
 </script>
 
+<script>
+	// iframe buster for the shonky redirect on ukpinballleague.co.uk
+	if (parent.frames.length > 0) {
+		top.location.replace(document.location);
+	}
+</script>
+
 <body>
 
 <!-- Background -->	
