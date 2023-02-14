@@ -109,6 +109,10 @@ function GetNorthernLeagueInfo($season)
 			$info->bQualifyingPlaces = 4;
 			$info->bQualifyingDescription = "League finals B qualifying place.";
 			break;
+		case 16:
+			$info->aQualifyingPlaces = 7;
+			$info->aQualifyingDescription = "League finals qualifying place.";
+			break;
 	}
 
 	return $info;
@@ -174,6 +178,10 @@ function GetSouthWestLeagueInfo($season)
 			$info->bQualifyingPlaces = 4;
 			$info->bQualifyingDescription = "League finals B qualifying place.";
 			break;
+		case 16:
+			$info->aQualifyingPlaces = 6;
+			$info->aQualifyingDescription = "League finals qualifying place.";
+			break;
 	}
 
 	return $info;
@@ -236,6 +244,10 @@ function GetMidlandsLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals A qualifying place.";
 			$info->bQualifyingPlaces = 4;
 			$info->bQualifyingDescription = "League finals B qualifying place.";
+			break;
+		case 16:
+			$info->aQualifyingPlaces = 7;
+			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 	}
 
@@ -305,6 +317,10 @@ function GetLondonSouthEastLeagueInfo($season)
 			$info->bQualifyingPlaces = 4;
 			$info->bQualifyingDescription = "League finals B qualifying place.";
 			break;
+		case 16:
+			$info->aQualifyingPlaces = 8;
+			$info->aQualifyingDescription = "League finals qualifying place.";
+			break;
 	}
 
 	return $info;
@@ -367,6 +383,10 @@ function GetIrishLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals A qualifying place.";
 			$info->bQualifyingPlaces = 4;
 			$info->bQualifyingDescription = "League finals B qualifying place.";
+			break;
+		case 16:
+			$info->aQualifyingPlaces = 6;
+			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 	}
 
@@ -432,6 +452,10 @@ function GetScottishLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals A qualifying place.";
 			$info->bQualifyingPlaces = 4;
 			$info->bQualifyingDescription = "League finals B qualifying place.";
+			break;
+		case 16:
+			$info->aQualifyingPlaces = 6;
+			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 	}
 

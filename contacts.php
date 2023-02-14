@@ -25,16 +25,9 @@
 
 <div class="panel"> 
 <h2>Midlands region</h2>
-<p class="lastline">Wayne Johns - <script language=Javascript type=text/javascript>
-<!--
-document.write('<a class="link" href="mai');
-document.write('lto');
-document.write(':&#119;&#97;&#121;&#110;&#101;&#106;&#111;&#104;&#110;&#115;&#49;&#57;&#55;&#51;');
-document.write('@');
-document.write('&#121;&#97;&#104;&#111;&#111;&#46;&#99;&#111;&#46;&#117;&#107;">');
-document.write('&#119;&#97;&#121;&#110;&#101;&#106;&#111;&#104;&#110;&#115;&#49;&#57;&#55;&#51;');
-document.write('@');
-document.write('&#121;&#97;&#104;&#111;&#111;&#46;&#99;&#111;&#46;&#117;&#107;<\/a>');
+<p class="lastline">Dan Lewell - <script language=Javascript type=text/javascript>
+<!-- 
+document.write('<a class="link" href="m&#97;&#105;l&#116;o&#58;dan.le&#37;77e%&#54;&#67;&#108;&#64;a%6&#52;&#97;ptiv%&#54;5it.co&#46;uk">dan&#46;le&#119;el&#108;&#64;ada&#112;&#116;&#105;veit&#46;c&#111;&#46;&#117;k</a>');
 // -->
 </script><noscript>&#119;&#97;&#121;&#110;&#101;&#106;&#111;&#104;&#110;&#115;&#49;&#57;&#55;&#51; at 
 &#121;&#97;&#104;&#111;&#111; dot &#99;&#111; dot &#117;&#107;</noscript>

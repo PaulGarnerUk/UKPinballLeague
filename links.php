@@ -50,7 +50,6 @@
 <p><a href="https://www.homeleisuredirect.com/pinball-machines/" class="link" target="_blank">Home Leisure Direct</a> – Seller of a wide variety of pinballs, pool tables and arcade machines.</p>
 <p><a href="https://www.libertygames.co.uk/store/pinball_machines/" class="link" target="_blank">Liberty Games</a> – Games room specialists. New and refurbished machines for sale. On-site maintenance available.</p>
 <p><a href="https://www.londonpinball.co.uk/product-category/pinball-machines/" class="link" target="_blank">London Pinball</a> – Buy and sell pinball machines. Always a large selection of refurbished machines for sale.</p>
-<p><a href="https://pinballbazaar.co.uk/" class="link" target="_blank">Pinball Bazaar</a> – Seller of a wide range of modifications and upgrades for pinball machines as well as some new in box games.</p>
 <p><a href="https://davidwillcox.vpweb.co.uk/" class="link" target="_blank">Pinball Daze</a> – Pinball spares and servicing. Data East, Sega and Stern specialist. Other manufacturer's spares also available.</p>
 <p><a href="https://www.pinball.co.uk/" class="link" target="_blank">Pinball Heaven</a> – National pinball seller of new and refurbished machines. Also supplies parts.</p>
 <p><a href="https://www.pinball-led.co.uk/" class="link" target="_blank">Pinball LED</a> – Seller of LEDs for pinball machines.</p>
