@@ -13,10 +13,11 @@
 
 <h1>UKPL Player Rankings</h1>
 
+<p class="firstline">This is a historical page that is no longer updated. Expect a new ranking system 'soon'!</p>
 <p class="firstline">Players' total ranking points are based on league points earned to date.</p>
 
 <p>League points depreciate as follows:<br>
-&bull; <strong>Season 14 (current season)</strong> – 100% of their original value<br>&bull; <strong>Season 13</strong> – 100% of their original value<br>&bull; <strong>Season 12</strong> – 80% of their original value<br>&bull; <strong>Season 11</strong> – 60% of their original value<br>&bull; <strong>Season 10</strong> – 40% of their original value<br>&bull; <strong>Season 9</strong> – 20% of their original value<br>&bull; <strong>Seasons 8, 7, 6, 5, 4, 3, 2 &amp; 1</strong> – 0% of their original value</p>
+&bull; <strong>Season 14</strong> – 100% of their original value<br>&bull; <strong>Season 13</strong> – 100% of their original value<br>&bull; <strong>Season 12</strong> – 80% of their original value<br>&bull; <strong>Season 11</strong> – 60% of their original value<br>&bull; <strong>Season 10</strong> – 40% of their original value<br>&bull; <strong>Season 9</strong> – 20% of their original value<br>&bull; <strong>Seasons 8, 7, 6, 5, 4, 3, 2 &amp; 1</strong> – 0% of their original value</p>
 
 <div class="panel">
 
