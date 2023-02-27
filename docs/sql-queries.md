@@ -78,10 +78,28 @@ INSERT INTO Score (CompetitionId, PlayerId, MachineId, Score) VALUES
 ## Calculate results of league meet
 
 Once all scores are entered the following query calculates results. Note however that ties are not calculated correctly in this query at the moment (two way ties add 0.5 points, three way ties add 0.3 points etc.)
+This query also (dynamically) allows non-league players to be included/excluded from the calculated results.
 
 ```
-DECLARE @TotalPlayers INT = 11; -- total number of players at the meet
-DECLARE @CompetitionId INT = 452; -- competition id to calculate results for
+DECLARE @CompetitionId INT = 492; -- competition id to calculate results for
+DECLARE @ExcludeNonLeaguePlayers BIT = 1
+
+-- Conditionally build a table variable containing excluded player ids
+DECLARE @ExcludedPlayerIds TABLE (PlayerId INT)
+IF (@ExcludeNonLeaguePlayers = 1) BEGIN
+	INSERT INTO @ExcludedPlayerIds (PlayerId) 
+	SELECT PlayerId 
+	FROM CompetitionPlayer
+	WHERE CompetitionPlayer.CompetitionId = @CompetitionId
+	AND CompetitionPlayer.ExcludeFromResults = 1
+	END
+
+-- Calculate number of players at meet
+DECLARE @TotalPlayers INT
+SET @TotalPlayers = (SELECT COUNT(DISTINCT(PlayerId))
+	FROM Score 
+	WHERE CompetitionId = @CompetitionId
+	AND PlayerId NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds));
 
 WITH MeetScores AS
 (
@@ -97,6 +115,7 @@ WITH MeetScores AS
 	INNER JOIN Player ON Player.Id = Score.PlayerId
 	INNER JOIN Machine ON Machine.Id = Score.MachineId
 	WHERE CompetitionId = @CompetitionId
+	AND Player.Id NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds)
 ),
 FirstPlaceScores AS
 (
@@ -141,7 +160,9 @@ Player.Id AS PlayerId,
 Player.Name,
 TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0) AS 'Score',
 RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) DESC) AS 'Position',
-CASE WHEN (((RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) ASC))-@TotalPlayers)+20) < 0 THEN 0 ELSE (((RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) ASC))-@TotalPlayers)+20) END as 'Points'
+CASE WHEN (((RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) ASC))-@TotalPlayers)+20) < 0 THEN 0 
+  ELSE (((RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) ASC))-@TotalPlayers)+20) 
+  END as 'Points'
 FROM TotalPoints
 LEFT OUTER JOIN BonusPoints on BonusPoints.PlayerId = TotalPoints.PlayerId
 INNER JOIN Player on Player.Id = TotalPoints.PlayerId

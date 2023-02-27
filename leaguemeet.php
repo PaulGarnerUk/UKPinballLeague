@@ -2,6 +2,7 @@
 	$season = htmlspecialchars($_GET["season"]);
 	$region = htmlspecialchars($_GET["region"]);
 	$meet = htmlspecialchars($_GET["meet"]);
+	$excludeGuests = htmlspecialchars($_GET['exclude_guests'] ?? false); // default to current season if not specified.
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -24,7 +25,12 @@
 	Region.Name AS RegionName,
 	LeagueMeet.MeetNumber,
 	CONVERT(varchar, LeagueMeet.Date, 103) AS Date,
-	LeagueMeet.Host
+	LeagueMeet.Host,
+	(
+		SELECT COUNT(PlayerId) 
+		FROM CompetitionPlayer
+		WHERE CompetitionPlayer.CompetitionId = LeagueMeet.CompetitionId
+	) AS ExcludedPlayers
 	FROM LeagueMeet
 	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
 	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
@@ -44,11 +50,17 @@
 	$leagueMeetRegionName = $leagueMeetRow['RegionName'];
 	$leagueMeetHostName = $leagueMeetRow['Host'];
 	$leagueMeetDate = $leagueMeetRow['Date'];
+	$leagueMeetExcludedPlayers = $leagueMeetRow['ExcludedPlayers'];
 ?>
 
 	<div class="panel">
 	<?php 
 		echo "<h1>$leagueMeetRegionName League, Season $season, Meet #$meet</h1>"; 
+
+	// if $leagueMeetExcludedPlayers > 0 then show panel..
+	//echo "<p>This meet contained $leagueMeetExcludedPlayers non-league players. Show non-league players in results?";
+	//echo "<br>(Non-league players appear with an * demarkation)</p>";
+	// checkbox reloads page and changes ?exclude_guests query parameter
 
 	// Get all scores at meet
 	$tsql="
@@ -76,13 +88,15 @@
 		SELECT COUNT(PlayCount.Score)
 		FROM Score PlayCount
 		WHERE PlayCount.PlayerId = Score.PlayerId AND PlayCount.MachineId = Score.MachineId 
-	) AS PlayCount
+	) AS PlayCount,
+	COALESCE(CompetitionPlayer.ExcludeFromResults, 0) AS ExcludedPlayer
 	FROM Score 
 	INNER JOIN Player ON Player.Id = Score.PlayerId
 	INNER JOIN Machine ON Machine.Id = Score.MachineId
 	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
 	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
 	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+	LEFT OUTER JOIN CompetitionPlayer ON CompetitionPlayer.CompetitionId = Score.CompetitionId AND CompetitionPlayer.PlayerId = Score.PlayerId
 	WHERE Region.Synonym = ? -- $region 
 	AND Season.SeasonNumber = ? -- $season 
 	AND LeagueMeet.MeetNumber = ? -- $meet 
@@ -110,6 +124,7 @@
 		$pbScore = number_format($scoreRow['PersonalBestScore']);
 		$hsScore = number_format($scoreRow['LeagueHighScore']);
 		$playCount = $scoreRow['PlayCount'];
+		$excludedPlayer = $scoreRow['ExcludedPlayer'];
 
 		// write new table header if this is a new machine
 		if ($scoreMachineName !== $lastMachineName)
@@ -147,7 +162,11 @@
 
         echo "<tr>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$scoreRank</td>\n
-			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$scoreLink\" class='player-link'>$scorePlayerName</a></td>\n
+			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$scoreLink\" class='player-link'>$scorePlayerName</a>";
+
+		if ($excludedPlayer == 1) echo " (*)";
+
+		echo "</td>\n
 			<td class='score' bgcolor='".$bgcolor."'>$scoreGameScore</td>\n";
 
 		// Awards.
@@ -241,9 +260,19 @@
 	echo "</div>";
 
 	sqlsrv_free_stmt($result);
+
+	
+
 ?>
 
 <div style="clear: both;"></div>
+
+<?php
+	if ($leagueMeetExcludedPlayers > 0)
+	{
+		echo "<p>(*) indicates guest appearance from player in different league. Player is excluded from official results.";
+	}
+?>
 
 <!-- Footer -->
 <?php include("includes/footer.inc"); ?>
