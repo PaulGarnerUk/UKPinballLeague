@@ -20,7 +20,7 @@
 
 
 <p class="bold">Where are the meets held?</p>
-<p>We have six active regions which form the UK Pinball League – South East, South West, Midlands, Northern, Scottish &amp; Irish. Meets are held at league members’ houses.</p>
+<p>We have six active regions which form the UK Pinball League – South East, South West, Midlands, Northern, Scottish &amp; Irish. Meets are frequently held at league members’ houses, but occasionally also at public venues such as arcades or pinball clubs.</p>
 
 
 <p class="bold">How often are meets held?</p>
@@ -60,7 +60,7 @@
 
 
 <p class="bold">How long has the league been running?</p>
-<p>The league was set up in 2006 and is now in its 12th season</p>
+<p>The league was set up in 2006 and is now in its 16th season</p>
 
 
 <p class="bold">Can I host a meet?</p>
@@ -83,47 +83,28 @@
 <p>You play between three and eight machines depending on the venue.  Your score is recorded and verified and then ranked against all other players with the top score getting the same number of points as the number of players and then each player one less point so that last gets one. Eg for 20 players, 1st gets 20 machine points, 2nd 19, 3rd 18 etc and 20th 1.  The total number of machine points you got on all machines is then totaled and ranked against all other players.  League points are then awarded to the top players as follows:</p>
  
 
-<p>1st&nbsp;&nbsp;&nbsp;20</p>
-
-<p>2nd&nbsp;&nbsp;&nbsp;19</p>
-
-<p>3rd&nbsp;&nbsp;&nbsp;18</p>
-
-<p>4th&nbsp;&nbsp;&nbsp;17</p>
-
-<p>5th&nbsp;&nbsp;&nbsp;16</p>             
-
-<p>6th&nbsp;&nbsp;&nbsp;15</p>
-
-<p>7th&nbsp;&nbsp;&nbsp;14</p>
-
-<p>8th&nbsp;&nbsp;&nbsp;13</p>
-
-<p>9th&nbsp;&nbsp;&nbsp;12</p>
-
-<p>10th&nbsp;&nbsp;&nbsp;11</p>
-
-<p>11th&nbsp;&nbsp;&nbsp;10</p>
-
-<p>12th&nbsp;&nbsp;&nbsp;9</p>
-
-<p>13th&nbsp;&nbsp;&nbsp;8</p>
-
-<p>14th&nbsp;&nbsp;&nbsp;7</p>
-
-<p>15th&nbsp;&nbsp;&nbsp;6</p>
-
-<p>16th&nbsp;&nbsp;&nbsp;5</p>
-
-<p>17th&nbsp;&nbsp;&nbsp;4</p>
-
-<p>18th&nbsp;&nbsp;&nbsp;3</p>
-
-<p>19th&nbsp;&nbsp;&nbsp;2</p>
-
-<p>20th&nbsp;&nbsp;&nbsp;1</p>
-
-<p>21st and below &nbsp;&nbsp;&nbsp;0</p>
+<p>
+1st&nbsp;&nbsp;&nbsp;20<br>
+2nd&nbsp;&nbsp;&nbsp;19<br>
+3rd&nbsp;&nbsp;&nbsp;18<br>
+4th&nbsp;&nbsp;&nbsp;17<br>
+5th&nbsp;&nbsp;&nbsp;16<br>
+6th&nbsp;&nbsp;&nbsp;15<br>
+7th&nbsp;&nbsp;&nbsp;14<br>
+8th&nbsp;&nbsp;&nbsp;13<br>
+9th&nbsp;&nbsp;&nbsp;12<br>
+10th&nbsp;&nbsp;&nbsp;11<br>
+11th&nbsp;&nbsp;&nbsp;10<br>
+12th&nbsp;&nbsp;&nbsp;9<br>
+13th&nbsp;&nbsp;&nbsp;8<br>
+14th&nbsp;&nbsp;&nbsp;7<br>
+15th&nbsp;&nbsp;&nbsp;6<br>
+16th&nbsp;&nbsp;&nbsp;5<br>
+17th&nbsp;&nbsp;&nbsp;4<br>
+18th&nbsp;&nbsp;&nbsp;3<br>
+19th&nbsp;&nbsp;&nbsp;2<br>
+20th&nbsp;&nbsp;&nbsp;1<br>
+21st and below &nbsp;&nbsp;&nbsp;0</p>
 
  
 
@@ -131,13 +112,14 @@
 
 
 <p class="bold">So what happens at the end of the season?</p>
-<p>The top players from each region qualify for the League Finals and League Finals B.  Usually the top four go through to the League Finals and next three go through to the League Finals B, but this varies based on the number of players in each region.</p>
+<p>The top players from each region qualify for the League Finals.  The number of players that qualify varies by region, and is based on regional attendance numbers in seasons prior.
+</p>
 
 <p>The finals are held at a neutral venue often in conjunction with a national pinball event. The final is played on five machines, with the same scoring format as a normal league meeting. Based on the qualification positions; there will then be a semi-final and final to determine the overall final placings.</p>
 
  
 <p class="bold">Do I get a prize for doing well?</p>
-<p>The top three players in each region and the national final all receive a glass trophy and a certificate.  There are also prizes for the best female and young (under 17) players across all regions.</p>
+<p>The top three players in each region and the national final all receive a trophy and a certificate.  There are also prizes for the best female and young (under 17) players across all regions.</p>
 
 
 <p class="bold">What are WPPR points?</p>

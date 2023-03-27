@@ -7,8 +7,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
 <!-- Header and menu -->
-<?php include("includes/header.inc"); ?>
- 
+<?php 
+	include("includes/header.inc"); 
+?>
+
 <!-- Content -->
 
 <div class="panel">
@@ -33,18 +35,11 @@
 <p>For a meeting to count towards the regional league at least five competitors from that region must take part.</p>
 
 <p class="bold">F.	Finals</p>
-<p>League Finals are split into A and B divisions. At the end of the league season the top players from each region will be able to compete in a UK individual Grand Final competition.</p>
+<p>At the end of the league season the top players from each region will be able to compete in a UK individual Grand Final competition.</p>
 
 <p class="bold">G.	Finals qualification</p>
-<p>The number of players who can qualify for the finals from each region is decided by the average attendance for each region.  The number of finalists for each region will be weighted between each region’s average attendance with a minimum of three qualifiers per region and a maximum of five (or six in exceptional cases). The A Finals will comprise the following players:</p>
-<p>South West - top four finishers<br>
-Midlands - top four finishers<br>
-London &amp; South East - top six finishers<br>
-Northern - top five finishers<br>
-Scottish - top three finishers<br>
-Irish - top three finishers</p>
-<p>The B Finals will comprise the next four finishers from each region.</p>
-<p>This gives a total of 26 players with no reserves, substitutions or promotions for people who don't attend. The format is league-style qualifying over five games. The top two progress to the final with a bye while 3rd-6th play off for the two remaining places in the final.</p>
+<p>The number of qualifying players in each region is determined by the average attendance of that region.</p>
+<p>For the 2022 season there will be a total of 40 qualifying players with no reserves, substitutions or promotions for people who don't attend. The format is league-style qualifying over five games. The top two progress to the final with a bye while 3rd-6th play off for the two remaining places in the final.</p>
 
 <p>The aim is to ensure strong regional representation with a final of the best players in the land. It is inclusive rather than exclusive and encourages participation in the smaller regional leagues.</p>
 
@@ -61,7 +56,7 @@ Irish - top three finishers</p>
 <p>Games played will be decided in advance of each meeting by the organizers. </p>
 
 <p class="bold">B.	Minimum number of machines</p>
-<p>Meetings will have at least four games available for the competition (the more the better) unless agreed with the regional coordinator and publicized in advance.</p> 
+<p>Meetings will have at least four games available for the competition (the more the better) unless agreed with the regional coordinator and published in advance.</p> 
 
 <p class="bold">C.	Machine owners</p>
 <p>Competition machine owners or those involved in organizing competitions may enter. Any advantage gained will be insignificant when spread over the other venues/meetings and is viewed as a benefit of hosting.</p>
