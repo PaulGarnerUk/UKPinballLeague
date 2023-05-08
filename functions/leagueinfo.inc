@@ -456,6 +456,7 @@ function GetScottishLeagueInfo($season)
 		case 16:
 			$info->aQualifyingPlaces = 6;
 			$info->aQualifyingDescription = "League finals qualifying place.";
+			$info->numberOfQualifyingMeets = 4; // six meets this season for the first time
 			break;
 	}
 
