@@ -77,11 +77,11 @@ INSERT INTO Score (CompetitionId, PlayerId, MachineId, Score) VALUES
 
 ## Calculate results of league meet
 
-Once all scores are entered the following query calculates results. Note however that ties are not calculated correctly in this query at the moment (two way ties add 0.5 points, three way ties add 0.3 points etc.)
+Once all scores are entered the following query calculates results.
 This query also (dynamically) allows non-league players to be included/excluded from the calculated results.
 
 ```
-DECLARE @CompetitionId INT = 492; -- competition id to calculate results for
+DECLARE @CompetitionId INT = 498; -- competition id to calculate results for
 DECLARE @ExcludeNonLeaguePlayers BIT = 1
 
 -- Conditionally build a table variable containing excluded player ids
@@ -104,73 +104,68 @@ SET @TotalPlayers = (SELECT COUNT(DISTINCT(PlayerId))
 WITH MeetScores AS
 (
 	SELECT
-	Player.Id AS 'PlayerId',
-	Player.Name AS 'Player',
-	Machine.Id AS 'MachineId',
-	Machine.Name AS 'Machine',
+	Score.PlayerId AS 'PlayerId',
+	Score.MachineId AS 'MachineId',
 	Score.Score,
 	RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score.Score DESC) AS 'Position',
 	RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score.Score ASC) AS 'Points'
 	FROM Score
-	INNER JOIN Player ON Player.Id = Score.PlayerId
-	INNER JOIN Machine ON Machine.Id = Score.MachineId
 	WHERE CompetitionId = @CompetitionId
-	AND Player.Id NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds)
-),
-FirstPlaceScores AS
-(
-	SELECT
-	PlayerId,
-	MachineId,
-	Score
-	FROM MeetScores
-	WHERE MeetScores.Position = 1
-),
-SecondPlaceScores AS
-(
-	SELECT
-	PlayerId,
-	MachineId,
-	Score
-	FROM MeetScores
-	WHERE MeetScores.Position = 2
+	AND Score.PlayerId NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds)
 ),
 BonusPoints AS
 (
 	SELECT
-	FirstPlaceScores.PlayerId,
-	COUNT(FirstPlaceScores.PlayerId) AS Bonus
-	FROM FirstPlaceScores
-	INNER JOIN SecondPlaceScores ON SecondPlaceScores.MachineId = FirstPlaceScores.MachineId
-	WHERE FirstPlaceScores.Score >= (SecondPlaceScores.Score * 2)
-	GROUP BY FirstPlaceScores.PlayerId
+	TopScore.PlayerId,
+	1 AS BonusPoint
+	FROM MeetScores AS TopScore
+	INNER JOIN MeetScores AS SecondScore ON SecondScore.MachineId = TopScore.MachineId AND SecondScore.Position = 2
+	WHERE TopScore.Position = 1
+	AND (TopScore.Score >= (SecondScore.Score * 2))
 ),
 TotalPoints AS
 (
 	SELECT
-	PlayerId,
-	SUM(Points) AS TotalPoints
+	MeetScores.PlayerId,
+	SUM(MeetScores.Points)
+	+ (SELECT COALESCE(SUM(BonusPoints.BonusPoint),0) FROM BonusPoints WHERE BonusPoints.PlayerId = MeetScores.PlayerId)
+	  AS TotalPoints
 	FROM MeetScores
-	INNER JOIN Player on Player.Id = PlayerId
 	GROUP BY MeetScores.PlayerId
+),
+RankedResults AS
+(
+	SELECT
+	PlayerId AS 'PlayerId',
+	TotalPoints.TotalPoints AS 'Score',
+	RANK() OVER (ORDER BY (TotalPoints.TotalPoints) DESC) AS 'Position',
+	CASE WHEN (((ROW_NUMBER() OVER (ORDER BY (TotalPoints.TotalPoints) ASC))-@TotalPlayers)+20) < 0 THEN 0 
+	  ELSE (((ROW_NUMBER() OVER (ORDER BY (TotalPoints.TotalPoints) ASC))-@TotalPlayers)+20) 
+	  END as 'Points'
+	FROM TotalPoints
 )
+
 SELECT
-@CompetitionId AS CompetitionId, --Competition.id,
-Player.Id AS PlayerId,
-Player.Name,
-TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0) AS 'Score',
-RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) DESC) AS 'Position',
-CASE WHEN (((RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) ASC))-@TotalPlayers)+20) < 0 THEN 0 
-  ELSE (((RANK() OVER (ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) ASC))-@TotalPlayers)+20) 
-  END as 'Points'
-FROM TotalPoints
-LEFT OUTER JOIN BonusPoints on BonusPoints.PlayerId = TotalPoints.PlayerId
-INNER JOIN Player on Player.Id = TotalPoints.PlayerId
-ORDER BY (TotalPoints.TotalPoints + COALESCE(BonusPoints.Bonus, 0)) DESC
+	@CompetitionId,
+	PlayerId,
+	Player.Name,
+	Score,
+	Position,
+	CASE
+	    -- When two (or more) players have the same position, then sum the points and divide by the number of players
+		WHEN (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position) > 1 THEN (
+			SELECT CAST(SUM(RankedResults.Points) AS float) FROM RankedResults WHERE Position = r.Position ) / (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position
+		) ELSE (
+		    r.Points
+		)
+	END as 'Points'
+FROM RankedResults r
+INNER JOIN Player ON Player.Id = r.PlayerId
+ORDER BY Score DESC, Player.Name ASC
 ```
 
 ## Add results
-Add results from the query above, being mindful that the query above does not handle ties very well and may need manually correcting. (Once results are calculated entirely in software this can be fixed)
+Add results from the query above, 
 ```
 INSERT INTO Result (CompetitionId, PlayerId, Score, Position, Points) VALUES
 (...etc)
