@@ -12,6 +12,15 @@
 <title>UK Pinball League - League Meet Results.</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
+  <script>
+    function UpdateQueryParameterFromCheckbox(parameterName, checkbox) {
+      const value = checkbox.checked ? 'false' : 'true';
+      const url = new URL(window.location.href);
+      url.searchParams.set(parameterName, value);
+      window.location.href = url.toString();
+    }
+  </script>
+
 <!-- Content -->
 
 <?php 
@@ -30,7 +39,8 @@
 		SELECT COUNT(PlayerId) 
 		FROM CompetitionPlayer
 		WHERE CompetitionPlayer.CompetitionId = LeagueMeet.CompetitionId
-	) AS ExcludedPlayers
+	) AS ExcludedPlayers,
+	LeagueMeet.CompetitionId AS CompetitionId
 	FROM LeagueMeet
 	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
 	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
@@ -51,45 +61,78 @@
 	$leagueMeetHostName = $leagueMeetRow['Host'];
 	$leagueMeetDate = $leagueMeetRow['Date'];
 	$leagueMeetExcludedPlayers = $leagueMeetRow['ExcludedPlayers'];
+	$competitionId = $leagueMeetRow['CompetitionId'];
 ?>
 
 	<div class="panel">
 	<?php 
 		echo "<h1>$leagueMeetRegionName League, Season $season, Meet #$meet</h1>"; 
 
-	// if $leagueMeetExcludedPlayers > 0 then show panel..
-	//echo "<p>This meet contained $leagueMeetExcludedPlayers non-league players. Show non-league players in results?";
-	//echo "<br>(Non-league players appear with an * demarkation)</p>";
-	// checkbox reloads page and changes ?exclude_guests query parameter
+/* Coming soon..
+	if ($leagueMeetExcludedPlayers > 0)
+	{
+		echo "
+		<form method='GET'>
+		<div class='checkbox-wrapper-13'>
+		<input id='c1-13' type='checkbox' name='exclude_guests' onchange='UpdateQueryParameterFromCheckbox(\"exclude_guests\", this)' ";
+		if ($excludeGuests != 'true') echo 'checked'; 
+		echo " >
+		<label for='c1-13'>Show $leagueMeetExcludedPlayers guest";
+		if ($leagueMeetExcludedPlayers > 1) echo " players ";
+		else echo " player ";
+		echo "in results.</label>
+		</div>
+		</form>";
+		echo "</p>";
+	}
+*/
 
 	// Get all scores at meet
 	$tsql="
+	DECLARE @region NVARCHAR(3) = ?; -- $region
+	DECLARE @season INTEGER = ?; -- $season
+	DECLARE @MeetNumber INTEGER = ?; -- $meet
+	DECLARE @ExcludeGuests BIT = ?; -- $excludeGuests
+	DECLARE @CompetitionId INTEGER = ?; -- $competitionId
+
+	-- Conditionally build a table variable containing excluded player ids
+	SET NOCOUNT ON;
+	DECLARE @ExcludedPlayerIds TABLE (PlayerId INT)
+	IF (@ExcludeGuests = 1) BEGIN
+		INSERT INTO @ExcludedPlayerIds (PlayerId) 
+		SELECT PlayerId 
+		FROM CompetitionPlayer
+		WHERE CompetitionPlayer.CompetitionId = @CompetitionId
+		AND CompetitionPlayer.ExcludeFromResults = 1
+		END
+
 	SELECT
-	RANK() OVER (PARTITION BY MachineId ORDER BY Score DESC) AS Rank,
-	Score.PlayerId AS PlayerId,
-	Player.Name AS PlayerName,
-	Score.MachineId AS MachineId,
-	Machine.Name AS MachineName,
-	Score.CompetitionId AS CompetitionId,
-	Score.Score AS GameScore,
+	RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score DESC) AS Rank,
+	Score.PlayerId AS 'PlayerId',
+	Player.Name AS 'PlayerName',
+	Score.MachineId AS 'MachineId',
+	Machine.Name AS 'MachineName',
+	CompetitionMachine.Notes AS 'MachineNotes',
+	Score.CompetitionId AS 'CompetitionId',
+	Score.Score AS 'GameScore',
 	(
 		SELECT TOP 1 PBScore.Score
 		FROM Score PBScore
 		WHERE PBScore.PlayerId = Score.PlayerId AND PBScore.MachineId = Score.MachineId 
 		ORDER BY PBScore.Score DESC
-	) AS PersonalBestScore,
+	) AS 'PersonalBestScore',
 	(
 		SELECT TOP 1 HighScore.Score
 		FROM Score HighScore
 		WHERE HighScore.MachineId = Score.MachineId 
 		ORDER BY HighScore.Score DESC
-	) AS LeagueHighScore,
+	) AS 'LeagueHighScore',
 	(
 		SELECT COUNT(PlayCount.Score)
 		FROM Score PlayCount
 		WHERE PlayCount.PlayerId = Score.PlayerId AND PlayCount.MachineId = Score.MachineId 
-	) AS PlayCount,
-	COALESCE(CompetitionPlayer.ExcludeFromResults, 0) AS ExcludedPlayer
+	) AS 'PlayCount',
+	COALESCE(CompetitionPlayer.ExcludeFromResults, 0) AS 'ExcludedPlayer'
 	FROM Score 
 	INNER JOIN Player ON Player.Id = Score.PlayerId
 	INNER JOIN Machine ON Machine.Id = Score.MachineId
@@ -97,17 +140,30 @@
 	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
 	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
 	LEFT OUTER JOIN CompetitionPlayer ON CompetitionPlayer.CompetitionId = Score.CompetitionId AND CompetitionPlayer.PlayerId = Score.PlayerId
-	WHERE Region.Synonym = ? -- $region 
-	AND Season.SeasonNumber = ? -- $season 
-	AND LeagueMeet.MeetNumber = ? -- $meet 
+	LEFT OUTER JOIN CompetitionMachine ON CompetitionMachine.CompetitionId = Score.CompetitionId AND CompetitionMachine.MachineId = Score.MachineId
+	WHERE Region.Synonym = @region
+	AND Season.SeasonNumber = @season 
+	AND LeagueMeet.MeetNumber = @meetNumber
+	AND Score.PlayerId NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds)
 	ORDER BY Machine.Name, GameScore desc, PlayerName
 	";
 
+	if ($excludeGuests === 'true') $excludeGuestsBit = 1;
+	else $excludeGuestsBit = 0;
+
 	// Perform query with parameterised values.
-	$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet));
+	$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet, $excludeGuestsBit, $competitionId));
 	if ($result == FALSE)
 	{
 		echo "query borken.";
+		/*
+		if( ($errors = sqlsrv_errors() ) != null) {
+			foreach( $errors as $error ) {
+				echo "SQLSTATE: ".$error[ 'SQLSTATE']."<br />";
+	            echo "code: ".$error[ 'code']."<br />";
+	            echo "message: ".$error[ 'message']."<br />";
+			}   
+		}*/
 	}
 
 	$lastMachineName = "";
@@ -118,6 +174,7 @@
 		$scorePlayerName = $scoreRow['PlayerName'];
 		$scoreMachineId = $scoreRow['MachineId'];
 		$scoreMachineName = $scoreRow['MachineName'];
+		$scoreMachineNotes = $scoreRow['MachineNotes'];
 		$scoreRank = $scoreRow['Rank'];
 		$scoreCompetitionId = $scoreRow['CompetitionId'];
 		$scoreGameScore = number_format($scoreRow['GameScore']);
@@ -139,6 +196,11 @@
 			echo "<div class='meet-table-holder'>";
         
 			echo "<h2><a href='machine-info.php?machineid=$scoreMachineId' class='player-link'>$scoreMachineName</a></h2>";
+/*			echo "<h2 style='display:inline;'><a href='machine-info.php?machineid=$scoreMachineId' class='player-link'>$scoreMachineName</a></h2>";
+			if ($scoreMachineNotes !== null)
+			{
+				echo "<p style='display:inline;'>($scoreMachineNotes)</p>";
+			}*/
         
 			echo "<table>";
         
@@ -261,21 +323,130 @@
 
 	sqlsrv_free_stmt($result);
 
-	
-
 ?>
 
 <div style="clear: both;"></div>
 
+<!-- Page notes -->
+<p>
 <?php
-	if ($leagueMeetExcludedPlayers > 0)
+	if ($leagueMeetExcludedPlayers > 0 AND $excludeGuests == 'false')
 	{
-		echo "<p>(*) indicates guest appearance from player in different league. Player is excluded from official results.";
+		echo "<br>(*) indicates guest appearance from player in different league. Player is excluded from official results.";
 	}
 ?>
+<br><b>HS</b> - This is the current league High Score for this machine.
+<br>PB - Indicates a Personal Best score for this player on the machine.</p>
 
 <!-- Footer -->
 <?php include("includes/footer.inc"); ?>
 
 </body>
 </html>
+
+
+
+<style>
+  @supports (-webkit-appearance: none) or (-moz-appearance: none) {
+    .checkbox-wrapper-13 input[type=checkbox] {
+      --active: #FEC171;
+      --active-inner: #fff;
+      --focus: 2px rgba(254, 193, 113, .3);
+	  
+      --border: #BBC1E1;
+      --border-hover: #275EFE;
+      --background: #fff;
+      --disabled: #F6F8FF;
+      --disabled-inner: #E1E6F9;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      height: 21px;
+	  margin: auto 0px 0px 20px;
+      outline: none;
+      display: inline-block;
+      vertical-align: top;
+      position: relative;
+      /*margin: 0;*/
+      cursor: pointer;
+      border: 1px solid var(--bc, var(--border));
+      background: var(--b, var(--background));
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:after {
+      content: "";
+      display: block;
+      left: 0;
+      top: 0;
+      position: absolute;
+      transition: transform var(--d-t, 0.3s) var(--d-t-e, ease), opacity var(--d-o, 0.2s);
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:checked {
+      --b: var(--active);
+      --bc: var(--active);
+      --d-o: .3s;
+      --d-t: .6s;
+      --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:disabled {
+      --b: var(--disabled);
+      cursor: not-allowed;
+      opacity: 0.9;
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:disabled:checked {
+      --b: var(--disabled-inner);
+      --bc: var(--border);
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:disabled + label {
+      cursor: not-allowed;
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:hover:not(:checked):not(:disabled) {
+      --bc: var(--border-hover);
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:focus {
+      box-shadow: 0 0 0 var(--focus);
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:not(.switch) {
+      width: 21px;
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:not(.switch):after {
+      opacity: var(--o, 0);
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:not(.switch):checked {
+      --o: 1;
+    }
+    .checkbox-wrapper-13 input[type=checkbox] + label {
+      display: inline-block;
+      vertical-align: middle;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    .checkbox-wrapper-13 input[type=checkbox]:not(.switch) {
+      border-radius: 7px;
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:not(.switch):after {
+      width: 5px;
+      height: 9px;
+      border: 2px solid var(--active-inner);
+      border-top: 0;
+      border-left: 0;
+      left: 7px;
+      top: 4px;
+      transform: rotate(var(--r, 20deg));
+    }
+    .checkbox-wrapper-13 input[type=checkbox]:not(.switch):checked {
+      --r: 43deg;
+    }
+  }
+
+  .checkbox-wrapper-13 * {
+    box-sizing: inherit;
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+  }
+  .checkbox-wrapper-13 *:before,
+  .checkbox-wrapper-13 *:after {
+    box-sizing: inherit;
+  }
+
+</style>
