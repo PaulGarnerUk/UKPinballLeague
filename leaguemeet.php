@@ -68,7 +68,6 @@
 	<?php 
 		echo "<h1>$leagueMeetRegionName League, Season $season, Meet #$meet</h1>"; 
 
-/* Coming soon..
 	if ($leagueMeetExcludedPlayers > 0)
 	{
 		echo "
@@ -85,7 +84,6 @@
 		</form>";
 		echo "</p>";
 	}
-*/
 
 	// Get all scores at meet
 	$tsql="
@@ -256,26 +254,117 @@
 
 
 	// Overall results
-	$tsql="
-	SELECT
-	Result.Position AS 'Rank',
-	Player.Id AS 'PlayerId',
-	Player.Name AS 'PlayerName',
-	Result.Score AS 'Score',
-	Result.Points AS 'Points'
-	from Result
-	INNER JOIN LeagueMeet on LeagueMeet.CompetitionId = Result.CompetitionId
-	INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
-	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
-	INNER JOIN Player ON Player.Id = Result.PlayerId
-	WHERE Region.Synonym = ? -- $region 
-	AND Season.SeasonNumber = ? -- $season 
-	AND LeagueMeet.MeetNumber = ? -- $meet 
-	ORDER BY Rank, PlayerName
-	";
-     
-    // Perform query with parameterised values.
-	$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet));
+	if ($excludeGuests === 'true')
+	{
+		$tsql="
+		SELECT
+		Result.Position AS 'Rank',
+		Player.Id AS 'PlayerId',
+		Player.Name AS 'PlayerName',
+		Result.Score AS 'Score',
+		Result.Points AS 'Points'
+		from Result
+		INNER JOIN LeagueMeet on LeagueMeet.CompetitionId = Result.CompetitionId
+		INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
+		INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+		INNER JOIN Player ON Player.Id = Result.PlayerId
+		WHERE Region.Synonym = ? -- $region 
+		AND Season.SeasonNumber = ? -- $season 
+		AND LeagueMeet.MeetNumber = ? -- $meet 
+		ORDER BY Rank, PlayerName
+		";
+
+		$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet));
+	}
+	else 
+	{
+		$tsql="
+		DECLARE @CompetitionId INT = ?; -- competition id to calculate results for
+		DECLARE @ExcludeNonLeaguePlayers BIT = ?; --
+
+		-- Conditionally build a table variable containing excluded player ids
+		DECLARE @ExcludedPlayerIds TABLE (PlayerId INT)
+		IF (@ExcludeNonLeaguePlayers = 1) BEGIN
+			INSERT INTO @ExcludedPlayerIds (PlayerId) 
+			SELECT PlayerId 
+			FROM CompetitionPlayer
+			WHERE CompetitionPlayer.CompetitionId = @CompetitionId
+			AND CompetitionPlayer.ExcludeFromResults = 1
+			END
+
+		-- Calculate number of players at meet
+		DECLARE @TotalPlayers INT
+		SET @TotalPlayers = (SELECT COUNT(DISTINCT(PlayerId))
+			FROM Score 
+			WHERE CompetitionId = @CompetitionId
+			AND PlayerId NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds));
+
+		WITH MeetScores AS
+		(
+			SELECT
+			Score.PlayerId AS 'PlayerId',
+			Score.MachineId AS 'MachineId',
+			Score.Score,
+			RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score.Score DESC) AS 'Position',
+			RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score.Score ASC) AS 'Points'
+			FROM Score
+			WHERE CompetitionId = @CompetitionId
+			AND Score.PlayerId NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds)
+		),
+		BonusPoints AS
+		(
+			SELECT
+			TopScore.PlayerId,
+			1 AS BonusPoint
+			FROM MeetScores AS TopScore
+			INNER JOIN MeetScores AS SecondScore ON SecondScore.MachineId = TopScore.MachineId AND SecondScore.Position = 2
+			WHERE TopScore.Position = 1
+			AND (TopScore.Score >= (SecondScore.Score * 2))
+		),
+		TotalPoints AS
+		(
+			SELECT
+			MeetScores.PlayerId,
+			SUM(MeetScores.Points)
+			+ (SELECT COALESCE(SUM(BonusPoints.BonusPoint),0) FROM BonusPoints WHERE BonusPoints.PlayerId = MeetScores.PlayerId)
+				AS TotalPoints
+			FROM MeetScores
+			GROUP BY MeetScores.PlayerId
+		),
+		RankedResults AS
+		(
+			SELECT
+			PlayerId AS 'PlayerId',
+			TotalPoints.TotalPoints AS 'Score',
+			RANK() OVER (ORDER BY (TotalPoints.TotalPoints) DESC) AS 'Position',
+			CASE WHEN (((ROW_NUMBER() OVER (ORDER BY (TotalPoints.TotalPoints) ASC))-@TotalPlayers)+20) < 0 THEN 0 
+				ELSE (((ROW_NUMBER() OVER (ORDER BY (TotalPoints.TotalPoints) ASC))-@TotalPlayers)+20) 
+				END as 'Points'
+			FROM TotalPoints
+		)
+
+		SELECT
+			@CompetitionId,
+			PlayerId AS 'PlayerId',
+			Player.Name AS 'PlayerName',
+			Score,
+			Position AS 'Rank',
+			CASE
+				-- When two (or more) players have the same position, then sum the points and divide by the number of players
+				WHEN (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position) > 1 THEN (
+					SELECT CAST(SUM(RankedResults.Points) AS float) FROM RankedResults WHERE Position = r.Position ) / (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position
+				) ELSE (
+					r.Points
+				)
+			END as 'Points'
+		FROM RankedResults r
+		INNER JOIN Player ON Player.Id = r.PlayerId
+		ORDER BY Score DESC, Player.Name ASC";
+
+		 // Perform query with parameterised values.
+		$result= sqlsrv_query($sqlConnection, $tsql, array($competitionId, $excludeGuestsBit));
+	}
+	
 	if ($result == FALSE)
 	{
 		echo "query borken.";
