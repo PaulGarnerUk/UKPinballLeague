@@ -39,6 +39,7 @@
 		SELECT COUNT(PlayerId) 
 		FROM CompetitionPlayer
 		WHERE CompetitionPlayer.CompetitionId = LeagueMeet.CompetitionId
+		AND CompetitionPlayer.ExcludeFromResults = 1
 	) AS ExcludedPlayers,
 	LeagueMeet.CompetitionId AS CompetitionId
 	FROM LeagueMeet
