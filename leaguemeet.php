@@ -392,7 +392,7 @@
 		$resultRank = $resultsRow['Rank'];
 		$resultPlayerName = $resultsRow['PlayerName'];
 		$resultScore = (float)$resultsRow['Score'];
-		$resultPoints = (float)$resultsRow['Points'];
+		$resultPoints = round((float)$resultsRow['Points'],2);
 		$playerId = $resultsRow['PlayerId'];
 
 		$playerLink = "player-info.php?playerid=$playerId";

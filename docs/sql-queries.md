@@ -172,11 +172,35 @@ INSERT INTO Result (CompetitionId, PlayerId, Score, Position, Points) VALUES
 ```
 
 
-# New Season Preparation
+# Maintenance
+
+## (Re) Generate league meet guests
+
+The following will (re) generate the table of players at league meets, and set the 'ExcludeFromResults' where the player does not already exist in the results (ie, player is a guest). 
+```
+DELETE FROM CompetitionPlayer
+
+INSERT INTO CompetitionPlayer (CompetitionId, PlayerId, ExcludeFromResults)
+SELECT
+Score.CompetitionId AS 'CompetitionId',
+Score.PlayerId AS 'PlayerId',
+CASE 
+ WHEN Result.PlayerId = Score.PlayerId THEN 0
+ ELSE 1
+END AS 'Guest'
+FROM Score
+LEFT OUTER JOIN Result ON Result.CompetitionId = Score.CompetitionId AND Result.PlayerId = Score.PlayerId
+INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+GROUP BY Score.CompetitionId, Score.PlayerId, Result.PlayerId
+```
+
+## New Season Preparation
 
 Start by adding a new Season  
 ```
 INSERT INTO Season (SeasonNumber, Name, Year) VALUES (16, '2023/Season 16', 2023)
 ```
 The app should be configured to use an environment variable named `currentseason` containing the latest season number (16 in this example). This is initialized in the `envvars.inc` include.
+
+
 
