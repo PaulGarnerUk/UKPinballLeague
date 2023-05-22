@@ -2,7 +2,7 @@
 	$season = htmlspecialchars($_GET["season"]);
 	$region = htmlspecialchars($_GET["region"]);
 	$meet = htmlspecialchars($_GET["meet"]);
-	$excludeGuests = htmlspecialchars($_GET['exclude_guests'] ?? false); // include guest players (if any) by default.
+	$excludeGuests = htmlspecialchars($_GET['exclude_guests'] ?? 'true'); // exclude guest players (if any) by default. Necessary just for SW league in S16 onwards which has no scores.
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

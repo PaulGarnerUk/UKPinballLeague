@@ -16,7 +16,7 @@
 	<h1>UKPL Schedule - Season 16 (2023)</h1>
 
 	<p class="firstline">The UK Pinball League season period is based on a calendar year.  Each region usually consists of up to six meets. Meets for the 16th season are currently being arranged and will be updated here as they are confirmed.</p>
-<!--	<p>At the end of the league season the top players from each region are invited to compete in a finals tournament, usually held over a single day during the <a href="http://www.ukpinfest.com/" class="link">UK Pinfest</a> show. For the 2022 season, finals will be played at Pinfest on <b>Saturday 27th August</b>. </p> -->
+	<p>At the end of the league season the top players from each region are invited to compete in a finals tournament, usually held over a single day during the <a href="http://www.ukpinfest.com/" class="link">UK Pinfest</a> show. For the 2023 season, finals will be played at Pinfest on <b>Saturday 26th August</b>. </p> 
 	<p>For a full calendar of other pinball events see the excellent <a href="http://www.pinballnews.com/diary/index.html" class="link" target="_blank">Show Diary</a> page on the <a href="http://www.pinballnews.com" class="link" target="_blank">Pinball News</a> website.</p>
 
 </div>
@@ -61,29 +61,7 @@ LEFT OUTER JOIN LeagueMeet ON
   AND (LeagueMeet.Status <> 4 OR LeagueMeet.Date > GETDATE()) -- ignore cancelled events (unless they are in the future)
 ORDER BY Region.SortOrder, MeetNumber
 ";
-/*
-SELECT
-Region.Id AS 'RegionId',
-Region.Name AS 'RegionName',
-Region.Synonym AS 'RegionSynonym',
-LeagueMeet.Id AS 'LeagueMeetId',
-LeagueMeet.MeetNumber AS 'LeagueMeetNumber',
-LeagueMeet.Status AS 'LeagueMeetStatus',
-LeagueMeet.Date AS 'LeagueMeetDate',
-LeagueMeet.PracticeStart AS 'LeagueMeetPracticeStart',
-LeagueMeet.PracticeEnd AS 'LeagueMeetPracticeEnd',
-LeagueMeet.CompetitionStart AS 'LeagueMeetCompetitionStart',
-LeagueMeet.CompetitionEnd AS 'LeagueMeetCompetitionEnd',
-LeagueMeet.Host AS 'LeagueMeetHost',
-LeagueMeet.PublicVenue AS 'LeagueMeetPublicVenue',
-COALESCE(LeagueMeet.Location, LeagueMeet.Address) AS 'LeagueMeetLocation'
-FROM LeagueMeet 
-INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
-INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
-WHERE Season.SeasonNumber = ? -- $currentseason
-AND LeagueMeet.Status <> 4 OR LeagueMeet.Date > GETDATE() -- ignore cancelled events (unless they are in the future)
-ORDER BY Region.SortOrder, MeetNumber
-";*/
+
 	// Perform query with parameterised values.
 	$result= sqlsrv_query($conn, $tsql, array($currentseason));
 	if ($result == FALSE)

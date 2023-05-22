@@ -80,7 +80,7 @@
 
 
 <p class="bold">How does the competition work?</p>
-<p>You play between three and eight machines depending on the venue.  Your score is recorded and verified and then ranked against all other players with the top score getting the same number of points as the number of players and then each player one less point so that last gets one. Eg for 20 players, 1st gets 20 machine points, 2nd 19, 3rd 18 etc and 20th 1.  The total number of machine points you got on all machines is then totaled and ranked against all other players.  League points are then awarded to the top players as follows:</p>
+<p>You play at least three machines, and potentially many more depending on the venue.  Your score is recorded and verified and then ranked against all other players, with the top score getting the same number of points as the number of players and then each player one less point so that last gets one. Eg for 20 players, 1st gets 20 machine points, 2nd 19, 3rd 18 etc and 20th 1.  The total number of machine points you got on all machines is then totaled and ranked against all other players.  League points are then awarded to the top players as follows:</p>
  
 
 <p>
@@ -115,7 +115,7 @@
 <p>The top players from each region qualify for the League Finals.  The number of players that qualify varies by region, and is based on regional attendance numbers in seasons prior.
 </p>
 
-<p>The finals are held at a neutral venue often in conjunction with a national pinball event. The final is played on five machines, with the same scoring format as a normal league meeting. Based on the qualification positions; there will then be a semi-final and final to determine the overall final placings.</p>
+<p>The finals are held at a neutral venue often in conjunction with a national pinball event. The first qualifying round of finals is played with the same scoring format as a normal league meeting. The top qualifiers will then face off against each other in a series of four player matches to determine the overall final placings.</p>
 
  
 <p class="bold">Do I get a prize for doing well?</p>
@@ -123,7 +123,7 @@
 
 
 <p class="bold">What are WPPR points?</p>
-<p>As for other sports, there is an official ranking system for the best pinball players in the world based on performances at officially recognised competitions.  This is the <a href="http://www.pinballrankings.com/country.php" class="link" target="_blank">World Pinball Players Rankings</a> (WPPR).  The league is an officially recognised competition as are various other competitions held in the UK.  Anyone who competes in the league earns WPPR points and of course the better you do, the more points you earn.</p>
+<p>As for other sports, there is an official ranking system for the best pinball players in the world based on performances at officially recognised competitions.  This is the <a href="https://www.ifpapinball.com/rankings/country.php" class="link" target="_blank">World Pinball Players Rankings</a> (WPPR).  The league is an officially recognised competition as are various other competitions held in the UK.</p>
 
 <p class="bold">I’ve got other questions not covered above.</p>
 <p>Please feel free to <a href="contacts.php" class="link">contact</a> your regional co-ordinator or the overall co-ordinator.</p>
