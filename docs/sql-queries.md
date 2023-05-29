@@ -162,6 +162,21 @@ SELECT
 FROM RankedResults r
 INNER JOIN Player ON Player.Id = r.PlayerId
 ORDER BY Score DESC, Player.Name ASC
+/*
+-- Or run the insert instead of select..
+INSERT INTO Result (CompetitionId, PlayerId, Score, Position, Points) 
+SELECT
+	@CompetitionId, PlayerId, Score, Position, 
+	CASE
+	    -- When two (or more) players have the same position, then sum the points and divide by the number of players
+		WHEN (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position) > 1 THEN (
+			SELECT CAST(SUM(RankedResults.Points) AS float) FROM RankedResults WHERE Position = r.Position ) / (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position
+		) ELSE (
+		    r.Points
+		)
+	END 
+FROM RankedResults r
+*/
 ```
 
 ## Add results
