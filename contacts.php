@@ -108,24 +108,6 @@ document.write('&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;<\/a>');
 
 <div class="panel"> 
 <h2>Treasurer</h2>
-<p class="lastline">Adrian Donati - <script language=Javascript type=text/javascript>
-<!--
-document.write('<a class="link" href="mai');
-document.write('lto');
-document.write(':&#97;&#100;&#114;&#105;&#97;&#110;&#95;&#100;&#111;&#110;&#97;&#116;&#105;');
-document.write('@');
-document.write('&#121;&#97;&#104;&#111;&#111;&#46;&#99;&#111;&#109;">');
-document.write('&#97;&#100;&#114;&#105;&#97;&#110;&#95;&#100;&#111;&#110;&#97;&#116;&#105;');
-document.write('@');
-document.write('&#121;&#97;&#104;&#111;&#111;&#46;&#99;&#111;&#109;<\/a>');
-// -->
-</script><noscript>&#97;&#100;&#114;&#105;&#97;&#110;&#95;&#100;&#111;&#110;&#97;&#116;&#105; at 
-&#121;&#97;&#104;&#111;&#111; dot &#99;&#111;&#109;</noscript>
-</p>
-</div>
-
-<div class="panel"> 
-<h2>Overall Coordinator</h2>
 <p class="lastline">Wayne Johns - <script language=Javascript type=text/javascript>
 <!--
 document.write('<a class="link" href="mai');
@@ -139,6 +121,25 @@ document.write('&#121;&#97;&#104;&#111;&#111;&#46;&#99;&#111;&#46;&#117;&#107;<\
 // -->
 </script><noscript>&#119;&#97;&#121;&#110;&#101;&#106;&#111;&#104;&#110;&#115;&#49;&#57;&#55;&#51; at 
 &#121;&#97;&#104;&#111;&#111; dot &#99;&#111; dot &#117;&#107;</noscript>
+</p>
+</div>
+
+<div class="panel"> 
+<h2>Overall Coordinator</h2>
+<p>Paul Garner - 
+<script language=Javascript type=text/javascript>
+<!--
+document.write('<a class="link" href="mai');
+document.write('lto');
+document.write(':&#112;&#97;&#117;&#108;');
+document.write('@');
+document.write('&#117;&#107;&#112;&#105;&#110;&#98;&#97;&#108;&#108;&#46;&#99;&#111;&#109;">');
+document.write('&#112;&#97;&#117;&#108;');
+document.write('@');
+document.write('&#117;&#107;&#112;&#105;&#110;&#98;&#97;&#108;&#108;&#46;&#99;&#111;&#109;<\/a>');
+// -->
+</script><noscript>&#112;&#97;&#117;&#108; at 
+&#117;&#107;&#112;&#105;&#110;&#98;&#97;&#108;&#108;&#46;&#99;&#111;&#109;</noscript>
 </p>
 </div>
 
