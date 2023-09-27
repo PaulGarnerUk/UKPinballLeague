@@ -26,15 +26,15 @@ body {
 	margin-left: auto;
 	margin-right: auto;
 	position: relative;
-	background: transparent;
+	background: #fff;
 }
 
 @media screen and (max-width: 954px) {
-#container {
-	width: 100%;
-	height: auto;
-	background: #eee;
-}}
+	#container {
+		width: 100%;
+		height: auto;
+		background: #fff;
+	}}
 
 /* Banner */
 
