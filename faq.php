@@ -60,7 +60,7 @@
 
 
 <p class="bold">How long has the league been running?</p>
-<p>The league was set up in 2006 and is now in its 16th season</p>
+<p>The league was set up in 2006 and is now in its 17th season</p>
 
 
 <p class="bold">Can I host a meet?</p>
@@ -112,14 +112,15 @@
 
 
 <p class="bold">So what happens at the end of the season?</p>
-<p>The top players from each region qualify for the League Finals.  The number of players that qualify varies by region, and is based on regional attendance numbers in seasons prior.
+<p>First, the top players from each region play off against each other in a Regional Finals.  This may be an additional scheduled event within the region, or a precursor to the National Finals. The number of players that qualify for Regional Finals varies by region.
+Once the Regional Finals are completed the top two players from each region will be invited to participate in the National Finals.
 </p>
 
-<p>The finals are held at a neutral venue often in conjunction with a national pinball event. The first qualifying round of finals is played with the same scoring format as a normal league meeting. The top qualifiers will then face off against each other in a series of four player matches to determine the overall final placings.</p>
+<p>The National Finals are held at a neutral venue often in conjunction with a national pinball event such as Pinfest. Here, the top two players from each region will playoff against each other to determine the best of the best in the UK!</p>
 
  
 <p class="bold">Do I get a prize for doing well?</p>
-<p>The top three players in each region and the national final all receive a trophy and a certificate.  There are also prizes for the best female and young (under 17) players across all regions.</p>
+<p>The top three players in each region and the national final all receive a trophy and a certificate.</p>
 
 
 <p class="bold">What are WPPR points?</p>
