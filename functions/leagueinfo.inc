@@ -34,6 +34,9 @@ function GetLeagueInfo($region, $season)
 		case "s":
 			$info = GetScottishLeagueInfo($season);
 			break;
+		case "ea":
+			$info = GetEastAnglianLeagueInfo($season);
+			break;
 	}
 
 	return $info;
@@ -457,6 +460,27 @@ function GetScottishLeagueInfo($season)
 			$info->aQualifyingPlaces = 6;
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			$info->numberOfQualifyingMeets = 4; // six meets this season for the first time
+			break;
+	}
+
+	return $info;
+}
+
+function GetEastAnglianLeagueInfo($season)
+{
+	$info = new LeagueInfo();
+	$info->aQualifyingPlaces = 0;
+	$info->bQualifyingPlaces = 0;
+	$info->numberOfQualifyingMeets = 4;
+
+	switch ($season)
+	{
+		case 17:
+			$info->aQualifyingPlaces = 6;
+			$info->aQualifyingDescription = "Regional finals qualifying place.";
+			break;
+		default:
+			$info->note="There was no league in the East Anglian region this season.";
 			break;
 	}
 

@@ -16,6 +16,7 @@
     // Header and menu
 	include("includes/header.inc"); 
 	include("includes/envvars.inc");
+	include("includes/obfuscateEmail.inc");
 
 	$connectionOptions = array(
 		"Database" => $sqldbname,
@@ -34,6 +35,8 @@
 SELECT
 Season.SeasonNumber,
 Region.Name AS 'RegionName',
+Region.Director AS 'RegionDirector',
+Region.DirectorEmail AS 'RegionDirectorEmail',
 LeagueMeet.CompetitionId AS 'CompetitionId',
 LeagueMeet.MeetNumber AS 'MeetNumber',
 LeagueMeet.Date AS 'MeetDate',
@@ -66,6 +69,8 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 		$meetConfirmed = true;
 
 		$regionName = $row['RegionName'];
+		$regionDirector = $row['RegionDirector'];
+		$regionDirectorEmailLink = obfuscateEmailLink($row['RegionDirectorEmail']);
 		//$regionSynonym = $row['RegionSynonym'];
 		$meetNumber = $row['MeetNumber'];
 		$meetDate = $row['MeetDate']->format('D jS M Y');
@@ -108,7 +113,7 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 		else 
 		{
 			echo "<p><b>Location:</b> $meetAddress<br>";
-			echo "This league meet is at a private venue. Please email the region co-ordinator for the full address : </p>";
+			echo "This league meet is at a private venue. Please email the region co-ordinator $regionDirector for the full address : $regionDirectorEmailLink </p>";
 		}
 
 		echo "</div>";

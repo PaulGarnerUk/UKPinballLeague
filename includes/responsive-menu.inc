@@ -9,6 +9,7 @@
             <li><a href="league.php?region=n">NORTHERN</a></li>
             <li><a href="league.php?region=s">SCOTTISH</a></li>
             <li><a href="league.php?region=i">IRISH</a></li>
+            <li><a href="league.php?region=ea">EAST ANGLIA</a></li>
             <li><a href="finals.php">FINALS</a></li>
             <li><a href="placings.php">MEET WINNERS</a></li>
             <li><a href="winners.php">LEAGUE WINNERS</a></li>
