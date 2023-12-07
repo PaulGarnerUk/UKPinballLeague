@@ -9,7 +9,7 @@ Create new competition for the meet.  CompetitionType is an enumerated value. 0=
 
 ```
 INSERT INTO Competition (CompetitionType, Name)
-VALUES (0, '2021 Northern League Meet 1'
+VALUES (0, '2024 Northern League Meet 1')
 ```
 
 Add details of the meet
@@ -33,15 +33,15 @@ INSERT INTO LeagueMeet (
 )
 VALUES
 (
-  15, -- season id
+  17, -- season id
   1,  -- region id
   437, -- competition id from previous insert
-  CONVERT(DATETIME, '2022-05-15 00:00:00', 120), -- date
-  CONVERT(DATETIME, '2022-05-15 10:00:00', 120), -- practice start
-  CONVERT(DATETIME, '2022-05-15 12:00:00', 120), -- practice end
-  CONVERT(DATETIME, '2022-05-15 13:00:00', 120), -- comp start
-  CONVERT(DATETIME, '2022-05-15 16:00:00', 120), -- comp end
-  5, -- meet number
+  CONVERT(DATETIME, '2024-05-15 00:00:00', 120), -- date
+  CONVERT(DATETIME, '2024-05-15 10:00:00', 120), -- practice start
+  CONVERT(DATETIME, '2024-05-15 12:00:00', 120), -- practice end
+  CONVERT(DATETIME, '2024-05-15 13:00:00', 120), -- comp start
+  CONVERT(DATETIME, '2024-05-15 16:00:00', 120), -- comp end
+  1, -- meet number
   0, -- public venue
   'Southport', -- Broad area
   null, -- Exact address including postcode for public venues
