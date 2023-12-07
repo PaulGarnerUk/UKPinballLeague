@@ -18,7 +18,7 @@
 
 	<h1>What's it all about?</h1>
 
-	<p>The UK Pinball League was set up in 2006 as the first pinball league in the UK. It is currently divided into seven separate regions - South West, Midlands, London &amp; South East, Northern, Scottish, Irish and East Anglia.</p>
+	<p>The UK Pinball League was set up in 2006 as the first pinball league in the UK. It is currently divided into eight separate regions - South West, Midlands, London &amp; South East, Northern, Scottish, Irish, East Anglia and South Wales.</p>
 
 	<p>The UK Pinball League offers you a chance to play a wide variety of pinball machines against  players of varying standards in a friendly and sociable atmosphere.</p>
 
