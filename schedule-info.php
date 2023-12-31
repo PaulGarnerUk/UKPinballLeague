@@ -125,8 +125,9 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 
 		$tsql = "
 		SELECT
-		Machine.Name AS 'MachineName'
-		--Machine.OpdbId,
+		Machine.Id AS 'MachineId',
+		Machine.Name AS 'MachineName',
+		Machine.OpdbId AS 'MachineOpdbId'
 		FROM CompetitionMachine
 		INNER JOIN Machine ON Machine.Id = CompetitionMachine.MachineId
 		WHERE CompetitionMachine.CompetitionId = ? -- $competitionId
@@ -147,15 +148,21 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 							<thead>
 								<tr class='white'>
 									<th>Game</th>
+									<th>&nbsp</th>
 								</tr>
 							</thead>
 							<tbody>
 						";
 			while ($machineRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
 			{
+				$machineId = $machineRow['MachineId'];
 				$machineName = $machineRow['MachineName'];
+				$machineOpdbId = $machineRow['MachineOpdbId'];
+				$tipsLink = "https://pintips.net/opdb/$machineOpdbId";
+
 				echo "<tr>
-						<td>$machineName</td>
+						<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a></td>
+						<td><a href=\"$tipsLink\" class='player-link'>Tips</a></td>
 						</tr>";
 			}
 
