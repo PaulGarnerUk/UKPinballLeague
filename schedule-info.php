@@ -101,7 +101,7 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 		echo "<h2>$meetDate</h2>"; 
 		echo "<br>";
 		echo "<p><b>Practice: </b>$practiceStart - $practiceEnd</p>";
-		echo "<p><b>Competion: </b>$competitionStart - $competitionEnd</p>";
+		echo "<p><b>Competition: </b>$competitionStart - $competitionEnd</p>";
 		echo "<p><b>Host: </b>$meetHost</p>";
 
 		if ($publicVenue === 1)
