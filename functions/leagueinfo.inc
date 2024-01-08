@@ -37,6 +37,9 @@ function GetLeagueInfo($region, $season)
 		case "ea":
 			$info = GetEastAnglianLeagueInfo($season);
 			break;
+		case "w":
+			$info = GetSouthWalesLeagueInfo($season);
+			break;
 	}
 
 	return $info;
@@ -252,6 +255,9 @@ function GetMidlandsLeagueInfo($season)
 			$info->aQualifyingPlaces = 7;
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
+		case 17:
+			$info->aQualifyingPlaces = 10;
+			$info->aQualifyingDescription = "Regional finals qualifying place.";
 	}
 
 	return $info;
@@ -476,11 +482,32 @@ function GetEastAnglianLeagueInfo($season)
 	switch ($season)
 	{
 		case 17:
-			$info->aQualifyingPlaces = 6;
-			$info->aQualifyingDescription = "Regional finals qualifying place.";
+			//$info->aQualifyingPlaces = 6;
+			//$info->aQualifyingDescription = "Regional finals qualifying place.";
 			break;
 		default:
 			$info->note="There was no league in the East Anglian region this season.";
+			break;
+	}
+
+	return $info;
+}
+
+function GetSouthWalesLeagueInfo($season)
+{
+	$info = new LeagueInfo();
+	$info->aQualifyingPlaces = 0;
+	$info->bQualifyingPlaces = 0;
+	$info->numberOfQualifyingMeets = 4;
+
+	switch ($season)
+	{
+		case 17:
+			//$info->aQualifyingPlaces = 6;
+			//$info->aQualifyingDescription = "Regional finals qualifying place.";
+			break;
+		default:
+			$info->note="There was no league in the South Wales region this season.";
 			break;
 	}
 
