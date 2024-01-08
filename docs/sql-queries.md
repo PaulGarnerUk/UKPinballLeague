@@ -108,7 +108,7 @@ WITH MeetScores AS
 	Score.MachineId AS 'MachineId',
 	Score.Score,
 	RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score.Score DESC) AS 'Position',
-	RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score.Score ASC) AS 'Points'
+	(COUNT(*) OVER (PARTITION BY Score.MachineId)) - (RANK() OVER (PARTITION BY Score.MachineId ORDER BY Score.Score DESC)) + 1  AS 'Points'
 	FROM Score
 	WHERE CompetitionId = @CompetitionId
 	AND Score.PlayerId NOT IN (SELECT PlayerId FROM @ExcludedPlayerIds)
