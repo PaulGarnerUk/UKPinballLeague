@@ -150,7 +150,8 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 		SELECT
 		Machine.Id AS 'MachineId',
 		Machine.Name AS 'MachineName',
-		Machine.OpdbId AS 'MachineOpdbId'
+		Machine.OpdbId AS 'MachineOpdbId',
+		Machine.GuideUrl AS 'MachineGuideLink'
 		FROM CompetitionMachine
 		INNER JOIN Machine ON Machine.Id = CompetitionMachine.MachineId
 		WHERE CompetitionMachine.CompetitionId = ? -- $competitionId
@@ -177,6 +178,7 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 									<th>Game</th>
 									<th>&nbsp</th>
 									<th>&nbsp</th>
+									<th>&nbsp</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -186,14 +188,23 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 				$machineId = $machineRow['MachineId'];
 				$machineName = $machineRow['MachineName'];
 				$machineOpdbId = $machineRow['MachineOpdbId'];
+				$machineGuideLink = $machineRow['MachineGuideLink'];
 				$tipsLink = "https://pintips.net/opdb/$machineOpdbId";
 				$videosLink = "https://pinballvideos.com/m/?q=$machineOpdbId";
 
 				echo "<tr>
 						<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a></td>
-						<td><a href=\"$tipsLink\" class='player-link'>Tips</a></td>
-						<td><a href=\"$videosLink\" class='player-link'>Videos</a></td>
-						</tr>";
+						<td><a href=\"$tipsLink\" class='player-link' target='_blank'>Tips</a></td>
+						<td><a href=\"$videosLink\" class='player-link' target='_blank'>Videos</a></td>";
+
+						if ($machineGuideLink != null) {
+							echo "<td><a href=\"$machineGuideLink\" class='player-link' target='_blank'>Guide</a></td>";
+						}
+						else {
+							echo "<td>&nbsp;</td>";
+						}
+
+				echo "</tr>";
 			}
 
 			echo "</tbody>
