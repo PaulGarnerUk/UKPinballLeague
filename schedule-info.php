@@ -13,7 +13,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
 <?php 
-    // Header and menu
+	// Header and menu
 	include("includes/header.inc"); 
 	include("includes/envvars.inc");
 	include("includes/obfuscateEmail.inc");
@@ -40,11 +40,13 @@ Region.DirectorEmail AS 'RegionDirectorEmail',
 LeagueMeet.CompetitionId AS 'CompetitionId',
 LeagueMeet.MeetNumber AS 'MeetNumber',
 LeagueMeet.Date AS 'MeetDate',
+LeagueMeet.Status AS 'Status',
 LeagueMeet.PracticeStart AS 'PracticeStart',
 LeagueMeet.PracticeEnd AS 'PracticeEnd',
 LeagueMeet.CompetitionStart AS 'CompetitionStart',
 LeagueMeet.CompetitionEnd AS 'CompetitionEnd',
 LeagueMeet.Host AS 'Host',
+LeagueMeet.Location AS 'Location',
 LeagueMeet.Address AS 'Address',
 LeagueMeet.PublicVenue AS 'Public'
 FROM LeagueMeet
@@ -81,7 +83,8 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 		$competitionId = $row['CompetitionId'];
 
 		$meetHost = $row['Host'];
-		//$meetStatus = $row['LeagueMeetStatus'];
+		$meetStatus = $row['Status'];
+		$meetLocation = $row['Location'];
 		$meetAddress = $row['Address'];
 		$publicVenue = $row['Public'];
 	}
@@ -97,11 +100,27 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 	{
 		echo "<div class='panel'>";
 
-		echo "<h1>$regionName League, Meet #$meet</h1>"; 
+		echo "<h1>$regionName League, Meet #$meet";
+		if ($meetStatus == 1) {
+			echo " (Scheduled)";
+		}
+		elseif ($meetStatus == 3) {
+			echo " (Completed)";
+		}
+		elseif ($meetStatus == 5) {
+			echo " (RESCHEDULED)";
+		}
+		echo "</h1>"; 
+
 		echo "<h2>$meetDate</h2>"; 
 		echo "<br>";
-		echo "<p><b>Practice: </b>$practiceStart - $practiceEnd</p>";
-		echo "<p><b>Competition: </b>$competitionStart - $competitionEnd</p>";
+
+		// Planned or Rescheduled, show times.
+		if ($meetStatus == 1 || $meetStatus == 5) {
+			echo "<p><b>Practice: </b>$practiceStart - $practiceEnd</p>";
+			echo "<p><b>Competition: </b>$competitionStart - $competitionEnd</p>";
+		}
+
 		echo "<p><b>Host: </b>$meetHost</p>";
 
 		if ($publicVenue === 1)
@@ -112,8 +131,12 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 		}
 		else 
 		{
-			echo "<p><b>Location:</b> $meetAddress<br>";
-			echo "This league meet is at a private venue. Please email the region co-ordinator $regionDirector for the full address : $regionDirectorEmailLink </p>";
+			echo "<p><b>Location:</b> $meetLocation<br>";
+			
+			// Planned or Rescheduled, show blurb about email for more info.
+			if ($meetStatus == 1 || $meetStatus == 5) {
+				echo "This league meet is at a private venue. Please email the region co-ordinator $regionDirector for the full address : $regionDirectorEmailLink </p>";
+			}
 		}
 
 		echo "</div>";
@@ -142,12 +165,17 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 
 		if (sqlsrv_has_rows($result) === true)
 		{
-			echo "<p>Subject to change.</p>
-					<div class='table-holder'>
+			// Planned or Rescheduled
+			if ($meetStatus == 1 || $meetStatus == 5) {
+				echo "<p>Subject to change.</p>";
+			}
+
+			echo "	<div class='table-holder'>
 						<table class='responsive'>
 							<thead>
 								<tr class='white'>
 									<th>Game</th>
+									<th>&nbsp</th>
 									<th>&nbsp</th>
 								</tr>
 							</thead>
@@ -159,10 +187,12 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 				$machineName = $machineRow['MachineName'];
 				$machineOpdbId = $machineRow['MachineOpdbId'];
 				$tipsLink = "https://pintips.net/opdb/$machineOpdbId";
+				$videosLink = "https://pinballvideos.com/m/?q=$machineOpdbId";
 
 				echo "<tr>
 						<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a></td>
 						<td><a href=\"$tipsLink\" class='player-link'>Tips</a></td>
+						<td><a href=\"$videosLink\" class='player-link'>Videos</a></td>
 						</tr>";
 			}
 
