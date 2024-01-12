@@ -150,6 +150,7 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 		SELECT
 		Machine.Id AS 'MachineId',
 		Machine.Name AS 'MachineName',
+		CompetitionMachine.Notes AS 'CompetitionMachineNotes',
 		Machine.OpdbId AS 'MachineOpdbId',
 		Machine.GuideUrl AS 'MachineGuideLink'
 		FROM CompetitionMachine
@@ -187,14 +188,20 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 			{
 				$machineId = $machineRow['MachineId'];
 				$machineName = $machineRow['MachineName'];
+				$machineNotes = $machineRow['CompetitionMachineNotes'];
 				$machineOpdbId = $machineRow['MachineOpdbId'];
 				$machineGuideLink = $machineRow['MachineGuideLink'];
 				$tipsLink = "https://pintips.net/opdb/$machineOpdbId";
 				$videosLink = "https://pinballvideos.com/m/?q=$machineOpdbId";
 
 				echo "<tr>
-						<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a></td>
-						<td><a href=\"$tipsLink\" class='player-link' target='_blank'>Tips</a></td>
+						<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a>";
+						if ($machineNotes != null) {
+							echo " ($machineNotes)";
+						}
+						echo "</td>";
+
+						echo "<td><a href=\"$tipsLink\" class='player-link' target='_blank'>Tips</a></td>
 						<td><a href=\"$videosLink\" class='player-link' target='_blank'>Videos</a></td>";
 
 						if ($machineGuideLink != null) {
