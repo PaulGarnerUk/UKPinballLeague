@@ -173,13 +173,19 @@ AND LeagueMeet.MeetNumber = ? -- $meet
 			}
 
 			echo "	<div class='table-holder'>
-						<table class='responsive'>
+						<table >
+				
+							<col style='width:64%'>
+							<col style='width:12%'>
+							<col style='width:12%'>
+							<col style='width:12%'>
+
 							<thead>
 								<tr class='white'>
 									<th>Game</th>
-									<th>&nbsp</th>
-									<th>&nbsp</th>
-									<th>&nbsp</th>
+									<th>&nbsp;</th>
+									<th>&nbsp;</th>
+									<th class='padright'>&nbsp;</th>
 								</tr>
 							</thead>
 							<tbody>
