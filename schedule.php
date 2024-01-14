@@ -19,8 +19,8 @@ include("includes/envvars.inc");
 	<h1>UKPL Schedule - Season <?=$currentseason?> (2024)</h1>
 
 	<p class="firstline">The UK Pinball League season period is based on a calendar year.  Each region usually consists of up to six meets. Meets for the <?=$currentseason?>th season are currently being arranged and will be updated here as they are confirmed.</p>
-	<p>At the end of the league season the top players from each region are invited to compete in a finals tournament, usually held over a single day during the <a href="http://www.ukpinfest.com/" class="link">UK Pinfest</a> show.</p> 
-	<p>For a full calendar of other pinball events see the excellent <a href="http://www.pinballnews.com/diary/index.html" class="link" target="_blank">Show Diary</a> page on the <a href="http://www.pinballnews.com" class="link" target="_blank">Pinball News</a> website.</p>
+	<p>At the end of the league season (and after any regional finals event) the top two players from each region are invited to compete in a national finals tournament, held over a single day during the <a href="http://www.ukpinfest.com/" class="link">UK Pinfest</a> show.</p> 
+	<p>For a full calendar of other pinball events see Lecari's excellent <a href="https://www.pinballinfo.com/community/threads/uk-events-diary-2024.54814/" class="link" target="_blank">2024 Events</a> page on the <a href="http://www.pinballinfo.com" class="link" target="_blank">Pinball Info forums.</a></p>
 
 </div>
 
