@@ -119,6 +119,9 @@ function GetNorthernLeagueInfo($season)
 			$info->aQualifyingPlaces = 7;
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
+		case 17:
+			$info->aQualifyingPlaces = 8;
+			$info->aQualifyingDescription = "Regional finals qualifying place.";
 	}
 
 	return $info;
@@ -466,6 +469,9 @@ function GetScottishLeagueInfo($season)
 			$info->aQualifyingPlaces = 6;
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			$info->numberOfQualifyingMeets = 4; // six meets this season for the first time
+			break;
+		case 17:
+			$info->numberOfQualifyingMeets = 4;
 			break;
 	}
 
