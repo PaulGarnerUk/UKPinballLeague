@@ -40,29 +40,55 @@ include("includes/envvars.inc");
 		// die( print_r( sqlsrv_errors(), true));
 	}
 
-	// Schedule info 
+	// Schedule 
 	$tsql= "
+DECLARE @CurrentSeason INT = ? -- $currentseason
+
 SELECT
+Region.SortOrder,
 Region.Id AS 'RegionId',
 Region.Name AS 'RegionName',
 Region.Synonym AS 'RegionSynonym',
+0 AS 'CompetitionType', -- LeagueMeet
 LeagueMeet.Id AS 'LeagueMeetId',
 LeagueMeet.MeetNumber AS 'LeagueMeetNumber',
-LeagueMeet.Status AS 'LeagueMeetStatus',
-LeagueMeet.Date AS 'LeagueMeetDate',
-LeagueMeet.PracticeStart AS 'LeagueMeetPracticeStart',
-LeagueMeet.PracticeEnd AS 'LeagueMeetPracticeEnd',
-LeagueMeet.CompetitionStart AS 'LeagueMeetCompetitionStart',
-LeagueMeet.CompetitionEnd AS 'LeagueMeetCompetitionEnd',
-LeagueMeet.Host AS 'LeagueMeetHost',
-LeagueMeet.PublicVenue AS 'LeagueMeetPublicVenue',
-COALESCE(LeagueMeet.Location, LeagueMeet.Address) AS 'LeagueMeetLocation'
-FROM Region --LeagueMeet 
+LeagueMeet.Status AS 'Status',
+LeagueMeet.Date AS 'Date',
+LeagueMeet.Host AS 'Host',
+COALESCE(LeagueMeet.Location, LeagueMeet.Address) AS 'Location',
+NULL AS 'LeagueRegionalFinalId'
+
+FROM Region 
 LEFT OUTER JOIN LeagueMeet ON 
   LeagueMeet.RegionId = Region.Id 
-  AND LeagueMeet.SeasonId = ? -- $currentseason
+  AND LeagueMeet.SeasonId = @Currentseason
   AND (LeagueMeet.Status <> 4 OR LeagueMeet.Date > GETDATE()) -- ignore cancelled events (unless they are in the future)
-ORDER BY Region.SortOrder, MeetNumber
+
+UNION ALL
+
+SELECT
+Region.SortOrder,
+Region.Id AS 'RegionId',
+Region.Name AS 'RegionName',
+Region.Synonym AS 'RegionSynonym',
+2 AS 'CompetitionType', -- RegionalFinal
+NULL AS 'LeagueMeetId',  -- Placeholder for LeagueMeet columns
+NULL AS 'LeagueMeetNumber',  -- Placeholder for LeagueMeet columns
+LeagueRegionalFinal.Status AS 'Status',
+LeagueRegionalFinal.Date AS 'Date',
+LeagueRegionalFinal.Host AS 'Host',  -- Placeholder for LeagueMeet columns
+COALESCE(LeagueRegionalFinal.Location, LeagueRegionalFinal.Address) AS 'Location',
+LeagueRegionalFinal.Id AS 'LeagueRegionalFinalId'
+
+FROM Region
+INNER JOIN
+    LeagueRegionalFinal ON LeagueRegionalFinal.RegionId = Region.Id
+	AND LeagueRegionalFinal.SeasonId = @Currentseason
+
+ORDER BY
+    Region.SortOrder,
+    LeagueRegionalFinalId ASC
+
 ";
 
 	// Perform query with parameterised values.
@@ -79,16 +105,26 @@ ORDER BY Region.SortOrder, MeetNumber
 		$regionName = $row['RegionName'];
 		$regionSynonym = $row['RegionSynonym'];
 		$leagueMeetNumber = $row['LeagueMeetNumber'];
+		$regionalFinalId = $row['LeagueRegionalFinalId'];
 
 		if ($leagueMeetNumber > 0)
 		{
-			$leagueMeetDate = $row['LeagueMeetDate']->format('D jS M Y');
-			$leagueMeetHost = $row['LeagueMeetHost'];
-			$leagueMeetStatus = $row['LeagueMeetStatus'];
-			$leagueMeetLocation = $row['LeagueMeetLocation'];
+			$date = $row['Date']->format('D jS M Y');
+			$leagueMeetStatus = $row['Status'];
+			$leagueMeetLocation = $row['Location'];
+			$leagueMeetHost = $row['Host'];
 
 			$resultsLink = "leaguemeet.php?season=$currentseason&region=$regionSynonym&meet=$leagueMeetNumber";
 			$infoLink = "schedule-info.php?season=$currentseason&region=$regionSynonym&meet=$leagueMeetNumber";
+		}
+
+		if ($regionalFinalId > 0)
+		{
+			$date = $row['Date']->format('D jS M Y');
+			$leagueMeetLocation = 'By Invitation';
+			$leagueMeetHost = 'Regional Finals';
+			
+			$infoLink = null; // still figuring this out
 		}
 
 		// If region changed..
@@ -138,7 +174,7 @@ ORDER BY Region.SortOrder, MeetNumber
 		}
 
 		// Meet info
-		if ($leagueMeetNumber > 0)
+		if ($leagueMeetNumber > 0 || $regionalFinalId > 0)
 		{
 			if ($leagueMeetStatus == 4)
 			{
@@ -149,7 +185,7 @@ ORDER BY Region.SortOrder, MeetNumber
 				echo "<tr>";
 			}
 
-			echo "<td>$leagueMeetDate</td>";
+			echo "<td>$date</td>";
 
 			if ($leagueMeetStatus == 5)
 			{
@@ -170,13 +206,20 @@ ORDER BY Region.SortOrder, MeetNumber
 			{
 				echo "<td><b>Cancelled</b></td>";
 			}
-			else
+			else if ($infoLink !== null)
 			{
 				echo "<td><a href='$infoLink' class='player-link padright'>Info</a></td>";
+			}
+			else
+			{
+				echo "<td>&nbsp;</td>";
 			}
 
 			echo "</tr>";
 		}
+
+
+
 		$lastRegionName = $regionName;
 	}
 
