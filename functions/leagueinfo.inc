@@ -191,6 +191,10 @@ function GetSouthWestLeagueInfo($season)
 			$info->aQualifyingPlaces = 6;
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
+		case 17:
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			break;
 	}
 
 	return $info;
@@ -399,6 +403,10 @@ function GetIrishLeagueInfo($season)
 		case 16:
 			$info->aQualifyingPlaces = 6;
 			$info->aQualifyingDescription = "League finals qualifying place.";
+			break;
+		case 17:
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
 			break;
 	}
 
