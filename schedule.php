@@ -87,6 +87,7 @@ INNER JOIN
 
 ORDER BY
     Region.SortOrder,
+	Date,
     LeagueRegionalFinalId ASC
 
 ";
