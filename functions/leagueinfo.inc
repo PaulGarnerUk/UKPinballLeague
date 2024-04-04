@@ -120,8 +120,8 @@ function GetNorthernLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
-			$info->aQualifyingPlaces = 8;
-			$info->aQualifyingDescription = "Regional finals qualifying place.";
+			$info->bQualifyingPlaces = 8;
+			$info->bQualifyingDescription = "Regional finals qualifying place.";
 	}
 
 	return $info;
@@ -263,8 +263,9 @@ function GetMidlandsLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
-			$info->aQualifyingPlaces = 10;
-			$info->aQualifyingDescription = "Regional finals qualifying place.";
+			$info->bQualifyingPlaces = 10;
+			$info->bQualifyingDescription = "Regional finals qualifying place.";
+			break;
 	}
 
 	return $info;
@@ -336,6 +337,10 @@ function GetLondonSouthEastLeagueInfo($season)
 		case 16:
 			$info->aQualifyingPlaces = 8;
 			$info->aQualifyingDescription = "League finals qualifying place.";
+			break;
+		case 17:
+			$info->bQualifyingPlaces = 16;
+			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 	}
 
@@ -480,6 +485,8 @@ function GetScottishLeagueInfo($season)
 			break;
 		case 17:
 			$info->numberOfQualifyingMeets = 4;
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
 			break;
 	}
 
@@ -496,8 +503,8 @@ function GetEastAnglianLeagueInfo($season)
 	switch ($season)
 	{
 		case 17:
-			//$info->aQualifyingPlaces = 6;
-			//$info->aQualifyingDescription = "Regional finals qualifying place.";
+			//$info->bQualifyingPlaces = 6;
+			//$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 		default:
 			$info->note="There was no league in the East Anglian region this season.";
@@ -517,8 +524,8 @@ function GetSouthWalesLeagueInfo($season)
 	switch ($season)
 	{
 		case 17:
-			//$info->aQualifyingPlaces = 6;
-			//$info->aQualifyingDescription = "Regional finals qualifying place.";
+			//$info->bQualifyingPlaces = 6;
+			//$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 		default:
 			$info->note="There was no league in the South Wales region this season.";
