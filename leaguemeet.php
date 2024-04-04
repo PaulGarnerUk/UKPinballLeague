@@ -262,6 +262,7 @@
 		Result.Position AS 'Rank',
 		Player.Id AS 'PlayerId',
 		Player.Name AS 'PlayerName',
+		0 AS 'ExcludedPlayer',
 		Result.Score AS 'Score',
 		Result.Points AS 'Points'
 		from Result
@@ -346,8 +347,9 @@
 
 		SELECT
 			@CompetitionId,
-			PlayerId AS 'PlayerId',
+			r.PlayerId AS 'PlayerId',
 			Player.Name AS 'PlayerName',
+			COALESCE(CompetitionPlayer.ExcludeFromResults, 0) AS 'ExcludedPlayer',
 			Score,
 			Position AS 'Rank',
 			CASE
@@ -360,6 +362,7 @@
 			END as 'Points'
 		FROM RankedResults r
 		INNER JOIN Player ON Player.Id = r.PlayerId
+		LEFT OUTER JOIN CompetitionPlayer ON CompetitionPlayer.PlayerId = r.PlayerId AND CompetitionPlayer.CompetitionId = @CompetitionId
 		ORDER BY Score DESC, Player.Name ASC";
 
 		 // Perform query with parameterised values.
@@ -394,6 +397,7 @@
 		$resultScore = (float)$resultsRow['Score'];
 		$resultPoints = round((float)$resultsRow['Points'],2);
 		$playerId = $resultsRow['PlayerId'];
+		$excludedPlayer = $resultsRow['ExcludedPlayer'];
 
 		$playerLink = "player-info.php?playerid=$playerId";
 
@@ -402,8 +406,12 @@
 
 		echo "<tr class='border'>\n
 			<td class='meetposition' bgcolor='".$bgcolor."'>$resultRank</td>\n
-			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$playerLink\" class='player-link'>$resultPlayerName</a></td>\n
-			<td class='score' bgcolor='".$bgcolor."'>$resultScore</td>\n
+
+			<td class='meetplayer' bgcolor='".$bgcolor."'><a href=\"$playerLink\" class='player-link'>$resultPlayerName</a>";
+			if ($excludedPlayer == 1) echo " (*)";
+			echo "</td>\n";
+
+			echo "<td class='score' bgcolor='".$bgcolor."'>$resultScore</td>\n
 			<td class='score padright' bgcolor='".$bgcolor."'>$resultPoints</td>\n
 		</tr>\n";
 	}
