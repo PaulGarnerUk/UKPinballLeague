@@ -524,8 +524,8 @@ function GetSouthWalesLeagueInfo($season)
 	switch ($season)
 	{
 		case 17:
-			//$info->bQualifyingPlaces = 6;
-			//$info->bQualifyingDescription = "Regional finals qualifying place.";
+			$info->bQualifyingPlaces = 8;
+			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 		default:
 			$info->note="There was no league in the South Wales region this season.";
