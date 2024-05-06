@@ -37,6 +37,11 @@
 	LeagueMeet.Host,
 	(
 		SELECT COUNT(PlayerId) 
+		FROM Result 
+		WHERE CompetitionId = LeagueMeet.CompetitionId
+	) AS LeaguePlayers,
+	(
+		SELECT COUNT(PlayerId) 
 		FROM CompetitionPlayer
 		WHERE CompetitionPlayer.CompetitionId = LeagueMeet.CompetitionId
 		AND CompetitionPlayer.ExcludeFromResults = 1
@@ -61,6 +66,7 @@
 	$leagueMeetRegionName = $leagueMeetRow['RegionName'];
 	$leagueMeetHostName = $leagueMeetRow['Host'];
 	$leagueMeetDate = $leagueMeetRow['Date'];
+	$leagueMeetPlayers = $leagueMeetRow['LeaguePlayers'];
 	$leagueMeetExcludedPlayers = $leagueMeetRow['ExcludedPlayers'];
 	$competitionId = $leagueMeetRow['CompetitionId'];
 ?>
@@ -147,8 +153,16 @@
 	ORDER BY Machine.Name, GameScore desc, PlayerName
 	";
 
-	if ($excludeGuests === 'true') $excludeGuestsBit = 1;
-	else $excludeGuestsBit = 0;
+	if ($excludeGuests === 'true') 
+	{
+		$excludeGuestsBit = 1;
+		$maxPlayers = $leagueMeetPlayers;
+	}
+	else 
+	{
+		$excludeGuestsBit = 0;
+		$maxPlayers = $leagueMeetPlayers + $leagueMeetExcludedPlayers;
+	}
 
 	// Perform query with parameterised values.
 	$result= sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet, $excludeGuestsBit, $competitionId));
@@ -188,6 +202,13 @@
 			// Close off the last table (unless this was the first table)
 			if ($lastMachineName !== "")
 			{
+				// Try to ensure each table of scores contains the same number of rows by appending empty rows to tables which are less than the maximum number of players
+				while ($counter < $maxPlayers)
+				{
+					echo "<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>";
+					$counter++;
+				}
+
 				echo "</table>";
 				echo "</div>";
 			}
