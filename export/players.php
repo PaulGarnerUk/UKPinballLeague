@@ -29,6 +29,7 @@
 		echo "query borken.";
 	}
 
+	echo "player_name, player_id, region_synonym, region_name\n";
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
 	{
 		$playerName = $row['PlayerName'];
