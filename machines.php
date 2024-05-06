@@ -81,8 +81,10 @@
 	echo "<a href='machines.php?region=m&season=$seasonParam&sort=$sort&dir=$dir'>Midlands</a>";
 	echo "<a href='machines.php?region=lse&season=$seasonParam&sort=$sort&dir=$dir'>London and South East</a>";
 	echo "<a href='machines.php?region=n&season=$seasonParam&sort=$sort&dir=$dir'>Northern</a>";
-	echo "<a href='machines.php?region=s&season=$seasonParam&sort=$sort&dir=$dir'>Scottish</a>";
-	echo "<a href='machines.php?region=i&season=$seasonParam&sort=$sort&dir=$dir'>Irish</a>";
+	echo "<a href='machines.php?region=s&season=$seasonParam&sort=$sort&dir=$dir'>Scotland</a>";
+	echo "<a href='machines.php?region=i&season=$seasonParam&sort=$sort&dir=$dir'>Ireland</a>";
+	echo "<a href='machines.php?region=ea&season=$seasonParam&sort=$sort&dir=$dir'>East Anglian</a>";
+	echo "<a href='machines.php?region=w&season=$seasonParam&sort=$sort&dir=$dir'>South Wales</a>";
 	echo "</div></span>";
 	
 	echo " <span class='dropdown'>
