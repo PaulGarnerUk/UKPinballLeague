@@ -1,6 +1,6 @@
 <?php
 	header('Content-Type: application/csv');
-	header('Content-Disposition: attachment; filename="filename.csv"');
+	header('Content-Disposition: attachment; filename="players.csv"');
 
 	include("../includes/sql.inc"); 
 
