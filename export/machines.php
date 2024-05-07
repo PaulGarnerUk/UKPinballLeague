@@ -30,12 +30,12 @@ Score.PlayerId AS 'HighScorePlayerId',
 Player.Name AS 'HighScorePlayerName',
 Competition.Id AS 'HighScoreCompetitionId',
 Competition.Name AS 'HighScoreCompetitionName'
-FROM AverageScore
-INNER JOIN HighScore ON HighScore.MachineId = AverageScore.MachineId
-INNER JOIN Machine ON Machine.Id = AverageScore.MachineId
-INNER JOIN Score ON Score.MachineId = Machine.Id AND Score.Score = HighScore.Score
-INNER JOIN Player ON Player.Id = Score.PlayerId
-INNER JOIN Competition on Competition.Id = Score.CompetitionId
+FROM Machine
+LEFT OUTER JOIN AverageScore ON AverageScore.MachineId = Machine.Id
+LEFT OUTER JOIN HighScore ON HighScore.MachineId = AverageScore.MachineId
+LEFT OUTER JOIN Score ON Score.MachineId = Machine.Id AND Score.Score = HighScore.Score
+LEFT OUTER JOIN Player ON Player.Id = Score.PlayerId
+LEFT OUTER JOIN Competition on Competition.Id = Score.CompetitionId
 ORDER BY MachineName
 ";
 
