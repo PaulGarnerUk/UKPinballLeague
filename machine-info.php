@@ -113,8 +113,10 @@ $countsRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
 	echo "<a href='machine-info.php?machineid=$machineIdParam&region=m&season=$seasonParam'>Midlands</a>";
 	echo "<a href='machine-info.php?machineid=$machineIdParam&region=lse&season=$seasonParam'>London and South East</a>";
 	echo "<a href='machine-info.php?machineid=$machineIdParam&region=n&season=$seasonParam'>Northern</a>";
-	echo "<a href='machine-info.php?machineid=$machineIdParam&region=s&season=$seasonParam'>Scottish</a>";
-	echo "<a href='machine-info.php?machineid=$machineIdParam&region=i&season=$seasonParam'>Irish</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=s&season=$seasonParam'>Scotland</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=i&season=$seasonParam'>Ireland</a>";
+    echo "<a href='machine-info.php?machineid=$machineIdParam&region=ea&season=$seasonParam'>East Anglian</a>";
+	echo "<a href='machine-info.php?machineid=$machineIdParam&region=w&season=$seasonParam'>South Wales</a>";
 	echo "</div></span>";
 	
 	echo " <span class='dropdown'>
@@ -145,7 +147,7 @@ $countsRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
         $finalsCount = number_format($countsRow['FinalsCount']);
         $appearances = number_format($countsRow['Appearances']);
 
-        echo "<p>Appearances : $appearances ($meetsCount league meets, and $finalsCount league finals)</p>";
+        echo "<p>Appearances : $appearances ($meetsCount league " . ngettext('meet', 'meets', $meetsCount) . ", and $finalsCount league " . ngettext('final', 'finals', $finalsCount) .")</p>";
         echo "<p>Total games played : $gamesPlayed</p>";
         echo "<p>Average score : $averageScore</p>";
     }
