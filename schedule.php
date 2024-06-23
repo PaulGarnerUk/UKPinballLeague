@@ -124,7 +124,9 @@ ORDER BY
 			$date = $row['Date']->format('D jS M Y');
 			$leagueMeetLocation = 'By Invitation';
 			$leagueMeetHost = 'Regional Finals';
+			$leagueMeetStatus = $row['Status'];
 			
+			$resultsLink = null; // still figuring this out
 			$infoLink = null; // still figuring this out
 		}
 
