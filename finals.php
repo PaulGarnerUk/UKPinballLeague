@@ -107,6 +107,7 @@ INNER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
 INNER JOIN Player ON Player.Id = Score.PlayerId
 INNER JOIN Machine ON Machine.Id = Score.MachineId
 WHERE LeagueFinal.SeasonId = @seasonId
+AND LeagueFinal.RegionId IS NULL
 
 UNION ALL
 
@@ -128,7 +129,7 @@ null AS 'PlayCount'
 FROM Result
 INNER JOIN Player ON Player.Id = Result.PlayerId
 INNER JOIN LeagueFinal on LeagueFinal.CompetitionId = Result.CompetitionId
-WHERE Result.CompetitionId IN (SELECT CompetitionId FROM LeagueFinal WHERE LeagueFinal.SeasonId = @seasonId)
+WHERE Result.CompetitionId IN (SELECT CompetitionId FROM LeagueFinal WHERE LeagueFinal.SeasonId = @seasonId AND LeagueFinal.RegionId IS NULL)
 
 ORDER BY Round ASC, Machine.Name DESC, GameScore DESC, Position
 ";
