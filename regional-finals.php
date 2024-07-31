@@ -88,6 +88,7 @@ Player.Name AS 'PlayerName',
 Score.Score AS 'GameScore',
 RANK() OVER (PARTITION BY LeagueFinal.CompetitionId, Score.MachineId ORDER BY Score.Score DESC) AS 'Position',
 null AS 'ResultScore',
+null AS 'ResultPoints',
 
 (
 	SELECT TOP 1 PBScore.Score
@@ -128,6 +129,7 @@ Player.Name AS 'PlayerName',
 null AS 'GameScore',
 Result.Position AS 'Position',
 Result.Score AS 'ResultScore',
+Result.Points AS 'ResultPoints',
 null AS 'PersonalBestScore',
 null AS 'LeagueHighScore',
 null AS 'PlayCount'
@@ -164,6 +166,7 @@ ORDER BY Round ASC, Machine.Name DESC, GameScore DESC, Position
 		$score = number_format($finalsRow['GameScore']);
 		$position = $finalsRow['Position'];
 		$resultScore = number_format($finalsRow['ResultScore']);
+		$resultPoints = $finalsRow['ResultPoints'] !== null ? number_format($finalsRow['ResultPoints']) : null;
 		$pbScore = number_format($finalsRow['PersonalBestScore']);
 		$hsScore = number_format($finalsRow['LeagueHighScore']);
 		$playCount = $finalsRow['PlayCount'];
@@ -230,9 +233,14 @@ ORDER BY Round ASC, Machine.Name DESC, GameScore DESC, Position
 			echo "<thead>
 				<tr class='white'>
 					<th class='meetposition'>&nbsp;</th> <!--  -->
-					<th>Player</th> <!-- class='meetplayer' -->
-					<!-- <th class='score'>Score</th>  -->
- 				</tr>
+					<th>Player</th> <!-- class='meetplayer' -->";
+
+			if ($resultPoints != null)
+			{
+				echo "<th class='score'>Points</th>";
+			}
+
+			echo "</tr>
 			</thead>";
 
 			$counter = 0;
@@ -278,8 +286,14 @@ ORDER BY Round ASC, Machine.Name DESC, GameScore DESC, Position
 			// Draw results row
 			echo "<tr>\n
 				<td class='meetposition' bgcolor='".$bgcolor."'>$position</td>\n
-				<td bgcolor='".$bgcolor."'>$playerName</td>\n
-				</tr>\n";
+				<td bgcolor='".$bgcolor."'>$playerName</td>\n";
+
+			if ($resultPoints != null)
+			{
+				echo "<td class='score' bgcolor='".$bgcolor."'>$resultPoints</td>\n";
+			}
+
+			echo "</tr>\n";
 		}
 
 
