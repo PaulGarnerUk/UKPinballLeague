@@ -9,7 +9,8 @@
 	SELECT
 	Region.Name AS 'RegionName',
 	Season.Year AS 'SeasonYear',
-	(SELECT COUNT(*) FROM LeagueMeet WHERE LeagueMeet.SeasonId = Season.Id AND LeagueMeet.RegionId = Region.Id AND LeagueMeet.Status = 3) AS 'TotalMeets'
+	(SELECT COUNT(*) FROM LeagueMeet WHERE LeagueMeet.SeasonId = Season.Id AND LeagueMeet.RegionId = Region.Id AND LeagueMeet.Status = 3) AS 'TotalMeets',
+	(SELECT MAX(competitionId) FROM LeagueFinal WHERE LeagueFinal.SeasonId = Season.Id and LeagueFinal.RegionId = Region.Id) AS 'FinalsCompetitionId'
 	FROM Season, Region
 	WHERE Region.Synonym = ? -- $region
 	AND Season.SeasonNumber = ? -- $season";
@@ -24,6 +25,7 @@
 	$regionName = $row['RegionName'];
 	$seasonYear = $row['SeasonYear'];
 	$totalMeets = $row['TotalMeets'];
+	$finalsCompetitionId = $row['FinalsCompetitionId'];
 
 	if (is_null($regionName))
 	{
@@ -46,7 +48,6 @@
 
 <div class="panel">
 <?php
-
 
 	include("functions/leagueinfo.inc");
 	
@@ -79,6 +80,7 @@ while ($seasonLoop > 0)
 DECLARE @region NVARCHAR(3) = ?; -- $region
 DECLARE @season INTEGER = ?; -- $season
 DECLARE @qualifyingMeets INTEGER = ?; -- $info->numberOfQualifyingMeets
+DECLARE @finalsCompetitionId INTEGER = ?; -- $finalsCompetitionId
 
 -- Simplify the region and season into id values
 WITH Query (RegionId, SeasonId) AS
@@ -124,49 +126,60 @@ SeasonPlayers (PlayerId, PlayerName) AS
 	FROM Result 
 	INNER JOIN LeagueMeets ON Result.CompetitionId = LeagueMeets.CompetitionId
 	INNER JOIN Player ON Player.Id = Result.PlayerId
+),
+LeagueResults AS
+(
+	SELECT 
+	SeasonPlayers.PlayerId AS playerid,
+	SeasonPlayers.PlayerName AS player,
+	(
+		SELECT COUNT(*) FROM Results WHERE Results.PlayerId = SeasonPlayers.PlayerId
+	) AS played,
+	MeetOne.Points as meet1,
+	MeetTwo.Points as meet2,
+	MeetThree.Points as meet3,
+	MeetFour.Points as meet4,
+	MeetFive.Points as meet5,
+	MeetSix.Points as meet6,
+	COALESCE(MeetOne.Points,0) + COALESCE(MeetTwo.Points,0) + COALESCE(MeetThree.Points,0) + COALESCE(MeetFour.Points,0) + COALESCE(MeetFive.Points,0) + COALESCE(MeetSix.Points,0) AS total,
+	(
+		SELECT 
+		SUM(Results.Points)
+		FROM Results
+		WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= @qualifyingMeets
+	) AS best4,
+	(
+		SELECT 
+		SUM(Results.Points)
+		FROM Results
+		WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= (@qualifyingMeets + 1)
+	) AS best5,
+	(
+		SELECT 
+		SUM(Results.Points)
+		FROM Results
+		WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= (@qualifyingMeets + 2)
+	) AS best6
+	FROM SeasonPlayers 
+	LEFT OUTER JOIN Results AS MeetOne ON MeetOne.MeetNumber = 1 AND MeetOne.PlayerId = SeasonPlayers.PlayerId
+	LEFT OUTER JOIN Results AS MeetTwo ON MeetTwo.MeetNumber = 2 AND MeetTwo.PlayerId = SeasonPlayers.PlayerId
+	LEFT OUTER JOIN Results AS MeetThree ON MeetThree.MeetNumber = 3 AND MeetThree.PlayerId = SeasonPlayers.PlayerId
+	LEFT OUTER JOIN Results AS MeetFour ON MeetFour.PlayerId = SeasonPlayers.PlayerId AND MeetFour.MeetNumber = 4
+	LEFT OUTER JOIN Results AS MeetFive ON MeetFive.PlayerId = SeasonPlayers.PlayerId AND MeetFive.MeetNumber = 5
+	LEFT OUTER JOIN Results AS MeetSix ON MeetSix.PlayerId = SeasonPlayers.PlayerId AND MeetSix.MeetNumber = 6
 )
 
 SELECT 
-SeasonPlayers.PlayerId AS playerid,
-SeasonPlayers.PlayerName AS player,
-(
-	SELECT COUNT(*) FROM Results WHERE Results.PlayerId = SeasonPlayers.PlayerId
-) AS played,
-MeetOne.Points as meet1,
-MeetTwo.Points as meet2,
-MeetThree.Points as meet3,
-MeetFour.Points as meet4,
-MeetFive.Points as meet5,
-MeetSix.Points as meet6,
-COALESCE(MeetOne.Points,0) + COALESCE(MeetTwo.Points,0) + COALESCE(MeetThree.Points,0) + COALESCE(MeetFour.Points,0) + COALESCE(MeetFive.Points,0) + COALESCE(MeetSix.Points,0) AS total,
-(
-	SELECT 
-	SUM(Results.Points)
-	FROM Results
-	WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= @qualifyingMeets
-) AS best4,
-(
-	SELECT 
-	SUM(Results.Points)
-	FROM Results
-	WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= (@qualifyingMeets + 1)
-) AS best5,
-(
-	SELECT 
-	SUM(Results.Points)
-	FROM Results
-	WHERE Results.PlayerId = SeasonPlayers.PlayerId AND Results.Rnk <= (@qualifyingMeets + 2)
-) AS best6
-FROM SeasonPlayers 
-LEFT OUTER JOIN Results AS MeetOne ON MeetOne.MeetNumber = 1 AND MeetOne.PlayerId = SeasonPlayers.PlayerId
-LEFT OUTER JOIN Results AS MeetTwo ON MeetTwo.MeetNumber = 2 AND MeetTwo.PlayerId = SeasonPlayers.PlayerId
-LEFT OUTER JOIN Results AS MeetThree ON MeetThree.MeetNumber = 3 AND MeetThree.PlayerId = SeasonPlayers.PlayerId
-LEFT OUTER JOIN Results AS MeetFour ON MeetFour.PlayerId = SeasonPlayers.PlayerId AND MeetFour.MeetNumber = 4
-LEFT OUTER JOIN Results AS MeetFive ON MeetFive.PlayerId = SeasonPlayers.PlayerId AND MeetFive.MeetNumber = 5
-LEFT OUTER JOIN Results AS MeetSix ON MeetSix.PlayerId = SeasonPlayers.PlayerId AND MeetSix.MeetNumber = 6
-ORDER BY best4 DESC, best5 DESC, best6 DESC, played ASC";
+LeagueResults.*,
+RANK() OVER (ORDER BY best4 DESC, best5 DESC, best6 DESC) AS 'league_pos',
+Finals.Position AS 'finals_pos',
+RANK() OVER (ORDER BY -Finals.Position DESC, best4 DESC, best5 DESC, best6 DESC) AS 'pos'
+FROM LeagueResults
+LEFT OUTER JOIN Result AS Finals ON Finals.PlayerId = LeagueResults.PlayerId AND Finals.CompetitionId = @finalsCompetitionId
+ORDER BY -Finals.Position DESC, best4 DESC, best5 DESC, best6 DESC, played ASC
+";
 
-	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season, $info->numberOfQualifyingMeets));
+	$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season, $info->numberOfQualifyingMeets, $finalsCompetitionId));
 
 	if ($result == FALSE)
 	{
@@ -191,17 +204,18 @@ while ($meetNumber <= $totalMeets)
 }
 
 		echo "<th>Total</th>
-				<th class='paddidge'>Best $info->numberOfQualifyingMeets</th>
-			</tr>
+				<th class='paddidge'>Best $info->numberOfQualifyingMeets</th>";
+
+		if ($finalsCompetitionId !== null) {
+			echo "<th><a href=\"regional-finals.php?season=$season&amp;region=$region\" class='link'>Finals</a></th>";
+		}
+
+		echo "</tr>
 		</thead>";
 
 		
 	$counter = 0;
-
 	$total = '';
-	$position = 0;
-	$previousRowBest = 0;
-	$hiddenPositions = 0;
 	
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
 	{
@@ -223,21 +237,10 @@ while ($meetNumber <= $totalMeets)
 		$best5 = round($best5,"1");
 		$best6 = round($best6,"1");
 		$total = round($total,"1");
+		$leaguePos = number_format($row['league_pos']);
+		$finalsPos = $row['finals_pos'] !== null ? number_format($row['finals_pos']) : null;
+		$pos = number_format($row['pos']);
 	
-		// Calculate rank. Ties on best4 are split by best5 and then best6.  This is a non-optimal way of doing that..
-		if ($best4 + $best5 + $best6 == $previousRowBest)
-		{
-			$hiddenPositions++;
-		}
-		else 
-		{
-			$position = $position + $hiddenPositions;
-			$hiddenPositions = 0;
-
-			$previousRowBest = $best4 + $best5 + $best6;
-			$position++;
-		}
-
 		// Calculate row highlighting
 		$counter++;
 		if ($counter <= $info->aQualifyingPlaces) $bgcolor = "#fec171";
@@ -245,7 +248,7 @@ while ($meetNumber <= $totalMeets)
 		else $bgcolor = ($counter % 2)?"#f7f7f7":"#ffffff";
 
 		echo "<tr bgcolor='".$bgcolor."'>\n
-		<td bgcolor='".$bgcolor."'>$position</td>\n
+		<td bgcolor='".$bgcolor."'>$pos</td>\n
 		<td bgcolor='".$bgcolor."'><a href=\"player-info.php?playerid=$playerid\" class='player-link'>$player</a></td>\n
 		<td bgcolor='".$bgcolor."'>$played</td>\n";
 		if ($totalMeets >= 1) echo "<td bgcolor='".$bgcolor."'>$meet1</td>\n";
@@ -255,8 +258,19 @@ while ($meetNumber <= $totalMeets)
 		if ($totalMeets >= 5) echo "<td bgcolor='".$bgcolor."'>$meet5</td>\n";
 		if ($totalMeets >= 6) echo "<td bgcolor='".$bgcolor."'>$meet6</td>\n";
 		echo "<td bgcolor='".$bgcolor."'>$total</td>\n
-		<td bgcolor='".$bgcolor."'>$best4</td>\n
-		</tr>\n";
+		<td bgcolor='".$bgcolor."'>$best4</td>\n";
+
+		if ($finalsCompetitionId !== null) {
+			$finalsAdj = $leaguePos - $pos; // Calculate a + or - number that shows how finals adjusted the player's position
+
+			if ($finalsAdj === 0 && $finalsPos === null) $finalsAdj = "-"; // If player did not play in finals, and had no adjustment to position, then show as '-'
+			if ($finalsAdj >= 0) $finalsAdj = "+".$finalsAdj;
+			// if ($finalsAdj < 0) $finalsAdj = "-".$finalsAdj;
+
+			echo "<td bgcolor='".$bgcolor."'>$finalsAdj</td>\n";
+		}
+
+		echo "</tr>\n";
 	}
 
 	echo "</table>\n";

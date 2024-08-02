@@ -263,7 +263,9 @@ function GetMidlandsLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
-			$info->bQualifyingPlaces = 10;
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			$info->bQualifyingPlaces = 8;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 	}
@@ -339,7 +341,9 @@ function GetLondonSouthEastLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
-			$info->bQualifyingPlaces = 8;
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			$info->bQualifyingPlaces = 6;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 	}
@@ -524,7 +528,9 @@ function GetSouthWalesLeagueInfo($season)
 	switch ($season)
 	{
 		case 17:
-			$info->bQualifyingPlaces = 8;
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			$info->bQualifyingPlaces = 6;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 		default:
