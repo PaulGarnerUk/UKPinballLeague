@@ -122,7 +122,7 @@ function GetNorthernLeagueInfo($season)
 		case 17:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
-			$info->bQualifyingPlaces = 8;
+			$info->bQualifyingPlaces = 6;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 	}
 
@@ -511,7 +511,7 @@ function GetEastAnglianLeagueInfo($season)
 		case 17:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
-			$info->bQualifyingPlaces = 10;
+			$info->bQualifyingPlaces = 8;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 		default:
