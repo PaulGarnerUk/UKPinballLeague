@@ -29,7 +29,7 @@
 <p>Players can register for one regional league only. Meetings will be open to all players but only points scored in a player's nominated region will count towards their league total.</p>
 
 <p class="bold">D. Fees</p>
-<p>A fee of £2.00 must be collected by the regional coordinator or deputy from all adult players before any play begins – children play for free. This will contribute to a central prize fund. An additional voluntary contribution is welcomed and is given to the host to help towards providing refreshments. Hosts and their immediate family members will be exempt from the entry fee for the meet which they host. Hosts (but not their family members) are also exempt from paying the entry fee for every meet they attend in their region for that season.</p>
+<p>A league fee of £2.00 must be collected by the regional coordinator or deputy from all adult players before any play begins (under 16s play for free). This will contribute to a central prize fund. An additional charge will be made or may be requested as a contribution to the host's costs. The combined league fee, plus charge for host's costs is the entry fee. Hosts and their immediate family members will be exempt from the entry fee for the meet which they host. Hosts (but not their family members) are also exempt from paying the entry fee for every meet they attend in their region for that season.</p>
 
 <p class="bold">E. Minimum number of competitors</p>
 <p>For a meeting to count towards the regional league at least five competitors from that region must take part.</p>
@@ -122,7 +122,7 @@
 <p>Entrants must wait until the game becomes available. Entrants may not start or restart any of the games unless instructed to do so by the organisers.</p> 
 
 <p class="bold">D. Game completion</p>
-<p>When the entrants have completed their game they must attract the attention of a steward who will record their nominated game score and initial the score card to verify that all is correct. Players may record their own score but must have the result witnessed by a steward after each game.  The game scores will, in due course, be returned to the regional coordinator or organisers as instructed on the day.</p> 
+<p>When the entrants have completed their game they must attract the attention of a witness who will record their nominated game score and initial the score card to verify that all is correct. Players may record their own score but must have the result witnessed and signed off after each game.  The game scores will, in due course, be returned to the regional coordinator or organisers as instructed on the day.</p> 
 
 </div>
 
@@ -139,13 +139,13 @@
 <p>If a mechanical or software fault develops during the course of the game, the entrant must attract the attention of the steward who will attempt to resolve the situation.  If the ball becomes stuck, the entrant may attempt to free it at the risk of tilting the game. Otherwise they should attract the attention of the steward who will attempt to free it and place it in a dead area of the game such as the shooter lane or in a ball trap so the entrant may continue play.</p>
 
 <p class="bold">C. Temporary faults with loss of ball</p>
-<p>If a player loses a ball through a random machine fault which is not persistent and has not affected other players and through no fault of their own, the player affected has two options as below.  The player must notify the regional coordinator and explain the fault which must be corroborated by another player.  It is up to the regional coordinator to decide if the event falls under this rule.  Their decision will be final but they may choose to consult with other players to deem what is the fairest solution, which may be an alternative to the options presented below.</p>
+<p>If a player loses a ball through a random machine fault which is not persistent and has not affected other players and through no fault of their own, the player must notify the regional coordinator and explain the fault which must be corroborated by another player.  It is up to the regional coordinator to decide if the event falls under this rule.  Their decision will be final but they may choose to consult with other players to deem what is the fairest solution, which will typically be one of the options presented below.</p>
 
 <p>1. Completing their game and then playing one ball of a new game.  The scores of the two games will then be added together to form the player’s score for that machine. Or,</p>
 
 <p>2. Discarding the current game and replaying the game from scratch.</p>
 
-<p>The player choose which option they wish to take and notify the regional coordinator accordingly.  Once decided they cannot change ie the player cannot continue their current game and then request to discard this game and start a whole new game – they must decide at the time of the fault.  On option 1, the one ball they play will be from a new game and no attempt should be made to manually award features that may have been achieved in the faulty game.  If the game was part of a multiplayer game and the other player's games were unaffected, these players should complete their games as normal irrespective of the choice the affected player makes.</p>
+<p>On option 1, the one ball they play will be from a new game and no attempt should be made to manually award features that may have been achieved in the faulty game.  If the game was part of a multiplayer game and the other player's games were unaffected, these players should complete their games as normal irrespective of the choice the affected player makes.</p>
 
 <p class="bold">D. Non-working features</p>
 <p>If a game has a known fault such as a non working feature, it may be used for the competition provided that it is agreed by the regional coordinator and provided that all players are made aware of the problem.</p>
@@ -183,18 +183,12 @@
 <p>Any coaching or advice to players, by spectators or other players is not allowed during a competitive game but the rules of the game may be discussed before starting play.</p>
 
 <p class="bold">C. Extra balls</p>
-<p>No extra balls shall be played in any game. If a player earns an extra ball they may plunge the ball and go for a plunger skill shot, but may not touch the machine in any way after the ball is plunged. The player may touch the flippers before plunging the ball in order to set up for a skill shot, etc.</p> 
-
-<p>If a player mistakenly plays an extra ball (meaning they intentionally hit the flippers, or bump the machine at any time during the extra ball), the player will receive a score of zero points on the game.</p> 
+<p>Extra Balls will normally be switched off for league play. Where a machine can be configured so that extra balls award points instead, this should be enabled. Any player becoming aware during the practice session that a machine is incorrectly awarding extra balls should bring this to the attention of a steward so that the settings may be changed. On certain older games, extra balls cannot be switched off, or may be part of normal play (eg add-a-ball type machines). The meeting steward should make players aware of these machines prior to the start of competitive league play. Extra balls earned during competitive play should be played as a normal ball by the player earning them.</p>
 
 <p class="bold">D. Tilts</p>
-<p>Tilting the machine during a game will result in the loss of the entrant's current ball. Slam tilting will result in the game ending and the offending player automatically losing that game and being awarded a score of zero.</p>
-
-<p>If this occurs in a multiplayer game, the other players have the choice of the option in rule 6c assuming that the players can agree on their score </p>
-
-<p>Note on some older games tilt will cause loss of the entire game and not just the ball in play.</p>
-
-<p>If in the opinion of the organisers the slam tilt is due to poor conduct by the entrant, the entrant may be disqualified from the event entirely and their score discarded.</p>
+<p>Tilting the machine during a game will result in the loss of the entrant's current ball. On some older games tilt will cause loss of the entire game and not just the ball in play.</p>
+<p>In the event of a 'tilt through' which causes the following player to lose their ball, the affected player will have the option of continuing their game as laid out in rule 6c.</p>
+<p>Slam tilting will result in the game ending and the offending player automatically losing that game and being awarded a score of zero. If a slam tilt occurs in a multiplayer game, the other players have the choice of continuing as laid out in rule 6c assuming that the players can agree on their score. If, in the opinion of the organisers, the slam tilt is due to poor conduct by the entrant, the entrant may be disqualified from the event entirely and their score discarded.</p>
 
 </div>
 
@@ -210,7 +204,7 @@
 
 <h2>Good luck, play well and have fun.</h2>
 
-<p>Last revision: November 2023</p>
+<p>Last revision: August 2024</p>
 
 </div>
 
