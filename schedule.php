@@ -11,12 +11,13 @@
 <?php 
 include("includes/header.inc");
 include("includes/envvars.inc");
+include("includes/sql.inc"); 
 ?>
 
 
 <div class="panel">
 
-	<h1>UKPL Schedule - Season <?=$currentseason?> (2024)</h1>
+	<h1>UKPL Schedule - Season <?=$currentseason?> (20<?=$currentseason+7?>)</h1>
 
 	<p class="firstline">The UK Pinball League season period is based on a calendar year.  Each region usually consists of up to six meets. Meets for the <?=$currentseason?>th season are currently being arranged and will be updated here as they are confirmed.</p>
 	<p>At the end of the league season (and after any regional finals event) the top two players from each region are invited to compete in a national finals tournament, held over a single day during the <a href="http://www.ukpinfest.com/" class="link">UK Pinfest</a> show.</p> 
@@ -25,20 +26,6 @@ include("includes/envvars.inc");
 </div>
 
 <?php
-	
-
-	$connectionOptions = array(
-		"Database" => $sqldbname,
-		"Uid" => $sqluser,
-		"PWD" => $sqlpassword
-	);
-
-	$conn = sqlsrv_connect($sqlserver, $connectionOptions);
-	if( $conn === false ) 
-	{
-		echo "connection borken.";
-		// die( print_r( sqlsrv_errors(), true));
-	}
 
 	// Schedule 
 	$tsql= "
@@ -89,11 +76,10 @@ ORDER BY
     Region.SortOrder,
 	Date,
     LeagueRegionalFinalId ASC
-
 ";
 
 	// Perform query with parameterised values.
-	$result= sqlsrv_query($conn, $tsql, array($currentseason));
+	$result= sqlsrv_query($sqlConnection, $tsql, array($currentseason));
 	if ($result == FALSE)
 	{
 		echo "query borken.";
