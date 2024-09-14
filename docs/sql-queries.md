@@ -9,7 +9,7 @@ Create new competition for the meet.  CompetitionType is an enumerated value. 0=
 
 ```
 INSERT INTO Competition (CompetitionType, Name)
-VALUES (0, '2024 Northern League Meet 1')
+VALUES (0, '2025 Northern League Meet 1')
 ```
 
 Add details of the meet
@@ -33,14 +33,14 @@ INSERT INTO LeagueMeet (
 )
 VALUES
 (
-  17, -- season id
+  18, -- season id
   1,  -- region id
   437, -- competition id from previous insert
-  CONVERT(DATETIME, '2024-05-15 00:00:00', 120), -- date
-  CONVERT(DATETIME, '2024-05-15 10:00:00', 120), -- practice start
-  CONVERT(DATETIME, '2024-05-15 12:00:00', 120), -- practice end
-  CONVERT(DATETIME, '2024-05-15 13:00:00', 120), -- comp start
-  CONVERT(DATETIME, '2024-05-15 16:00:00', 120), -- comp end
+  CONVERT(DATETIME, '2025-05-15 00:00:00', 120), -- date
+  CONVERT(DATETIME, '2025-05-15 10:00:00', 120), -- practice start
+  CONVERT(DATETIME, '2025-05-15 12:00:00', 120), -- practice end
+  CONVERT(DATETIME, '2025-05-15 13:00:00', 120), -- comp start
+  CONVERT(DATETIME, '2025-05-15 16:00:00', 120), -- comp end
   1, -- meet number
   0, -- public venue
   'Southport', -- Broad area
@@ -81,8 +81,8 @@ Once all scores are entered the following query calculates results.
 This query also (dynamically) allows non-league players to be included/excluded from the calculated results.
 
 ```
-DECLARE @CompetitionId INT = 498; -- competition id to calculate results for
-DECLARE @ExcludeNonLeaguePlayers BIT = 1
+DECLARE @CompetitionId INT = x; -- competition id to calculate results for
+DECLARE @ExcludeNonLeaguePlayers BIT = 1 -- set to 1 to exclude non-league players from results (or 0 to include)
 
 -- Conditionally build a table variable containing excluded player ids
 DECLARE @ExcludedPlayerIds TABLE (PlayerId INT)
@@ -145,6 +145,21 @@ RankedResults AS
 	FROM TotalPoints
 )
 
+-- Insert results into the database
+INSERT INTO Result (CompetitionId, PlayerId, Score, Position, Points) 
+SELECT
+	@CompetitionId, PlayerId, Score, Position, 
+	CASE
+	    -- When two (or more) players have the same position, then sum the points and divide by the number of players
+		WHEN (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position) > 1 THEN (
+			SELECT CAST(SUM(RankedResults.Points) AS float) FROM RankedResults WHERE Position = r.Position ) / (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position
+		) ELSE (
+		    r.Points
+		)
+	END 
+FROM RankedResults r
+/*
+-- Or to view the results instead of inserting rows into the database:
 SELECT
 	@CompetitionId,
 	PlayerId,
@@ -162,30 +177,8 @@ SELECT
 FROM RankedResults r
 INNER JOIN Player ON Player.Id = r.PlayerId
 ORDER BY Score DESC, Player.Name ASC
-/*
--- Or run the insert instead of select..
-INSERT INTO Result (CompetitionId, PlayerId, Score, Position, Points) 
-SELECT
-	@CompetitionId, PlayerId, Score, Position, 
-	CASE
-	    -- When two (or more) players have the same position, then sum the points and divide by the number of players
-		WHEN (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position) > 1 THEN (
-			SELECT CAST(SUM(RankedResults.Points) AS float) FROM RankedResults WHERE Position = r.Position ) / (SELECT COUNT(*) FROM RankedResults WHERE Position = r.Position
-		) ELSE (
-		    r.Points
-		)
-	END 
-FROM RankedResults r
 */
 ```
-
-## Add results
-Add results from the query above, 
-```
-INSERT INTO Result (CompetitionId, PlayerId, Score, Position, Points) VALUES
-(...etc)
-```
-
 
 # Maintenance
 
@@ -213,9 +206,9 @@ GROUP BY Score.CompetitionId, Score.PlayerId, Result.PlayerId
 
 Start by adding a new Season  
 ```
-INSERT INTO Season (SeasonNumber, Name, Year) VALUES (16, '2023/Season 16', 2023)
+INSERT INTO Season (SeasonNumber, Name, Year) VALUES (18, '2025/Season 18', 2025)
 ```
-The app should be configured to use an environment variable named `currentseason` containing the latest season number (16 in this example). This is initialized in the `envvars.inc` include.
+The app should be configured to use an environment variable named `currentseason` containing the latest season number (18 in this example). This is initialized in the `envvars.inc` include.
 
 
 
