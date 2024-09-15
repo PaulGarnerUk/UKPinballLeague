@@ -19,8 +19,8 @@
 		INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Result.CompetitionId -- exclude league finals
 		GROUP BY Result.PlayerId
 	) AS MostRecentResult ON MostRecentResult.PlayerId = Player.Id
-	INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = MostRecentResult.CompetitionId
-	INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+	LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = MostRecentResult.CompetitionId
+	LEFT OUTER JOIN Region ON Region.Id = LeagueMeet.RegionId
 	ORDER BY Player.Name ASC";
 
 	$result = sqlsrv_query($sqlConnection, $tsql);
