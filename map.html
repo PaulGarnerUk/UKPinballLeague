@@ -1,1146 +1,152 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>UK Pinball League meet locations</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta charset="utf-8">
+	<title>UK Pinball League meet locations</title>
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin="" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		  crossorigin="" />
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+			integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+			crossorigin=""></script>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
+	<link href="css/nouislider.min.css" rel="stylesheet">
+	<script src="js/nouislider.min.js"></script>
+	<script src="js/wNumb.min.js"></script>
 
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+			z-index: -1;
+		}
+
+		#slider {
+			width: 80%;
+			margin: 0 auto;
+		}
+
+	</style>
 </head>
 <body>
-    <div id="map"></div>
-
-    <script>
-
-        var map = L.map('map').setView([53.5, -3], 7);
-
-        map.options.maxZoom = 13;
-        map.options.minZoom = 5;
-
-        L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmhpbGwiLCJhIjoiY2tmZHdkN2t4MW41eTJ4b2ZzbGRrbTZ5cSJ9.6NgSdrjSbrtfFk5ozMdFdw', {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        }).addTo(map);
-
-        
-
-
-        
-        var circle = L.circle([50.76306, -2.01375], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.62188, -2.02078], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.34932, -2.93381], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.07008, -1.81051], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.30305, -2.21574], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.60213, -1.22885], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.77892, -3.00751], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.66319, -3.00993], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.47407, -2.59269], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.72115, -1.80389], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.31829, -2.22863], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.76175, -3.44007], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.27708, -3.82370], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.36562, -4.08376], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.20226, -2.18726], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.20715, -3.46861], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.59684, -2.58097], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.68433, -3.00646], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.75742, -3.35851], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.35997, -4.07055], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.53127, -3.40544], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.59747, -2.94176], {
-            color: 'green',
-            fillColor: 'green',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-
-
-
-
-        
-
-        
-        var circle = L.circle([53.24423, 0.17008], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.67672, -1.15417], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.51, -1.12], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.20, -0.61], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.00, -2.17], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.00, -0.89], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.80362, -0.61989], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.14, -2.36], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.76846, -1.28048], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.39, -1.18], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.37, -1.26], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.62, -1.68], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.24425, -0.83994], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.16077, -0.89958], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.24677, -0.88845], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.44411, -1.91746], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.52448, -1.44825], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.47963, -1.89631], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.48670, -1.81159], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.67, -0.31], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.72, -1.36], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.35, -1.96], {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-        var circle = L.circle([51.08021, -0.80328], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.51, -0.42], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.54, -0.14], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.46956, -0.04267], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.29, -0.75], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.82, -0.39], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([50.86, -0.86], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.51718, -0.07712], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.15418, -0.28406], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.36708, 0.03703], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.48156, 0.00711], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.42382, 0.02959], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.39840, 0.51514], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.50284, -0.22405], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.46799, -0.06694], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.60442, -0.85382], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.47, -0.96], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.37096, -0.12247], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.30909, -0.57025], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.49398, -0.25485], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.52439, -0.12376], {
-            color: 'blue',
-            fillColor: 'blue',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-        
-        var circle = L.circle([53.72898, -1.85255], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.60205, -1.92922], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.76, -0.33], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.79, -1.54], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.84983, -1.66236], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.16399, -2.20808], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.70, -1.78], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.79, -2.24], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.53, -2.10], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.75, -2.86], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.88783, -2.92745], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.64322, -2.97095], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.62888, -2.98154], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.32114, -2.65296], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.65, -2.63], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.27, -2.91], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.82, -3.04], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.87, -1.85], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.79, -1.84], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.64, -1.38], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.38, -3.03], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.47, -2.12], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.38071, -2.47920], {
-            color: 'purple',
-            fillColor: 'purple',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-        var circle = L.circle([55.83248, -4.15805], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([56.18360, -3.97504], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([55.95672, -4.01961], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([55.95067, -3.19009], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([55.50362, -4.32760], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([55.85694, -4.24613], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([56.47601, -2.96271], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([55.86, -3.98], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([55.99962, -3.78635], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([55.96749, -3.17481], {
-            color: 'magenta',
-            fillColor: 'magenta',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-
-
-
-
-
-
-        
-
-        
-        var circle = L.circle([53.15, -6.91], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.16054, -6.90512], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.66214, -8.62867], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.48829, -6.14893], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.71445, -6.35353], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([54.00, -6.39], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.27676, -7.49402], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.36, -7.49], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.25046, -7.55036], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.25316, -7.11537], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([54.59894, -5.92202], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([54.51525, -6.05509], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([54.59744, -5.92005], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([54.59, -5.94], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([54.59, -5.86], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([53.13, -6.61], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([54.60206, -5.92641], {
-            color: '#B87333',
-            fillColor: '#B87333',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-        var circle = L.circle([52.04438, 0.73707], {
-            color: 'orange',
-            fillColor: 'orange',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.13766, -0.46368], {
-            color: 'orange',
-            fillColor: 'orange',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.04926, -0.02088], {
-            color: 'orange',
-            fillColor: 'orange',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.81179, 0.15893], {
-            color: 'orange',
-            fillColor: 'orange',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.05825, 1.15661], {
-            color: 'orange',
-            fillColor: 'orange',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.53932, 0.71911], {
-            color: 'orange',
-            fillColor: 'orange',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-        var circle = L.circle([51.53127, -3.40544], {
-            color: '#87CEEB',
-            fillColor: '#87CEEB',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.59747, -2.94176], {
-            color: '#87CEEB',
-            fillColor: '#87CEEB',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.58534, -2.99271], {
-            color: '#87CEEB',
-            fillColor: '#87CEEB',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([52.12161, -2.31749], {
-            color: '#87CEEB',
-            fillColor: '#87CEEB',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-        
-        var circle = L.circle([51.81938, -4.68757], {
-            color: '#87CEEB',
-            fillColor: '#87CEEB',
-            fillOpacity: 0.5,
-            radius: 5000
-        }).addTo(map);
-
-
-    </script>
+	<p>&nbsp;</p>
+	<div id="slider"></div>
+
+	<script>
+		var slider = document.getElementById('slider');
+
+		noUiSlider.create(slider, {
+			start: [15, 18],
+			step: 1,
+			behaviour: 'drag',
+			connect: true,
+			tooltips: true,
+			range: {
+				'min': 1,
+				'max': 18
+			},
+			format: wNumb({ decimals: 0 })
+		});
+
+	</script>
+
+	
+	<div id="map"></div>
+
+	<script>
+
+		var map = L.map('map').setView([53.5, -3], 7);
+
+		map.options.maxZoom = 13;
+		map.options.minZoom = 5;
+
+		L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibmhpbGwiLCJhIjoiY2tmZHdkN2t4MW41eTJ4b2ZzbGRrbTZ5cSJ9.6NgSdrjSbrtfFk5ozMdFdw', {
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		}).addTo(map);
+
+		var markers = [];
+
+		// Fetch league meet data from api style endpoint
+		fetch('api/league_meets.php')
+			.then(response => response.json())
+			.then(data => {
+				data.forEach(function(leagueMeet) {
+
+					if (leagueMeet.latitude === null) return;
+
+					switch (leagueMeet.region_id) {
+						case 1: // Northern
+							circleColour = 'purple';
+							break;
+						case 2: // South West
+							circleColour = 'green';
+							break;
+						case 3: // Midlands
+							circleColour = 'red';
+							break;
+						case 4: // London SE
+							circleColour = 'blue';
+							break;
+						case 5: // Irish
+							circleColour = '#B87333';
+							break;
+						case 6: // Scottish
+							circleColour = 'magenta';
+							break;
+						case 7: // East Anglia
+							circleColour = 'orange';
+							break;
+						case 8: // South Wales
+							circleColour = '#87CEEB';
+							break;
+						default:
+							circleColour = "gray";
+					}
+
+					let marker = L.circle([leagueMeet.latitude, leagueMeet.longitude], {
+						color: circleColour,
+						fillColor: circleColour,
+						fillOpacity: 0.5,
+						radius: 3000 + (leagueMeet.attendance / 3) * 1000
+					}).bindPopup(`Attendance: ${leagueMeet.attendance}`).addTo(map);
+
+					markers.push({
+						marker: marker,
+						season: leagueMeet.season
+					});
+
+				});
+			})
+			.catch(error => console.error('Error fetching data:', error));
+
+		// Update map markers based on slider values
+		slider.noUiSlider.on('update', function(values) {
+			var minSeason = parseInt(values[0]);
+			var maxSeason = parseInt(values[1]);
+
+			// Filter markers based on season_id
+			markers.forEach(function(item) {
+				if (item.season >= minSeason && item.season < maxSeason) {
+					item.marker.addTo(map); // Show marker
+				} else {
+					map.removeLayer(item.marker); // Hide marker
+				}
+			});
+        });
+
+	</script>
 
 </body>
 </html>
