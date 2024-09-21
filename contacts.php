@@ -17,11 +17,7 @@
 </div>
 
 <?php
-	// First, validate region and season# 
 	require_once("includes/sql.inc"); 
-
-	$region = htmlspecialchars($_GET["region"] ?? null);
-	$season = htmlspecialchars($_GET['season'] ?? $currentseason); // default to current season if not specified.
 
 	$tsql="
 	SELECT
