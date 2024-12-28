@@ -29,7 +29,7 @@
 <p>Players can register for one regional league only. Meetings will be open to all players but only points scored in a player's nominated region will count towards their league total.</p>
 
 <p class="bold">D. Fees</p>
-<p>A league fee of £2.00 must be collected by the regional coordinator or deputy from all adult players before any play begins (under 16s play for free). This will contribute to a central prize fund. An additional charge will be made or may be requested as a contribution to the host's costs. The combined league fee, plus charge for host's costs is the entry fee. Hosts and their immediate family members will be exempt from the entry fee for the meet which they host. Hosts (but not their family members) are also exempt from paying the entry fee for every meet they attend in their region for that season.</p>
+<p>A league fee of £1.50 must be collected by the regional coordinator or deputy from all adult players before any play begins (under 16s play for free). This will contribute to a central prize fund. An additional charge will be made or may be requested as a contribution to the host's costs. The combined league fee, plus charge for host's costs is the entry fee. Hosts and household members will be exempt from the entry fee for the meet which they host. One person from each hosting venue will also be exempt from paying the entry fee for every meet they attend in their region for that season.</p>
 
 <p class="bold">E. Minimum number of competitors</p>
 <p>For a meeting to count towards the regional league at least five competitors from that region must take part.</p>
@@ -104,7 +104,7 @@
 <p>Regional coordinators will act as central contacts and adjudicators for their regions. Regional coordinators or meeting hosts must ensure that a steward or stewards are present at the meeting to monitor player conduct and ensure fair play.</p>
 
 <p class="bold">C. Reporting results</p>
-<p>Regional coordinators or deputies must report league point awards to the UK Pinball League web site organiser within one week of the end of a regional meeting.</p>
+<p>Regional coordinators or deputies must report league point awards to the UK Pinball League web site organiser within one week of the end of a regional meeting. League fees are also expected to be paid soon after each meeting.</p>
 
 </div>
 
@@ -204,7 +204,7 @@
 
 <h2>Good luck, play well and have fun.</h2>
 
-<p>Last revision: August 2024</p>
+<p>Last revision: December 2024</p>
 
 </div>
 
