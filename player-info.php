@@ -98,6 +98,8 @@ $machinesPlayed = $row['MachinesPlayed'];
                     <th width="200px">Machine</th>
                     <th width="50px">Played</th>
                     <th width="100px" class="score padright">Best</th>
+                    <th width="100px" class="score padright">Rank</th>
+
                     <!-- Add LeagueRank to this table too, then allow column sorting? -->
                 </tr>
             </thead>
@@ -108,21 +110,30 @@ $tsql ="
 WITH BestScores AS
 (
 	SELECT
-	MachineId,
-	COUNT(Score.Id) AS 'GamesPlayed',
-	MAX(Score) AS 'BestScore'
+	    MachineId,
+	    COUNT(Score.Id) AS 'GamesPlayed',
+	    MAX(Score) AS 'BestScore'
 	FROM
 	Score
 	WHERE PlayerId = ? -- $playerid
 	GROUP BY MachineId
+),
+RankedScores AS (
+    SELECT
+        MachineId,
+        Score,
+        RANK() OVER (PARTITION BY MachineId ORDER BY Score DESC) AS ScoreRank
+    FROM Score
 )
 SELECT
-Machine.Id AS 'MachineId',
-Machine.Name AS 'MachineName',
-BestScores.GamesPlayed AS 'GamesPlayed',
-BestScores.BestScore AS 'BestScore'
+    Machine.Id AS 'MachineId',
+    Machine.Name AS 'MachineName',
+    BestScores.GamesPlayed AS 'GamesPlayed',
+    BestScores.BestScore AS 'BestScore',
+    RankedScores.ScoreRank AS 'BestScoreRank'
 FROM BestScores
 INNER JOIN Machine ON Machine.Id = BestScores.MachineId
+INNER JOIN RankedScores ON RankedScores.MachineId = BestScores.MachineId AND RankedScores.Score = BestScores.BestScore
 ORDER BY Machine.Name
 ";
 
@@ -139,6 +150,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
     $machineName = $row['MachineName'];
     $gamesPlayed = $row['GamesPlayed'];
     $bestScore = number_format($row['BestScore']);
+    $bestScoreRank = number_format($row['BestScoreRank']);
     $machineLink = "machine-info.php?machineid=$machineId";
     $scoresLink = "scores.php?playerid=$playerid&machineid=$machineId";
 
@@ -146,6 +158,7 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
     				<td><a href='$machineLink' class='player-link'>$machineName</a></td>
     				<td><a href='$scoresLink' class='player-link'>$gamesPlayed</a></td>
     				<td class='score padright'>$bestScore</td>
+    				<td class='score padright'>$bestScoreRank</td>
     			</tr>\n";
 }
 
