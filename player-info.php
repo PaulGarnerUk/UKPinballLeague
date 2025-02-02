@@ -1,6 +1,31 @@
-<?php
+﻿<?php
+	require_once("includes/sql.inc");
+
 	$playerid = htmlspecialchars($_GET["playerid"] ?? null);
 	$playername = htmlspecialchars($_GET['player'] ?? null); 
+
+   	$sort = htmlspecialchars($_GET["sort"] ?? "machine"); // sortby 'plays', 'machine', 'rank'
+	$dir = htmlspecialchars($_GET["dir"] ?? "asc"); // sort direction ('asc' or 'desc')
+
+    if ($dir === "desc") {
+		$sortdir = "DESC";
+		$sortchar = "▼";
+		$oppositesortdir = "asc";
+	} else {
+		$sortdir = "ASC";
+		$sortchar = "▲";
+		$oppositesortdir = "desc";
+	}
+
+	if ($sort === "plays") {
+		$orderby = "ORDER BY BestScores.GamesPlayed $sortdir, Machine.Name ASC";
+	} else if ($sort === "rank") {
+		$orderby = "ORDER BY RankedScores.ScoreRank $sortdir, Machine.Name ASC";
+	} else {
+		$sort = "machine";
+		$orderby = "ORDER BY Machine.Name $sortdir";
+	}
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -24,9 +49,7 @@ Aerobatics       1,321,330     234  12.4%             (special row highlighting 
 -->
 
 <!-- Header and menu -->
-<?php include("includes/header.inc"); ?>
-
-<?php include("includes/sql.inc");
+<?php include("includes/header.inc");
 
 // At some future point this can be simplified. We only need the union'd select by name for legacy pages
 $tsql ="
@@ -89,18 +112,35 @@ $machinesPlayed = $row['MachinesPlayed'];
 <div class="panel">
 
     <h2>Machines played.</h2>
-    <p>Click on the played count for a breakdown of all of <?=$playername?>'s recorded scores on that machine.</p>
+    <p>Click on the played count for a breakdown of all of <?=$playername?>'s recorded scores on that machine.  Click on column headings to sort.</p>
 	
     <div class="table-holder">
         <table>
             <thead>
                 <tr class="white">
-                    <th width="200px">Machine</th>
-                    <th width="50px">Played</th>
-                    <th width="100px" class="score padright">Best</th>
-                    <th width="100px" class="score padright">Rank</th>
+<?php
+                    // machine sortable column header
+                    if ($sort === "machine") {
+	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=machine&dir=$oppositesortdir' class='player-link'>Machine $sortchar</a></th>";
+                    } else {
+	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=machine&dir=asc' class='player-link'>Machine</a></th>";
+                    }
 
-                    <!-- Add LeagueRank to this table too, then allow column sorting? -->
+                    if ($sort === "plays") {
+	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=plays&dir=$oppositesortdir' class='player-link'>Plays $sortchar</a></th>";
+                    } else  {
+	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=plays&dir=desc' class='player-link'>Plays</a></th>";
+                    }
+
+                    echo "<th class='score padright'>Best</th>";
+
+                    if ($sort === "rank") {
+	                    echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank&dir=$oppositesortdir' class='player-link'>Rank $sortchar</a></th>";
+                    } else  {
+	                    echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank&dir=asc' class='player-link'>Rank</a></th>";
+                    }
+
+?>
                 </tr>
             </thead>
             <tbody>
@@ -134,7 +174,7 @@ SELECT
 FROM BestScores
 INNER JOIN Machine ON Machine.Id = BestScores.MachineId
 INNER JOIN RankedScores ON RankedScores.MachineId = BestScores.MachineId AND RankedScores.Score = BestScores.BestScore
-ORDER BY Machine.Name
+$orderby
 ";
 
 // Perform query.
