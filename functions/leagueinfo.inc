@@ -194,6 +194,7 @@ function GetSouthWestLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
+		case 18:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			break;
@@ -509,6 +510,7 @@ function GetEastAnglianLeagueInfo($season)
 	switch ($season)
 	{
 		case 17:
+		case 18:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			$info->bQualifyingPlaces = 8;
@@ -536,6 +538,10 @@ function GetSouthWalesLeagueInfo($season)
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			$info->bQualifyingPlaces = 6;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
+			break;
+		case 18:
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
 			break;
 		default:
 			$info->note="There was no league in the South Wales region this season.";
