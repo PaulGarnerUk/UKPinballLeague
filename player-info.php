@@ -21,6 +21,8 @@
 		$orderby = "ORDER BY BestScores.GamesPlayed $sortdir, Machine.Name ASC";
 	} else if ($sort === "rank") {
 		$orderby = "ORDER BY RankedScores.ScoreRank $sortdir, Machine.Name ASC";
+    } else if ($sort === "rank_percent") {
+        $orderby = "ORDER BY RankPercent $sortdir, Machine.Name ASC";
 	} else {
 		$sort = "machine";
 		$orderby = "ORDER BY Machine.Name $sortdir";
@@ -140,6 +142,11 @@ $machinesPlayed = $row['MachinesPlayed'];
 	                    echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank&dir=asc' class='player-link'>Rank</a></th>";
                     }
 
+                    if ($sort === "rank_percent") {
+                        echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank_percent&dir=$oppositesortdir' class='player-link'>% Top $sortchar</a></th>";
+                    } else  {
+                        echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank_percent&dir=asc' class='player-link'>% Top</a></th>";
+                    }
 ?>
                 </tr>
             </thead>
@@ -147,33 +154,46 @@ $machinesPlayed = $row['MachinesPlayed'];
 
 <?php
 $tsql ="
+DECLARE @playerId INTEGER = ?; -- $playerid
+
 WITH BestScores AS
 (
-	SELECT
-	    MachineId,
-	    COUNT(Score.Id) AS 'GamesPlayed',
-	    MAX(Score) AS 'BestScore'
-	FROM
-	Score
-	WHERE PlayerId = ? -- $playerid
-	GROUP BY MachineId
+    SELECT
+        MachineId,
+        COUNT(Score.Id) AS 'GamesPlayed',
+        MAX(Score) AS 'BestScore'
+    FROM Score
+    WHERE PlayerId = @playerId
+    GROUP BY MachineId
 ),
-RankedScores AS (
+RankedScores AS 
+(
     SELECT
         MachineId,
         Score,
         RANK() OVER (PARTITION BY MachineId ORDER BY Score DESC) AS ScoreRank
     FROM Score
+),
+MaxRankStats AS
+(
+    SELECT
+        MachineId,
+        MAX(ScoreRank) AS MaxRank
+    FROM RankedScores
+    GROUP BY MachineId
 )
 SELECT
     Machine.Id AS 'MachineId',
     Machine.Name AS 'MachineName',
     BestScores.GamesPlayed AS 'GamesPlayed',
     BestScores.BestScore AS 'BestScore',
-    RankedScores.ScoreRank AS 'BestScoreRank'
+    RankedScores.ScoreRank AS 'BestScoreRank',
+    MaxRankStats.MaxRank As 'TotalScores',
+    ROUND(CAST(RankedScores.ScoreRank  AS FLOAT) / (MaxRankStats.MaxRank ) * 100 , 2) as 'RankPercent'
 FROM BestScores
 INNER JOIN Machine ON Machine.Id = BestScores.MachineId
 INNER JOIN RankedScores ON RankedScores.MachineId = BestScores.MachineId AND RankedScores.Score = BestScores.BestScore
+INNER JOIN MaxRankStats ON MaxRankStats.MachineId = BestScores.MachineId
 $orderby
 ";
 
@@ -191,6 +211,8 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
     $gamesPlayed = $row['GamesPlayed'];
     $bestScore = number_format($row['BestScore']);
     $bestScoreRank = number_format($row['BestScoreRank']);
+    $totalScores = number_format($row['TotalScores']);
+    $rankPercent = number_format($row['RankPercent'], 2);
     $machineLink = "machine-info.php?machineid=$machineId";
     $scoresLink = "scores.php?playerid=$playerid&machineid=$machineId";
 
@@ -198,7 +220,8 @@ while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
     				<td><a href='$machineLink' class='player-link'>$machineName</a></td>
     				<td><a href='$scoresLink' class='player-link'>$gamesPlayed</a></td>
     				<td class='score padright'>$bestScore</td>
-    				<td class='score padright'>$bestScoreRank</td>
+    				<td class='score padright'>$bestScoreRank / $totalScores</td>
+                    <td class='score padright'>$rankPercent%</td>
     			</tr>\n";
 }
 
