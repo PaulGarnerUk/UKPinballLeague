@@ -1,6 +1,7 @@
 <div class="panel-copyright">
     <!-- Footer -->
     <p class="copyright">&copy; UK Pinball League <?=date("Y");?> </p>
+	<p class="copyright">(Environment: <?=$env?>)</p>
 </div>
 
 <div class="panel-bottom"></div>
