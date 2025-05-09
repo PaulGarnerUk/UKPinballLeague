@@ -1,6 +1,6 @@
 <?php
-	include("../includes/sql.inc");
 	include("../includes/envvars.inc");
+	include("../includes/sql.inc");
 
 	$seasonFrom = htmlspecialchars($_GET["season_from"] ?? 1);
 	$seasonTo = htmlspecialchars($_GET["season_to"] ?? $currentseason);
