@@ -345,6 +345,7 @@ function GetLondonSouthEastLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
+		case 18:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			$info->bQualifyingPlaces = 6;
