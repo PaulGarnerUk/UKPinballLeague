@@ -6,6 +6,7 @@
 
 	$tsql="
 SELECT
+Id AS 'Id',
 Name AS 'Name',
 Synonym AS 'Synonym',
 Director AS 'Director'
@@ -23,6 +24,7 @@ FROM Region
 	while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
 	{
 		$regions[] = array(
+			'id' => $row['Id'],
 			'name' => $row['Name'],
 			'synonym' => $row['Synonym'],
 			'director' => $row['Director'],
