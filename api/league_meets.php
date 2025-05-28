@@ -70,12 +70,7 @@ ORDER BY Region.SortOrder, LeagueMeet.SeasonId, LeagueMeet.MeetNumber
 		);
 	}
 
-	if ($output == 'json')
-	{
-		header('Content-Type: application/json');
-		echo json_encode($league_meets);
-	}
-	else if ($output = 'csv')
+	if ($output == 'csv')
 	{
 		header('Content-Type: application/csv');
 		header('Content-Disposition: attachment; filename="league_meets.csv"');
@@ -92,5 +87,10 @@ ORDER BY Region.SortOrder, LeagueMeet.SeasonId, LeagueMeet.MeetNumber
 
 		// Close the output stream
 		fclose($outputStream);
+	}
+	else
+	{
+		header('Content-Type: application/json');
+		echo json_encode($league_meets);
 	}
 ?>
