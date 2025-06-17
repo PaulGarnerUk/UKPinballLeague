@@ -267,6 +267,7 @@ function GetMidlandsLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
+		case 18:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			$info->bQualifyingPlaces = 8;
@@ -419,6 +420,7 @@ function GetIrishLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
+		case 18:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			break;
@@ -493,6 +495,7 @@ function GetScottishLeagueInfo($season)
 			$info->numberOfQualifyingMeets = 4; // six meets this season for the first time
 			break;
 		case 17:
+		case 18:
 			$info->numberOfQualifyingMeets = 4;
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
