@@ -267,10 +267,15 @@ function GetMidlandsLeagueInfo($season)
 			$info->aQualifyingDescription = "League finals qualifying place.";
 			break;
 		case 17:
-		case 18:
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			$info->bQualifyingPlaces = 8;
+			$info->bQualifyingDescription = "Regional finals qualifying place.";
+			break;
+		case 18:
+			$info->aQualifyingPlaces = 2;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			$info->bQualifyingPlaces = 10;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 	}
