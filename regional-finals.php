@@ -61,7 +61,7 @@
 	$seasonLoop=$currentseason;
 	while ($seasonLoop > 0)
 	{
-		echo "<a href='finals.php?season=$seasonLoop'>Season $seasonLoop</a>";
+		echo "<a href='regional-finals.php?season=$seasonLoop'>Season $seasonLoop</a>";
 		$seasonLoop--;
 	}
 	echo "</span></div>";

@@ -180,6 +180,25 @@ ORDER BY Score DESC, Player.Name ASC
 */
 ```
 
+## Regional Finals
+
+Regional finals appear in the schedule with some basic data as below. The competition type is 2 for regional finals, and the region id is used to identify which region the final is for. 
+The Competition.Name only appears when viewing the results, and for regions playing multiple rounds is best configured as below.
+
+```
+INSERT INTO Competition (CompetitionType, Name)
+VALUES (2, '2025 London and South East Regional Finals - Round One')
+
+INSERT INTO LeagueRegionalFinal (SeasonId, RegionId, CompetitionId, Date) 
+VALUES (18, 4, 659, CONVERT(DATETIME, '2025-06-08 00:00:00', 120))
+```
+
+Each round will also need a row in `LeagueFinal` to indicate the round number and description. 
+```
+INSERT INTO LeagueFinal (SeasonId, RegionId, CompetitionId, Description, Round )
+VALUES (18, 4, 659, 'Round One', 1)
+```
+
 # Maintenance
 
 ## (Re) Generate league meet guests
