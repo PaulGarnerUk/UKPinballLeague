@@ -111,15 +111,19 @@ Season.Year AS 'SeasonYear',
 Season.SeasonNumber AS 'SeasonNumber',
 Region.Name AS 'RegionName',
 Region.Synonym AS 'RegionSynonym',
+RegionalFinalRegion.Synonym AS 'RegionalFinalRegionSynonym',
 LeagueMeet.MeetNumber AS 'LeagueMeetNumber',
+Competition.CompetitionType AS 'CompetitionType',
 LeagueFinal.Description AS 'LeagueFinalDescription'
 FROM Score
 INNER JOIN RankedScores ON RankedScores.ScoreId = Score.Id
 INNER JOIN Player ON Player.Id = Score.PlayerId
 LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
 LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
+INNER JOIN Competition ON Competition.Id = Score.CompetitionId
 INNER JOIN Season ON Season.Id = (COALESCE(LeagueMeet.SeasonId, LeagueFinal.SeasonId))
 LEFT OUTER JOIN Region ON Region.Id = LeagueMeet.RegionId
+LEFT OUTER JOIN Region AS RegionalFinalRegion ON RegionalFinalRegion.Id = LeagueFinal.RegionId
 WHERE (Rank = 1 OR Score.PlayerId = ?) -- $playerid
 ORDER BY Rank, Player.Name
 ";
@@ -158,20 +162,22 @@ ORDER BY Rank, Player.Name
 			$scoreSeasonYear = $scoreRow['SeasonYear'];
 			$scoreRegion = $scoreRow['RegionName'];
 			$scoreRegionSynonym = $scoreRow['RegionSynonym'];
+			$finalRegionSynonym = $scoreRow['RegionalFinalRegionSynonym'];
 			$scoreLeagueMeetNumber = $scoreRow['LeagueMeetNumber'];
+			$competitionType = $scoreRow['CompetitionType'];
 
-			$leagueFinal = $scoreRow['LeagueFinalDescription'];
-			if (is_null($leagueFinal))
+			if ($competitionType == 0) // League Meet
 			{
 				$event = "<a href=\"leaguemeet.php?season=$scoreSeasonNumber&region=$scoreRegionSynonym&meet=$scoreLeagueMeetNumber\" class='player-link'>$scoreSeasonYear $scoreRegion League - Meet $scoreLeagueMeetNumber</a>";
 			}
-			else if (str_starts_with($leagueFinal, 'League Final'))
+			else if ($competitionType == 1) // League Final
 			{
-				$event = "$scoreSeasonYear $leagueFinal";
+				$event = "<a href=\"finals.php?season=$scoreSeasonNumber\" class='player-link'>$scoreSeasonYear $scoreRegion League Finals</a>";
 			}
-			else 
+			else if ($competitionType == 2) // Regional Final
 			{
-				$event = "$scoreSeasonYear League Final, $leagueFinal";
+				$regionalFinalDescription = $scoreRow['LeagueFinalDescription'];
+				$event = "<a href=\"regional-finals.php?season=$scoreSeasonNumber&region=$finalRegionSynonym\" class='player-link'>$scoreSeasonYear $scoreRegion Regional Finals $regionalFinalDescription</a>";
 			}
 
 			if ($scoreCompetitionId == $competitionid and $scorePlayerId == $playerid)
