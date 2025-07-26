@@ -10,7 +10,7 @@
     $sqlConnection = sqlsrv_connect($sqlserver, $sqlConnectionOptions);
 	if($sqlConnection === false ) 
 	{
-		echo "connection borken.";
+		echo "connection borken.<br>";
 		// die( print_r( sqlsrv_errors(), true));
 	}
 

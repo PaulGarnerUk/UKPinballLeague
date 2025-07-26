@@ -7,7 +7,7 @@
 	        return getenv($key);
 	    }
 		// If the env is not 'primary', then we assume it's a prefixed env, such as 'failover'.
-	    $prefixedKey = strtoupper($env) . '_' . strtoupper($key);
+	    $prefixedKey = strtolower($env) . '_' . strtolower($key);
 	    return getenv($prefixedKey) ?: getenv($key); 
 	}
 
