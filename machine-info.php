@@ -23,9 +23,15 @@
 		exit;
     }
 
-    // Run inital query for machine info and stats
+    // For use in SQL queries - set to null if 'all' is selected, otherwise set to the relevant id.
+    $regionId = $region->regionId ?: null;
+    $seasonId = $season->seasonId ?: null;
+
+/*
     $filterClause = "";
     $tsqlParams = "";
+
+    
 
     if ($region->regionId > 0) {
 	    $filterClause = "AND (LeagueMeet.RegionId = @RegionId)\r\n"; 
@@ -36,7 +42,7 @@
 	    $filterClause .= "AND (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)\r\n";
 	    $tsqlParams .= "DECLARE @SeasonId INT = $season->seasonId;\r\n";
     }
-
+*/
     // First query to obtain machine info and basic info
     $tsql = "
 DECLARE @MachineId INT = ?;
@@ -59,25 +65,27 @@ FROM Machine WHERE Machine.Id = @MachineId
 
     $tsql = "
 DECLARE @MachineId INT = ?;
-$tsqlParams
+DECLARE @RegionId INT = ?;  -- NULL if not filtering
+DECLARE @SeasonId INT = ?;  -- NULL if not filtering
 
 SELECT
-Machine.Name AS 'MachineName',
-AVG(Score) AS 'AverageScore',
-COUNT(Score) AS 'GamesPlayed',
-COUNT(DISTINCT(LeagueMeet.Id)) + COUNT(DISTINCT(LeagueFinal.Id))  AS 'Appearances',
-COUNT(DISTINCT(LeagueMeet.Id)) AS 'MeetsCount',
-COUNT(DISTINCT(LeagueFinal.Id)) AS 'FinalsCount'
+    Machine.Name AS MachineName,
+    AVG(Score.Score) AS AverageScore,
+    COUNT(Score.Score) AS GamesPlayed,
+    COUNT(DISTINCT LeagueMeet.Id) + COUNT(DISTINCT LeagueFinal.Id) AS Appearances,
+    COUNT(DISTINCT LeagueMeet.Id) AS MeetsCount,
+    COUNT(DISTINCT LeagueFinal.Id) AS FinalsCount
 FROM Score
-INNER JOIN Machine ON Machine.Id = Score.MachineId
-LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
-LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
-WHERE MachineId = @MachineId
-$filterClause
-GROUP BY Machine.Name
+JOIN Machine ON Machine.Id = Score.MachineId
+LEFT JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+LEFT JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
+WHERE Score.MachineId = @MachineId
+  AND (@RegionId IS NULL OR LeagueMeet.RegionId = @RegionId)
+  AND (@SeasonId IS NULL OR LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)
+GROUP BY Machine.Name;
 ";
 
-$result= sqlsrv_query($sqlConnection, $tsql, array($machineIdParam));
+$result= sqlsrv_query($sqlConnection, $tsql, array($machineIdParam, $regionId, $seasonId));
 if ($result == FALSE) { echo "query borken."; }
 
 $countsRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
@@ -174,32 +182,33 @@ $countsRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
 <?php
 $tsql = "
 DECLARE @MachineId INT = ?;
-$tsqlParams
+DECLARE @RegionId INT = ?;  -- NULL if not filtering
+DECLARE @SeasonId INT = ?;  -- NULL if not filtering
 
-SELECT TOP(50)
-RANK() OVER(ORDER BY Score.Score DESC, Player.Name ASC) AS 'Rank',
-Score.Score AS 'Score',
-Score.CompetitionId AS 'CompetitionId',
-Competition.Name AS 'EventName',
-Score.PlayerId AS 'PlayerId',
-Player.Name AS 'PlayerName',
-Season.SeasonNumber AS 'SeasonNumber',
-Region.Synonym AS 'RegionSynonym',
-LeagueMeet.MeetNumber AS 'MeetNumber'
+SELECT TOP (50)
+    RANK() OVER (ORDER BY Score.Score DESC, Player.Name ASC) AS Rank,
+    Score.Score,
+    Score.CompetitionId,
+    Competition.Name AS EventName,
+    Score.PlayerId,
+    Player.Name AS PlayerName,
+    Season.SeasonNumber,
+    Region.Synonym AS RegionSynonym,
+    LeagueMeet.MeetNumber
 FROM Score
-INNER JOIN Machine ON Machine.Id = Score.MachineId
-INNER JOIN Player ON Player.Id = Score.PlayerId
-INNER JOIN Competition ON Competition.Id = Score.CompetitionId
-LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
-LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
-LEFT OUTER JOIN Region ON Region.Id = LeagueMeet.RegionId
-LEFT OUTER JOIN Season ON Season.Id = LeagueMeet.SeasonId
-WHERE MachineId = @MachineId
-$filterClause
-ORDER BY Score.Score DESC
+JOIN Player ON Player.Id = Score.PlayerId
+JOIN Competition ON Competition.Id = Score.CompetitionId
+LEFT JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+LEFT JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
+LEFT JOIN Region ON Region.Id = LeagueMeet.RegionId
+LEFT JOIN Season ON Season.Id = LeagueMeet.SeasonId
+WHERE Score.MachineId = @MachineId
+  AND (@RegionId IS NULL OR LeagueMeet.RegionId = @RegionId)
+  AND (@SeasonId IS NULL OR LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)
+ORDER BY Score.Score DESC, Player.Name ASC;
 ";
 
-$result= sqlsrv_query($sqlConnection, $tsql, array($machineIdParam));
+$result= sqlsrv_query($sqlConnection, $tsql, array($machineIdParam, $regionId, $seasonId));
 if ($result == FALSE)
 {
 	echo "query borken.";
