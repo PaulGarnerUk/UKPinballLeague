@@ -27,22 +27,6 @@
     $regionId = $region->regionId ?: null;
     $seasonId = $season->seasonId ?: null;
 
-/*
-    $filterClause = "";
-    $tsqlParams = "";
-
-    
-
-    if ($region->regionId > 0) {
-	    $filterClause = "AND (LeagueMeet.RegionId = @RegionId)\r\n"; 
-	    $tsqlParams = "DECLARE @RegionId INT = $region->regionId;\r\n";
-    }
-
-    if ($season->seasonId > 0) {
-	    $filterClause .= "AND (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)\r\n";
-	    $tsqlParams .= "DECLARE @SeasonId INT = $season->seasonId;\r\n";
-    }
-*/
     // First query to obtain machine info and basic info
     $tsql = "
 DECLARE @MachineId INT = ?;

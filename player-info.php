@@ -18,9 +18,9 @@
 	}
 
 	if ($sort === "plays") {
-		$orderby = "ORDER BY BestScores.GamesPlayed $sortdir, Machine.Name ASC";
+		$orderby = "ORDER BY PlayerBest.GamesPlayed $sortdir, Machine.Name ASC";
 	} else if ($sort === "rank") {
-		$orderby = "ORDER BY RankedScores.ScoreRank $sortdir, Machine.Name ASC";
+		$orderby = "ORDER BY BestScoreRank $sortdir, Machine.Name ASC";
     } else if ($sort === "rank_percent") {
         $orderby = "ORDER BY RankPercent $sortdir, Machine.Name ASC";
 	} else {
@@ -156,44 +156,43 @@ $machinesPlayed = $row['MachinesPlayed'];
 $tsql ="
 DECLARE @playerId INTEGER = ?; -- $playerid
 
-WITH BestScores AS
+WITH PlayerBest AS
 (
     SELECT
-        MachineId,
-        COUNT(Score.Id) AS 'GamesPlayed',
-        MAX(Score) AS 'BestScore'
+        Score.MachineId,
+        COUNT(*) AS GamesPlayed,
+        MAX(Score.Score) AS BestScore
     FROM Score
-    WHERE PlayerId = @playerId
-    GROUP BY MachineId
-),
-RankedScores AS 
-(
-    SELECT
-        MachineId,
-        Score,
-        RANK() OVER (PARTITION BY MachineId ORDER BY Score DESC) AS ScoreRank
-    FROM Score
-),
-MaxRankStats AS
-(
-    SELECT
-        MachineId,
-        MAX(ScoreRank) AS MaxRank
-    FROM RankedScores
-    GROUP BY MachineId
+    WHERE Score.PlayerId = @playerId
+    GROUP BY Score.MachineId
 )
 SELECT
-    Machine.Id AS 'MachineId',
-    Machine.Name AS 'MachineName',
-    BestScores.GamesPlayed AS 'GamesPlayed',
-    BestScores.BestScore AS 'BestScore',
-    RankedScores.ScoreRank AS 'BestScoreRank',
-    MaxRankStats.MaxRank As 'TotalScores',
-    ROUND(CAST(RankedScores.ScoreRank  AS FLOAT) / (MaxRankStats.MaxRank ) * 100 , 2) as 'RankPercent'
-FROM BestScores
-INNER JOIN Machine ON Machine.Id = BestScores.MachineId
-INNER JOIN RankedScores ON RankedScores.MachineId = BestScores.MachineId AND RankedScores.Score = BestScores.BestScore
-INNER JOIN MaxRankStats ON MaxRankStats.MachineId = BestScores.MachineId
+    Machine.Id AS MachineId,
+    Machine.Name AS MachineName,
+    PlayerBest.GamesPlayed,
+    PlayerBest.BestScore,
+
+    -- Rank of the player's best score
+    COUNT(CASE WHEN Score.Score > PlayerBest.BestScore THEN 1 END) + 1 AS BestScoreRank,
+
+    -- Total number of scores for this machine
+    COUNT(Score.Id) AS TotalScores,
+
+    ROUND(
+        CAST(
+            COUNT(CASE WHEN Score.Score > PlayerBest.BestScore THEN 1 END) + 1
+            AS FLOAT
+        ) / COUNT(Score.Id) * 100,
+        2
+    ) AS RankPercent
+FROM PlayerBest
+INNER JOIN Machine ON Machine.Id = PlayerBest.MachineId
+INNER JOIN Score ON Score.MachineId = PlayerBest.MachineId
+GROUP BY
+    Machine.Id,
+    Machine.Name,
+    PlayerBest.GamesPlayed,
+    PlayerBest.BestScore
 $orderby
 ";
 
