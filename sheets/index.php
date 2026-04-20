@@ -6,6 +6,7 @@ $folders = [
     'scotland' => '1gQrp64OWY-FjCj55F_zIPxzIeZoYT585',
     'london' => '1gsFQZS-I2cc0s6_yolmKX7mAv0Pxf5kU',
     'eastanglia' => '1XJvDMFm2Kautq8mSLkZXktfVdH66EP6T',
+    'southwales' => '1FXx8tUz5JX92K-rYtnF6DjI8TnluVgqj',
 ];
 
 // Get the last part of the path: /sheets/midlands → midlands

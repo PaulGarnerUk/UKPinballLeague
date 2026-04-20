@@ -1,296 +1,303 @@
 <?php
-	require_once("includes/sql.inc");
-	require_once("functions/regioninfo.inc");
-    require_once("functions/seasoninfo.inc");
+require_once("includes/sql.inc");
+require_once("functions/regioninfo.inc");
+require_once("functions/seasoninfo.inc");
 
-	$sort = htmlspecialchars($_GET["sort"] ?? "machine"); // sortby 'plays', 'machine', 'meets', 'player', 'score'
-	$dir = htmlspecialchars($_GET["dir"] ?? "asc"); // sort direction ('asc' or 'desc')
-	$regionParam = htmlspecialchars($_GET["region"] ?? "all"); // region synonym ('n', 'm' etc) or 'all' for all regions.
-	$seasonParam = htmlspecialchars($_GET["season"] ?? "all"); // season number, or 'all' for all seasons.
+$sort = htmlspecialchars($_GET["sort"] ?? "machine"); // 'plays', 'machine', 'meets', 'player', 'score'
+$dir = htmlspecialchars($_GET["dir"] ?? "asc");        // 'asc' or 'desc'
+$regionParam = htmlspecialchars($_GET["region"] ?? "all");
+$seasonParam = htmlspecialchars($_GET["season"] ?? "all");
 
-	// Validate region
-	$region = ValidateRegionSynonym($regionParam, $sqlConnection);
-	if (is_null($region)) {
-		echo '<p>Unexpected region.</p>';
-		exit;
-	}
+// Validate region and season
+$region = ValidateRegionSynonym($regionParam, $sqlConnection);
+if (is_null($region)) {
+    echo '<p>Unexpected region.</p>';
+    exit;
+}
 
-    // Validate season
-    $season = ValidateSeasonNumber($seasonParam, $sqlConnection);
-    if (is_null($season)) {
-        echo '<p>Unexpected season.</p>';
-		exit;
+$season = ValidateSeasonNumber($seasonParam, $sqlConnection);
+if (is_null($season)) {
+    echo '<p>Unexpected season.</p>';
+    exit;
+}
+
+// Sort direction
+if ($dir === "desc") {
+    $sortdir = "DESC";
+    $sortchar = "&#9660;"; // ▼
+    $oppositesortdir = "asc";
+} else {
+    $sortdir = "ASC";
+    $sortchar = "&#9650;"; // ▲
+    $oppositesortdir = "desc";
+}
+
+// Sort column
+if ($sort === "plays") {
+    $sortColumn = 'GamesPlayed';
+    $orderby = "ORDER BY GamesPlayed $sortdir, Appearances $sortdir";
+} elseif ($sort === "meets") {
+    $sortColumn = 'Appearances';
+    $orderby = "ORDER BY Appearances $sortdir, GamesPlayed $sortdir";
+} elseif ($sort === "player") {
+    $sortColumn = 'PlayerName';
+    $orderby = "ORDER BY PlayerName $sortdir, Machine.Name ASC";
+} elseif ($sort === "score") {
+    $sortColumn = 'HighScore';
+    $orderby = "ORDER BY HighScore $sortdir, Machine.Name ASC";
+} else {
+    $sort = "machine";
+    $sortColumn = 'MachineName';
+    $orderby = "ORDER BY MachineName $sortdir";
+}
+
+// Build filter clause
+$filterClause = "";
+$tsqlParams = "";
+
+if ($region->regionId > 0) {
+    $filterClause = "WHERE (LeagueMeet.RegionId = @RegionId)";
+    $tsqlParams = "DECLARE @RegionId INT = $region->regionId;";
+}
+
+if ($season->seasonId > 0) {
+    if ($region->regionId > 0) {
+        $filterClause .= "\r\nAND (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)";
+        $tsqlParams .= "\r\nDECLARE @SeasonId INT = $season->seasonId;";
+    } else {
+        $filterClause = "WHERE (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)";
+        $tsqlParams = "DECLARE @SeasonId INT = $season->seasonId;";
     }
+}
 
+$finalFilterClause = str_replace("WHERE", "AND", $filterClause);
 
-	if ($dir === "desc") {
-		$sortdir = "DESC";
-		$sortchar = "▼";
-		$oppositesortdir = "asc";
-	} else {
-		$sortdir = "ASC";
-		$sortchar = "▲";
-		$oppositesortdir = "desc";
-	}
-
-	if ($sort === "plays") {
-		$sortColumn = 'GamesPlayed';
-		$orderby = "ORDER BY GamesPlayed $sortdir, Appearances $sortdir";
-	} else if ($sort === "meets") {
-		$sortColumn = 'Appearances';
-		$orderby = "ORDER BY Appearances $sortdir, GamesPlayed $sortdir";
-	} else if ($sort === "player") {
-		$sortColumn = 'PlayerName';
-		$orderby = "ORDER BY PlayerName $sortdir, Machine.Name ASC";
-	} else if ($sort === "score") {
-		$sortColumn = 'HighScore';
-		$orderby = "ORDER BY HighScore $sortdir, Machine.Name ASC";
-	} else {
-		$sort = "machine";
-		$sortColumn = 'MachineName';
-		$orderby = "ORDER BY MachineName $sortdir";
-	}
-?>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="description" content="All pinball machines played in the UK Pinball League." />
-<title>UK Pinball League - Machines</title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-<!-- Header and menu -->
-<?php include("includes/header.inc"); ?>
-
-<div class="panel">
-
-	<h1>Machines - Full List</h1>
-	<p>All machines played to date in the UK Pinball League.<br>
-	Use the buttons to filter the data, and click on column headings to sort.</p>
-
-<?php 
-
-	echo "<h2>Filter: ";
-
-	echo "<span class='dropdown'>
-  <h2 class='dropbtn'>$region->leagueName</h2>
-  <div class='dropdown-content'>";
-	echo "<a href='machines.php?region=all&season=$seasonParam&sort=$sort&dir=$dir'>All Leagues</a>";
-	echo "<a href='machines.php?region=sw&season=$seasonParam&sort=$sort&dir=$dir'>South West</a>";
-	echo "<a href='machines.php?region=m&season=$seasonParam&sort=$sort&dir=$dir'>Midlands</a>";
-	echo "<a href='machines.php?region=lse&season=$seasonParam&sort=$sort&dir=$dir'>London and South East</a>";
-	echo "<a href='machines.php?region=n&season=$seasonParam&sort=$sort&dir=$dir'>Northern</a>";
-	echo "<a href='machines.php?region=s&season=$seasonParam&sort=$sort&dir=$dir'>Scotland</a>";
-	echo "<a href='machines.php?region=i&season=$seasonParam&sort=$sort&dir=$dir'>Ireland</a>";
-	echo "<a href='machines.php?region=ea&season=$seasonParam&sort=$sort&dir=$dir'>East Anglian</a>";
-	echo "<a href='machines.php?region=w&season=$seasonParam&sort=$sort&dir=$dir'>South Wales</a>";
-	echo "</div></span>";
-	
-	echo " <span class='dropdown'>
-  <h2 class='dropbtn'>$season->seasonName</h2>
-  <div class='dropdown-content'>";
-	echo "<a href='machines.php?region=$regionParam&season=all&sort=$sort&dir=$dir'>All Seasons</a>";
-	$seasonLoop=$currentseason;
-	while ($seasonLoop > 0)
-	{
-		echo "<a href='machines.php?region=$regionParam&season=$seasonLoop&sort=$sort&dir=$dir'>Season $seasonLoop</a>";
-		$seasonLoop--;
-	}
-
-	echo "</div></span>";
-	
-	/* Coming soon*.
-	echo "<input class='search' type='text' size='30' placeholder='Search..'>";
-	*/
-	echo "</h2><p></p>";
-
-	$filterClause = "";
-	$tsqlParams = "";
-
-	if ($region->regionId > 0) {
-		$filterClause = "WHERE (LeagueMeet.RegionId = @RegionId)"; 
-		$tsqlParams = "DECLARE @RegionId INT = $region->regionId;";
-	}
-
-	if ($season->seasonId > 0) {
-		if ($region->regionId > 0) {
-			$filterClause .= "\r\nAND (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)";
-			$tsqlParams .= "\r\nDECLARE @SeasonId INT = $season->seasonId;";
-		} else {
-			$filterClause = "WHERE (LeagueMeet.SeasonId = @SeasonId OR LeagueFinal.SeasonId = @SeasonId)"; 
-			$tsqlParams = "DECLARE @SeasonId INT = $season->seasonId;";
-		}
-	}
-
-	// The final filter clause is an AND 
-	$finalFilterClause = str_replace("WHERE", "AND", $filterClause);
-
-	// 
-	$tsql ="
-	$tsqlParams
+$tsql = "
+$tsqlParams
 
 WITH AverageScore AS
 (
-	SELECT 
-	MachineId,
-	AVG(Score.Score) AS 'Average'
-	FROM Score
-	LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
-	LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
-	$filterClause
-	GROUP BY MachineId
+    SELECT
+    MachineId,
+    AVG(Score.Score) AS 'Average'
+    FROM Score
+    LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+    LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
+    $filterClause
+    GROUP BY MachineId
 ),
 GamesPlayed AS
 (
-	SELECT
-	MachineId,
-	COUNT(DISTINCT(Score.CompetitionId)) AS 'Appearances',
-	COUNT(Score.Score) AS 'GamesPlayed'
-	FROM Score
-	LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
-	LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
-	$filterClause
-	GROUP BY MachineId
+    SELECT
+    MachineId,
+    COUNT(DISTINCT(Score.CompetitionId)) AS 'Appearances',
+    COUNT(Score.Score) AS 'GamesPlayed'
+    FROM Score
+    LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+    LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
+    $filterClause
+    GROUP BY MachineId
 ),
 MaxScore AS
 (
-	SELECT
-	Score.CompetitionId,
-	MachineId, 
-	Score, 
-	PlayerId,
+    SELECT
+    Score.CompetitionId,
+    MachineId,
+    Score,
+    PlayerId,
     ROW_NUMBER() OVER (PARTITION BY MachineId ORDER BY Score DESC) Rank
     FROM Score
-	LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
-	LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
-	$filterClause
+    LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Score.CompetitionId
+    LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = Score.CompetitionId
+    $filterClause
 )
 
-SELECT 
-MaxScore.MachineId AS 'MachineId', 
+SELECT
+MaxScore.MachineId AS 'MachineId',
 Machine.Name AS 'MachineName',
 GamesPlayed.Appearances AS 'Appearances',
 GamesPlayed.GamesPlayed AS 'GamesPlayed',
-MaxScore.Score AS HighScore, 
+MaxScore.Score AS HighScore,
 AverageScore.Average AS AverageScore,
 MaxScore.PlayerId AS 'PlayerId',
 Player.Name AS 'PlayerName',
 MaxScore.CompetitionId
 FROM MaxScore
-INNER JOIN AverageScore on AverageScore.MachineId = MaxScore.MachineId
+INNER JOIN AverageScore ON AverageScore.MachineId = MaxScore.MachineId
 INNER JOIN GamesPlayed ON GamesPlayed.MachineId = MaxScore.MachineId
 INNER JOIN Machine ON Machine.Id = MaxScore.MachineId
 INNER JOIN Player ON Player.Id = MaxScore.PlayerId
 LEFT OUTER JOIN LeagueMeet ON LeagueMeet.CompetitionId = MaxScore.CompetitionId
 LEFT OUTER JOIN LeagueFinal ON LeagueFinal.CompetitionId = MaxScore.CompetitionId
-WHERE MaxScore.Rank = 1 
+WHERE MaxScore.Rank = 1
 $finalFilterClause
 $orderby
 ";
 
-// Perform query.
-$result= sqlsrv_query($sqlConnection, $tsql);
-if ($result == FALSE)
-{
-	echo "query borken.";
-	echo $tsql;
+$result = sqlsrv_query($sqlConnection, $tsql);
+
+// Buffer rows
+$rows = [];
+if ($result) {
+    while ($r = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
+        $rows[] = $r;
+    }
+    sqlsrv_free_stmt($result);
 }
 
-echo "<table class='machines'>";
-
-echo "<thead>
-			<tr class='white'>
-				<th>&nbsp;</th>";
-
-// machine sortable column header
-if ($sort === "machine") {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=machine&dir=$oppositesortdir' class='player-link'>Machine $sortchar</a></th>";
-} else {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=machine&dir=asc' class='player-link'>Machine</a></th>";
+// Helper: build a sort link URL
+function sortUrl($sortKey, $defaultDir, $sort, $dir, $oppositesortdir, $regionParam, $seasonParam) {
+    $d = ($sort === $sortKey) ? $oppositesortdir : $defaultDir;
+    return "machines.php?region=$regionParam&season=$seasonParam&sort=$sortKey&dir=$d";
 }
-
-if ($sort === "meets") {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=meets&dir=$oppositesortdir' class='player-link'>Appearances $sortchar</a></th>";
-} else  {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=meets&dir=desc' class='player-link'>Appearances</a></th>";
-}
-
-if ($sort === "plays") {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=plays&dir=$oppositesortdir' class='player-link'>Plays $sortchar</a></th>";
-} else  {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=plays&dir=desc' class='player-link'>Plays</a></th>";
-}
-
-// Non sortable columns
-echo "<th class='score'>Average Score</th>
-		<th class='score'>High Score</th>";
-
-if ($sort === "player") {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=player&dir=$oppositesortdir' class='player-link'>Player $sortchar</a></th>";
-} else {
-	echo "<th><a href='machines.php?region=$regionParam&season=$seasonParam&sort=player&dir=asc' class='player-link'>Player</th>";
-}
-
-	echo "</tr></thead>\n";
-
-	$position = 0;
-	$hiddenPositions = 0;
-	$lastSortedValue = 0;
-
-while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC))
-{
-	$gamesPlayed = $row['GamesPlayed'];
-	$appearances = $row['Appearances'];
-	$machineId = $row['MachineId'];
-	$machineName = $row['MachineName'];
-	$averagescore = number_format($row['AverageScore']);
-	$highscore = number_format($row['HighScore']);
-	$playerName = $row['PlayerName'];
-	$playerId = $row['PlayerId'];
-
-	$sortedValue = $row[$sortColumn];
-
-	if ($sortedValue != $lastSortedValue)
-	{
-		$lastSortedValue = $sortedValue;
-		$position = $hiddenPositions + $position + 1;
-		$hiddenPositions = 0;
-	}
-	else 
-	{
-		++$hiddenPositions;
-	}
-
-	echo "<tr>
-			<td>$position</td>
-			<td><a href='machine-info.php?machineid=$machineId&region=$regionParam&season=$seasonParam' class='player-link'>$machineName</a></td>
-			<td class='score'>$appearances</td>
-			<td class='score padright'>$gamesPlayed</td>
-
-			<td class='score'>$averagescore</td>
-			<td class='score'>$highscore</td>
-			<td><a href='player-info.php?playerid=$playerId' class='player-link'>$playerName</a></td>
-
-			</tr>\n";
-}
-echo "</table>";
-
-sqlsrv_free_stmt($result);
+$pageTitle = 'UK Pinball League — Machines';
+$pageDescription = 'All pinball machines played in the UK Pinball League.';
 ?>
+<?php require_once('includes/header-modern.inc'); ?>
 
-	<p></p>
-	<p>
-	When filtered by region, only scores achieved at league meets (within specified region) are considered.<br><br>
-	<b>'Appearances'</b> is the number of league meets or league finals the game has appeared in.<br>
-	<b>'Plays'</b> is the number of games played across those events.<br>
-	For example, if Twilight Zone appeared at one meet with 12 players, then we would expect Appearances to be 1 and Plays to be 12.
-	</p>
+    <!-- ===== PAGE HERO ===== -->
+    <div class="page-hero">
+        <p class="page-hero-eyebrow"><?= htmlspecialchars($region->leagueName) ?> &bull; <?= htmlspecialchars($season->seasonName) ?></p>
+        <h1 class="page-hero-title">Machines</h1>
+    </div>
 
-</div>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="site-content">
 
-<!-- Footer -->
-<?php include("includes/footer.inc"); ?>
+        <!-- Filters -->
+        <div class="card">
+            <div class="card-body">
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label class="filter-label" for="regionSelect">League</label>
+                        <select class="filter-select-light" id="regionSelect">
+                            <option value="all"<?= ($regionParam === 'all' ? ' selected' : '') ?>>All Leagues</option>
+                            <option value="sw"<?= ($regionParam === 'sw'  ? ' selected' : '') ?>>South West</option>
+                            <option value="m"<?= ($regionParam === 'm'   ? ' selected' : '') ?>>Midlands</option>
+                            <option value="lse"<?= ($regionParam === 'lse' ? ' selected' : '') ?>>London &amp; South East</option>
+                            <option value="n"<?= ($regionParam === 'n'   ? ' selected' : '') ?>>Northern</option>
+                            <option value="s"<?= ($regionParam === 's'   ? ' selected' : '') ?>>Scotland</option>
+                            <option value="i"<?= ($regionParam === 'i'   ? ' selected' : '') ?>>Ireland</option>
+                            <option value="ea"<?= ($regionParam === 'ea'  ? ' selected' : '') ?>>East Anglian</option>
+                            <option value="w"<?= ($regionParam === 'w'   ? ' selected' : '') ?>>South Wales</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="seasonSelect">Season</label>
+                        <select class="filter-select-light" id="seasonSelect">
+                            <option value="all"<?= ($seasonParam === 'all' ? ' selected' : '') ?>>All Seasons</option>
+                            <?php for ($s = $currentseason; $s >= 1; $s--): ?>
+                            <option value="<?= $s ?>"<?= ($seasonParam == $s ? ' selected' : '') ?>>Season <?= $s ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-</body>
-</html>
+        <!-- Machines Table -->
+        <div class="card">
+        <!--
+            <div class="card-header">
+                <div class="card-accent"></div>
+                <h2>All Machines</h2>
+            </div>
+-->
+            <div class="card-body" style="padding: 0; overflow-x: auto;">
+                <table class="league-table">
+                    <thead>
+                        <tr>
+                            <th class="th-pos">#</th>
+                            <th class="th-player">
+                                <a href="<?= sortUrl('machine', 'asc', $sort, $dir, $oppositesortdir, $regionParam, $seasonParam) ?>"<?= ($sort === 'machine' ? ' class="th-sort-active"' : '') ?>>Machine<?= ($sort === 'machine' ? ' ' . $sortchar : '') ?></a>
+                            </th>
+                            <th>
+                                <a href="<?= sortUrl('meets', 'desc', $sort, $dir, $oppositesortdir, $regionParam, $seasonParam) ?>"<?= ($sort === 'meets' ? ' class="th-sort-active"' : '') ?>>Appearances<?= ($sort === 'meets' ? ' ' . $sortchar : '') ?></a>
+                            </th>
+                            <th>
+                                <a href="<?= sortUrl('plays', 'desc', $sort, $dir, $oppositesortdir, $regionParam, $seasonParam) ?>"<?= ($sort === 'plays' ? ' class="th-sort-active"' : '') ?>>Plays<?= ($sort === 'plays' ? ' ' . $sortchar : '') ?></a>
+                            </th>
+                            <th>Avg Score</th>
+                            <th>
+                                <a href="<?= sortUrl('score', 'desc', $sort, $dir, $oppositesortdir, $regionParam, $seasonParam) ?>"<?= ($sort === 'score' ? ' class="th-sort-active"' : '') ?>>High Score<?= ($sort === 'score' ? ' ' . $sortchar : '') ?></a>
+                            </th>
+                            <th class="th-player">
+                                <a href="<?= sortUrl('player', 'asc', $sort, $dir, $oppositesortdir, $regionParam, $seasonParam) ?>"<?= ($sort === 'player' ? ' class="th-sort-active"' : '') ?>>Player<?= ($sort === 'player' ? ' ' . $sortchar : '') ?></a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $position = 0;
+                        $hiddenPositions = 0;
+                        $lastSortedValue = null;
+
+                        foreach ($rows as $r):
+                            $machineId = $r['MachineId'];
+                            $machineName = $r['MachineName'];
+                            $appearances = $r['Appearances'];
+                            $gamesPlayed = $r['GamesPlayed'];
+                            $avgScore = number_format($r['AverageScore']);
+                            $highScore = number_format($r['HighScore']);
+                            $playerName = $r['PlayerName'];
+                            $playerId = $r['PlayerId'];
+                            $sortedValue = $r[$sortColumn];
+
+                            if ($sortedValue != $lastSortedValue) {
+                                $lastSortedValue = $sortedValue;
+                                $position = $hiddenPositions + $position + 1;
+                                $hiddenPositions = 0;
+                            } else {
+                                $hiddenPositions++;
+                            }
+                        ?>
+                        <tr>
+                            <td class="td-pos"><?= $position ?></td>
+                            <td class="td-player"><a href="machine-info.php?machineid=<?= $machineId ?>&amp;region=<?= $regionParam ?>&amp;season=<?= $seasonParam ?>"><?= htmlspecialchars($machineName) ?></a></td>
+                            <td><?= $appearances ?></td>
+                            <td><?= $gamesPlayed ?></td>
+                            <td><?= $avgScore ?></td>
+                            <td><?= $highScore ?></td>
+                            <td class="td-player"><a href="player-info.php?playerid=<?= $playerId ?>"><?= htmlspecialchars($playerName) ?></a></td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php if (empty($rows)): ?>
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding: 24px; color: var(--gray-500); font-style:italic;">No machines found for the selected filter.</td>
+                        </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="card intro-card">
+            <div class="card-body">
+                <p>When filtered by region, only scores achieved at league meets within that region are considered.</p>
+                <p><strong>Appearances</strong> is the number of league meets or league finals the game has appeared in.<br>
+                <strong>Plays</strong> is the total number of games played across those events.<br>
+                For example, if Twilight Zone appeared at one meet with 12 players, Appearances would be 1 and Plays would be 12.</p>
+            </div>
+        </div>
+
+    </main>
+
+<script>
+(function ()
+{
+    function applyFilters()
+    {
+        var r = document.getElementById('regionSelect').value;
+        var s = document.getElementById('seasonSelect').value;
+        window.location.href = 'machines.php?region=' + r + '&season=' + s + '&sort=<?= $sort ?>&dir=<?= $dir ?>';
+    }
+
+    var rSel = document.getElementById('regionSelect');
+    var sSel = document.getElementById('seasonSelect');
+    if (rSel) rSel.addEventListener('change', applyFilters);
+    if (sSel) sSel.addEventListener('change', applyFilters);
+})();
+</script>
+
+<?php require_once('includes/footer-modern.inc'); ?>

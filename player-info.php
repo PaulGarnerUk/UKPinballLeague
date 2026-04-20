@@ -1,260 +1,222 @@
-﻿<?php
-	require_once("includes/sql.inc");
+<?php
+require_once("includes/sql.inc");
 
-	$playerid = htmlspecialchars($_GET["playerid"] ?? null);
-	$playername = htmlspecialchars($_GET['player'] ?? null); 
+$playerid = htmlspecialchars($_GET["playerid"] ?? null);
+$playername = htmlspecialchars($_GET['player'] ?? null);
 
-   	$sort = htmlspecialchars($_GET["sort"] ?? "machine"); // sortby 'plays', 'machine', 'rank'
-	$dir = htmlspecialchars($_GET["dir"] ?? "asc"); // sort direction ('asc' or 'desc')
+$sort = htmlspecialchars($_GET["sort"] ?? "machine"); // 'plays', 'machine', 'rank', 'rank_percent'
+$dir = htmlspecialchars($_GET["dir"] ?? "asc");        // 'asc' or 'desc'
 
-    if ($dir === "desc") {
-		$sortdir = "DESC";
-		$sortchar = "▼";
-		$oppositesortdir = "asc";
-	} else {
-		$sortdir = "ASC";
-		$sortchar = "▲";
-		$oppositesortdir = "desc";
-	}
+if ($dir === "desc") {
+    $sortdir = "DESC";
+    $sortchar = "&#9660;"; // ▼
+    $oppositesortdir = "asc";
+}
+else {
+    $sortdir = "ASC";
+    $sortchar = "&#9650;"; // ▲
+    $oppositesortdir = "desc";
+}
 
-	if ($sort === "plays") {
-		$orderby = "ORDER BY PlayerBest.GamesPlayed $sortdir, Machine.Name ASC";
-	} else if ($sort === "rank") {
-		$orderby = "ORDER BY BestScoreRank $sortdir, Machine.Name ASC";
-    } else if ($sort === "rank_percent") {
-        $orderby = "ORDER BY RankPercent $sortdir, Machine.Name ASC";
-	} else {
-		$sort = "machine";
-		$orderby = "ORDER BY Machine.Name $sortdir";
-	}
+if ($sort === "plays") {
+    $orderby = "ORDER BY PlayerBest.GamesPlayed $sortdir, Machine.Name ASC";
+} elseif ($sort === "rank") {
+    $orderby = "ORDER BY BestScoreRank $sortdir, Machine.Name ASC";
+} elseif ($sort === "rank_percent") {
+    $orderby = "ORDER BY RankPercent $sortdir, Machine.Name ASC";
+} else {
+    $sort = "machine";
+    $orderby = "ORDER BY Machine.Name $sortdir";
+}
 
-?>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>UK Pinball League - Player Info.</title>
-<meta name="description" content="Player information." />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-<!--
-Paul Garner
-
-Best finish: 13th - 2019 Northern League  (later)
-
-Paul has played 350 games across 321 machines:
-
-Machine		Paul's Best   Rank  % Top
-AC/DC           36,123,980      23   0.1%             <-- click machine for playerscores.php
-Aerobatics       1,321,330     234  12.4%             (special row highlighting for rank 1)
--->
-
-<!-- Header and menu -->
-<?php include("includes/header.inc");
-
-// At some future point this can be simplified. We only need the union'd select by name for legacy pages
-$tsql ="
-SELECT
-Id,
-Name
-FROM
-Player 
-WHERE Id = ? -- $playerid
+// --- Query: resolve player by id or name ---
+$tsql = "
+SELECT Id, Name FROM Player WHERE Id = ? -- $playerid
 UNION
-SELECT
-Id,
-Name
-FROM
-Player 
-WHERE Name = ? -- $playername
+SELECT Id, Name FROM Player WHERE Name = ? -- $playername
 ";
 
-// Perform query.
-$result= sqlsrv_query($sqlConnection, $tsql, array($playerid, $playername));
-if ($result == FALSE)
+$result = sqlsrv_query($sqlConnection, $tsql, array($playerid, $playername));
+$row = ($result) ? sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC) : null;
+
+$playerFound = ($row !== null);
+
+if ($playerFound)
 {
-	echo "query borken.";
-}
+    $playerid = $row['Id'];
+    $playername = $row['Name'];
 
-$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-$playerid = $row['Id'];
-$playername = $row['Name'];
-
-$tsql ="
-SELECT
-COUNT(Id) AS 'GamesPlayed',
-COUNT(DISTINCT(MachineId)) AS 'MachinesPlayed'
-FROM
-Score
-WHERE PlayerId = ? -- $playerid
-";
-
-// Perform query.
-$result= sqlsrv_query($sqlConnection, $tsql, array($playerid));
-if ($result == FALSE)
-{
-	echo "query borken.";
-}
-
-$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-$totalGamesPlayed = $row['GamesPlayed'];
-$machinesPlayed = $row['MachinesPlayed'];
-
-?>
-
-<div class="panel">
-
-    <h1><?=$playername?></h1>
-
-    <p><?=$playername?> has played <?=$totalGamesPlayed?> games across <?=$machinesPlayed?> different machines.</p>
-
-</div>
-
-<div class="panel">
-
-    <h2>Machines played.</h2>
-    <p>Click on the played count for a breakdown of all of <?=$playername?>'s recorded scores on that machine.  Click on column headings to sort.</p>
-	
-    <div class="table-holder">
-        <table>
-            <thead>
-                <tr class="white">
-<?php
-                    // machine sortable column header
-                    if ($sort === "machine") {
-	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=machine&dir=$oppositesortdir' class='player-link'>Machine $sortchar</a></th>";
-                    } else {
-	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=machine&dir=asc' class='player-link'>Machine</a></th>";
-                    }
-
-                    if ($sort === "plays") {
-	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=plays&dir=$oppositesortdir' class='player-link'>Plays $sortchar</a></th>";
-                    } else  {
-	                    echo "<th><a href='player-info.php?playerid=$playerid&sort=plays&dir=desc' class='player-link'>Plays</a></th>";
-                    }
-
-                    echo "<th class='score padright'>Best</th>";
-
-                    if ($sort === "rank") {
-	                    echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank&dir=$oppositesortdir' class='player-link'>Rank $sortchar</a></th>";
-                    } else  {
-	                    echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank&dir=asc' class='player-link'>Rank</a></th>";
-                    }
-
-                    if ($sort === "rank_percent") {
-                        echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank_percent&dir=$oppositesortdir' class='player-link'>% Top $sortchar</a></th>";
-                    } else  {
-                        echo "<th class='score padright'><a href='player-info.php?playerid=$playerid&sort=rank_percent&dir=asc' class='player-link'>% Top</a></th>";
-                    }
-?>
-                </tr>
-            </thead>
-            <tbody>
-
-<?php
-$tsql ="
-DECLARE @playerId INTEGER = ?; -- $playerid
-
-WITH PlayerBest AS
-(
+    // --- Query: summary stats ---
+    $tsqlStats = "
     SELECT
-        Score.MachineId,
-        COUNT(*) AS GamesPlayed,
-        MAX(Score.Score) AS BestScore
+        COUNT(Id) AS 'GamesPlayed',
+        COUNT(DISTINCT(MachineId)) AS 'MachinesPlayed'
     FROM Score
-    WHERE Score.PlayerId = @playerId
-    GROUP BY Score.MachineId
-)
-SELECT
-    Machine.Id AS MachineId,
-    Machine.Name AS MachineName,
-    PlayerBest.GamesPlayed,
-    PlayerBest.BestScore,
+    WHERE PlayerId = ? -- $playerid
+    ";
 
-    -- Rank of the player's best score
-    COUNT(CASE WHEN Score.Score > PlayerBest.BestScore THEN 1 END) + 1 AS BestScoreRank,
+    $statsResult = sqlsrv_query($sqlConnection, $tsqlStats, array($playerid));
+    $statsRow = ($statsResult) ? sqlsrv_fetch_array($statsResult, SQLSRV_FETCH_ASSOC) : null;
+    $totalGamesPlayed = $statsRow ? $statsRow['GamesPlayed'] : 0;
+    $machinesPlayed = $statsRow ? $statsRow['MachinesPlayed'] : 0;
 
-    -- Total number of scores for this machine
-    COUNT(Score.Id) AS TotalScores,
+    // --- Query: machines played ---
+    $tsqlMachines = "
+    DECLARE @playerId INTEGER = ?; -- $playerid
 
-    ROUND(
-        CAST(
-            COUNT(CASE WHEN Score.Score > PlayerBest.BestScore THEN 1 END) + 1
-            AS FLOAT
-        ) / COUNT(Score.Id) * 100,
-        2
-    ) AS RankPercent
-FROM PlayerBest
-INNER JOIN Machine ON Machine.Id = PlayerBest.MachineId
-INNER JOIN Score ON Score.MachineId = PlayerBest.MachineId
-GROUP BY
-    Machine.Id,
-    Machine.Name,
-    PlayerBest.GamesPlayed,
-    PlayerBest.BestScore
-$orderby
-";
+    WITH PlayerBest AS
+    (
+        SELECT
+            Score.MachineId,
+            COUNT(*) AS GamesPlayed,
+            MAX(Score.Score) AS BestScore
+        FROM Score
+        WHERE Score.PlayerId = @playerId
+        GROUP BY Score.MachineId
+    )
+    SELECT
+        Machine.Id AS MachineId,
+        Machine.Name AS MachineName,
+        PlayerBest.GamesPlayed,
+        PlayerBest.BestScore,
+        COUNT(CASE WHEN Score.Score > PlayerBest.BestScore THEN 1 END) + 1 AS BestScoreRank,
+        COUNT(Score.Id) AS TotalScores,
+        ROUND(
+            CAST(
+                COUNT(CASE WHEN Score.Score > PlayerBest.BestScore THEN 1 END) + 1
+                AS FLOAT
+            ) / COUNT(Score.Id) * 100,
+            2
+        ) AS RankPercent
+    FROM PlayerBest
+    INNER JOIN Machine ON Machine.Id = PlayerBest.MachineId
+    INNER JOIN Score ON Score.MachineId = PlayerBest.MachineId
+    GROUP BY
+        Machine.Id,
+        Machine.Name,
+        PlayerBest.GamesPlayed,
+        PlayerBest.BestScore
+    $orderby
+    ";
 
-// Perform query.
-$result= sqlsrv_query($sqlConnection, $tsql, array($playerid));
-if ($result == FALSE)
-{
-	echo "query borken.";
+    $machinesResult = sqlsrv_query($sqlConnection, $tsqlMachines, array($playerid));
+
+    // Buffer rows
+    $machineRows = [];
+    if ($machinesResult)
+    {
+        while ($r = sqlsrv_fetch_array($machinesResult, SQLSRV_FETCH_ASSOC))
+        {
+            $machineRows[] = $r;
+        }
+        sqlsrv_free_stmt($machinesResult);
+    }
 }
 
-while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
-{
-	$machineId = $row['MachineId'];
-    $machineName = $row['MachineName'];
-    $gamesPlayed = $row['GamesPlayed'];
-    $bestScore = number_format($row['BestScore']);
-    $bestScoreRank = number_format($row['BestScoreRank']);
-    $totalScores = number_format($row['TotalScores']);
-    $rankPercent = number_format($row['RankPercent'], 2);
-    $machineLink = "machine-info.php?machineid=$machineId";
-    $scoresLink = "scores.php?playerid=$playerid&machineid=$machineId";
+$pageTitle = $playerFound
+    ? "UK Pinball League - " . htmlspecialchars($playername)
+    : "UK Pinball League - Player Info";
+$pageDescription = $playerFound
+    ? "Player information for " . htmlspecialchars($playername) . "."
+    : "Player information.";
 
-    			echo "<tr>
-    				<td><a href='$machineLink' class='player-link'>$machineName</a></td>
-    				<td><a href='$scoresLink' class='player-link'>$gamesPlayed</a></td>
-    				<td class='score padright'>$bestScore</td>
-    				<td class='score padright'>$bestScoreRank / $totalScores</td>
-                    <td class='score padright'>$rankPercent%</td>
-    			</tr>\n";
-}
-
-sqlsrv_free_stmt($result);
 ?>
 
-            </tbody>
-        </table>
+<?php require_once('includes/header-modern.inc'); ?>
+
+    <!-- ===== PAGE HERO ===== -->
+    <div class="page-hero">
+        <p class="page-hero-eyebrow">Player Profile</p>
+        <h1 class="page-hero-title"><?= $playerFound ? htmlspecialchars($playername) : 'Player Not Found' ?></h1>
     </div>
-</div>
 
-<!-- Header and menu -->
-<?php include("includes/footer.inc"); ?>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="site-content">
 
-</body>
-</html>
+        <?php if (!$playerFound): ?>
 
+            <div class="card intro-card">
+                <div class="card-body">
+                    <p>No player was found matching the supplied details.</p>
+                </div>
+            </div>
 
-<!-- Too messy now. Add this to select 'Best finish: 1st (36 times) Most recent: _Northern League 2020 Meet 4_
-But do it in a function that returns an object of 'player info' or something that runs numerous queries and then returns an object to use on the page.
+        <?php else: ?>
 
-SELECT 
-* 
-FROM Result
-INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Result.CompetitionId 
-WHERE Position IN
-(
-  -- select single best position for this player in a league meet
-  SELECT MIN(Position) 
-  FROM Result
-  INNER JOIN LeagueMeet ON LeagueMeet.CompetitionId = Result.CompetitionId 
-  WHERE PlayerId = 125
-)
-AND PlayerId = 125
-ORDER BY Position ASC, LeagueMeet.SeasonId DESC, LeagueMeet.MeetNumber DESC
+            <!-- Stats bar -->
+            <div class="stats-bar" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-item">
+                    <span class="stat-number"><?= number_format($totalGamesPlayed) ?></span>
+                    <span class="stat-label">Games Played</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number"><?= number_format($machinesPlayed) ?></span>
+                    <span class="stat-label">Machines Played</span>
+                </div>
+            </div>
 
--->
+            <!-- Machines played card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-accent"></div>
+                    <h2>Machines Played</h2>
+                </div>
+                <div class="card-body" style="padding: 0; overflow-x: auto;">
+                    <table class="league-table">
+                        <thead>
+                            <tr>
+                                <th class="th-player">
+                                    <a href="player-info.php?playerid=<?= $playerid ?>&sort=machine&dir=<?= $sort === 'machine' ? $oppositesortdir : 'asc' ?>"<?= ($sort === 'machine' ? ' class="th-sort-active"' : '') ?>>Machine<?= ($sort === 'machine' ? ' ' . $sortchar : '') ?></a>
+                                </th>
+                                <th>
+                                    <a href="player-info.php?playerid=<?= $playerid ?>&sort=plays&dir=<?= $sort === 'plays' ? $oppositesortdir : 'desc' ?>"<?= ($sort === 'plays' ? ' class="th-sort-active"' : '') ?>>Plays<?= ($sort === 'plays' ? ' ' . $sortchar : '') ?></a>
+                                </th>
+                                <th>Best Score</th>
+                                <th>
+                                    <a href="player-info.php?playerid=<?= $playerid ?>&sort=rank&dir=<?= $sort === 'rank' ? $oppositesortdir : 'asc' ?>"<?= ($sort === 'rank' ? ' class="th-sort-active"' : '') ?>>Rank<?= ($sort === 'rank' ? ' ' . $sortchar : '') ?></a>
+                                </th>
+                                <th>
+                                    <a href="player-info.php?playerid=<?= $playerid ?>&sort=rank_percent&dir=<?= $sort === 'rank_percent' ? $oppositesortdir : 'asc' ?>"<?= ($sort === 'rank_percent' ? ' class="th-sort-active"' : '') ?>>% Top<?= ($sort === 'rank_percent' ? ' ' . $sortchar : '') ?></a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($machineRows as $r):
+                                $machineId     = $r['MachineId'];
+                                $machineName   = htmlspecialchars($r['MachineName']);
+                                $gamesPlayed   = $r['GamesPlayed'];
+                                $bestScore     = number_format($r['BestScore']);
+                                $bestScoreRank = $r['BestScoreRank'];
+                                $totalScores   = number_format($r['TotalScores']);
+                                $rankPercent   = number_format($r['RankPercent'], 2);
+                                $machineLink   = "machine-info.php?machineid=$machineId";
+                                $scoresLink    = "scores.php?playerid=$playerid&machineid=$machineId";
+                                /*$isTopRank     = ($bestScoreRank === 1);
+                                $rowClass      = $isTopRank ? ' class="row-rank-first"' : '';*/
+                            ?>
+                            <tr>
+                                <td class="td-player"><a href="<?= $machineLink ?>"><?= $machineName ?></a></td>
+                                <td><a href="<?= $scoresLink ?>" class="plays-link"><?= $gamesPlayed ?></a></td>
+                                <td><?= $bestScore ?></td>
+                                <td><?= number_format($bestScoreRank) ?> / <?= $totalScores ?></td>
+                                <td><?= $rankPercent ?>%</td>
+                            </tr>
+                            <?php endforeach; ?>
+                            <?php if (empty($machineRows)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 24px; color: var(--gray-500); font-style: italic;">No machines recorded.</td>
+                            </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer" style="font-size: 12px; color: var(--gray-500); font-style: italic; background: var(--gray-50); border-top: 1px solid var(--gray-100); padding: 10px 16px;">
+                    Click a plays count to view all recorded scores on that machine. Rank shows this player's best score position out of all recorded scores.
+                </div>
+            </div>
+
+        <?php endif; ?>
+
+    </main>
+
+<?php require_once('includes/footer-modern.inc'); ?>

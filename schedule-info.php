@@ -1,243 +1,232 @@
 <?php
-	$season = htmlspecialchars($_GET["season"]);
-	$region = htmlspecialchars($_GET["region"]);
-	$meet = htmlspecialchars($_GET["meet"]);
-?>
+$season = htmlspecialchars($_GET['season'] ?? '');
+$region = htmlspecialchars($_GET['region'] ?? '');
+$meet = htmlspecialchars($_GET['meet']   ?? '');
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="description" content="Page description" />
-<title>UK Pinball League - Meet Info</title>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+// sql.inc pulls in envvars.inc and creates $sqlConnection
+include("includes/sql.inc");
+include("includes/obfuscateEmail.inc");
 
-<?php 
-	// Header and menu
-	include("includes/header.inc"); 
-	include("includes/envvars.inc");
-	include("includes/obfuscateEmail.inc");
-
-	$connectionOptions = array(
-		"Database" => $sqldbname,
-		"Uid" => $sqluser,
-		"PWD" => $sqlpassword
-	);
-
-	$conn = sqlsrv_connect($sqlserver, $connectionOptions);
-	if( $conn === false ) 
-	{
-		echo "connection borken.";
-		// die( print_r( sqlsrv_errors(), true));
-	}
-
-		$tsql= "
+// --- Query: Meet details ---
+$tsql = "
 SELECT
-Season.SeasonNumber,
-Region.Name AS 'RegionName',
-Region.Director AS 'RegionDirector',
-Region.DirectorEmail AS 'RegionDirectorEmail',
-LeagueMeet.CompetitionId AS 'CompetitionId',
-LeagueMeet.MeetNumber AS 'MeetNumber',
-LeagueMeet.Date AS 'MeetDate',
-LeagueMeet.Status AS 'Status',
-LeagueMeet.PracticeStart AS 'PracticeStart',
-LeagueMeet.PracticeEnd AS 'PracticeEnd',
-LeagueMeet.CompetitionStart AS 'CompetitionStart',
-LeagueMeet.CompetitionEnd AS 'CompetitionEnd',
-LeagueMeet.Host AS 'Host',
-LeagueMeet.Location AS 'Location',
-LeagueMeet.Address AS 'Address',
-LeagueMeet.PublicVenue AS 'Public'
-FROM LeagueMeet
-INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
-INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
-WHERE Region.Synonym = ? -- $region 
-AND Season.SeasonNumber = ? -- $season 
-AND LeagueMeet.MeetNumber = ? -- $meet 
+    Season.SeasonNumber,
+    Region.Name AS 'RegionName',
+    Region.Director AS 'RegionDirector',
+    Region.DirectorEmail AS 'RegionDirectorEmail',
+    LeagueMeet.CompetitionId AS 'CompetitionId',
+    LeagueMeet.MeetNumber AS 'MeetNumber',
+    LeagueMeet.Date AS 'MeetDate',
+    LeagueMeet.Status AS 'Status',
+    LeagueMeet.PracticeStart AS 'PracticeStart',
+    LeagueMeet.PracticeEnd AS 'PracticeEnd',
+    LeagueMeet.CompetitionStart AS 'CompetitionStart',
+    LeagueMeet.CompetitionEnd AS 'CompetitionEnd',
+    LeagueMeet.Host AS 'Host',
+    LeagueMeet.Location AS 'Location',
+    LeagueMeet.Address AS 'Address',
+    LeagueMeet.PublicVenue AS 'Public'
+    FROM LeagueMeet
+    INNER JOIN Region ON Region.Id = LeagueMeet.RegionId
+    INNER JOIN Season ON Season.Id = LeagueMeet.SeasonId
+    WHERE Region.Synonym = ?
+    AND Season.SeasonNumber = ?
+    AND LeagueMeet.MeetNumber = ?
 ";
 
-	// Perform query with parameterised values.
-	$result= sqlsrv_query($conn, $tsql, array($region, $season, $meet));
-	if ($result == FALSE)
-	{
-		echo "query borken.";
-	}
+$result = sqlsrv_query($sqlConnection, $tsql, array($region, $season, $meet));
+$row = ($result) ? sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC) : null;
 
-	$row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
-	
-	if (sqlsrv_has_rows($result) === true)
-	{
-		$meetConfirmed = true;
+$meetConfirmed = ($row !== null);
 
-		$regionName = $row['RegionName'];
-		$regionDirector = $row['RegionDirector'];
-		$regionDirectorEmailLink = obfuscateEmailLink($row['RegionDirectorEmail']);
-		//$regionSynonym = $row['RegionSynonym'];
-		$meetNumber = $row['MeetNumber'];
-		$meetDate = $row['MeetDate']->format('D jS M Y');
-		$practiceStart = $row['PracticeStart']->format('g:i a');
-		$practiceEnd = $row['PracticeEnd']->format('g:i a');
-		$competitionStart = $row['CompetitionStart']->format('g:i a');
-		$competitionEnd = $row['CompetitionEnd']->format('g:i a');
-		$competitionId = $row['CompetitionId'];
+if ($meetConfirmed) 
+{
+    $regionName = htmlspecialchars($row['RegionName']);
+    $meetNumber = (int)$row['MeetNumber'];
+    $meetDate = $row['MeetDate']->format('l jS F Y');
+    $meetStatus = (int)$row['Status'];
+    $meetHost = htmlspecialchars((string)$row['Host']);
+    $meetLocation = htmlspecialchars((string)$row['Location']);
+    $meetAddress = htmlspecialchars((string)$row['Address']);
+    $publicVenue = $row['Public'];
+    $competitionId = $row['CompetitionId'];
+    $regionDirector = htmlspecialchars($row['RegionDirector']);
+    $regionDirectorEmailLink = obfuscateEmailLink($row['RegionDirectorEmail']);
 
-		$meetHost = $row['Host'];
-		$meetStatus = $row['Status'];
-		$meetLocation = $row['Location'];
-		$meetAddress = $row['Address'];
-		$publicVenue = $row['Public'];
-	}
-	else 
-	{
-		echo "<h1>This meet is yet to be confirmed.</h1>";
-		$meetConfirmed = false;
-	}
+    $showTimes = ($meetStatus == 1 || $meetStatus == 5);
+    if ($showTimes) 
+    {
+        $practiceStart = $row['PracticeStart']->format('g:i a');
+        $practiceEnd = $row['PracticeEnd']->format('g:i a');
+        $competitionStart = $row['CompetitionStart']->format('g:i a');
+        $competitionEnd = $row['CompetitionEnd']->format('g:i a');
+    }
+
+    switch ($meetStatus) 
+    {
+        case 1: $statusLabel = 'Scheduled'; $statusBadgeClass = 'badge-scheduled'; break;
+        case 3: $statusLabel = 'Completed'; $statusBadgeClass = 'badge-completed'; break;
+        case 5: $statusLabel = 'Rescheduled'; $statusBadgeClass = 'badge-rescheduled'; break;
+        default: $statusLabel = ''; $statusBadgeClass = ''; break;
+    }
+
+    // --- Query: Machines for this competition ---
+    $tsql2 = "
+    SELECT
+        Machine.Id AS 'MachineId',
+        Machine.Name AS 'MachineName',
+        CompetitionMachine.Notes AS 'Notes',
+        Machine.OpdbId AS 'OpdbId',
+        Machine.GuideUrl AS 'GuideUrl'
+    FROM CompetitionMachine
+    INNER JOIN Machine ON Machine.Id = CompetitionMachine.MachineId
+    WHERE CompetitionMachine.CompetitionId = ?
+    ";
+    $machinesResult = sqlsrv_query($sqlConnection, $tsql2, array($competitionId));
+    $hasMachines = ($machinesResult && sqlsrv_has_rows($machinesResult));
+}
+
+// Page title for <title> tag
+$pageTitle = $meetConfirmed
+    ? htmlspecialchars($regionName) . " League — Meet {$meetNumber}"
+    : "UK Pinball League — Meet Info";
+$pageDescription = 'Meet information for UK Pinball League.';
 ?>
 
-<?php 
-	if ($meetConfirmed === true)
-	{
-		echo "<div class='panel'>";
+<?php require_once('includes/header-modern.inc'); ?>
 
-		echo "<h1>$regionName League, Meet #$meet";
-		if ($meetStatus == 1) {
-			echo " (Scheduled)";
-		}
-		elseif ($meetStatus == 3) {
-			echo " (Completed)";
-		}
-		elseif ($meetStatus == 5) {
-			echo " (RESCHEDULED)";
-		}
-		echo "</h1>"; 
+    <!-- ===== PAGE HERO ===== -->
+    <div class="page-hero">
+        <a href="schedule.php" class="page-hero-back">← Schedule</a>
 
-		echo "<h2>$meetDate</h2>"; 
-		echo "<br>";
+        <?php if ($meetConfirmed): ?>
+            <p class="page-hero-eyebrow"><?= $regionName ?> League &bull; Meet <?= $meetNumber ?></p>
+            <h1 class="page-hero-title"><?= $meetDate ?></h1>
+            <?php if ($statusLabel): ?>
+                <div class="page-hero-badge">
+                    <span class="badge <?= $statusBadgeClass ?>"><?= $statusLabel ?></span>
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <p class="page-hero-eyebrow">Meet Info</p>
+            <h1 class="page-hero-title">Not Yet Confirmed</h1>
+        <?php endif; ?>
+    </div>
 
-		// Planned or Rescheduled, show times.
-		if ($meetStatus == 1 || $meetStatus == 5) {
-			echo "<p><b>Practice: </b>$practiceStart - $practiceEnd</p>";
-			echo "<p><b>Competition: </b>$competitionStart - $competitionEnd</p>";
-		}
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="site-content">
 
-		echo "<p><b>Host: </b>$meetHost</p>";
+        <?php if (!$meetConfirmed): ?>
+            <div class="card intro-card">
+                <div class="card-body">
+                    <p>This meet has not yet been confirmed. Please check back later or <a href="contacts.php">contact your regional co-ordinator</a> for more information.</p>
+                </div>
+            </div>
 
-		if ($publicVenue === 1)
-		{
-			$addressLink = "https://www.google.com/maps?saddr=My+Location&daddr=$meetAddress";
-			echo "<p><b>Location:</b> $meetAddress <a href='$addressLink'>(Directions)</a><br>";
-			echo "This is a venue open to the public.</p>";
-		}
-		else 
-		{
-			echo "<p><b>Location:</b> $meetLocation<br>";
-			
-			// Planned or Rescheduled, show blurb about email for more info.
-			if ($meetStatus == 1 || $meetStatus == 5) {
-				echo "This league meet is at a private venue. Please email the region co-ordinator $regionDirector for the full address : $regionDirectorEmailLink </p>";
-			}
-		}
+        <?php else: ?>
 
-		echo "</div>";
+            <!-- Meet details card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-accent"></div>
+                    <h2>Meet Details</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="info-grid">
 
+                        <dt class="info-label">Date</dt>
+                        <dd class="info-value"><?= $meetDate ?></dd>
 
-		echo "<div class='panel'>
-				<h2>League Games</h2>
-				";
+                        <?php if ($showTimes): ?>
+                        <dt class="info-label">Practice</dt>
+                        <dd class="info-value"><?= $practiceStart ?> – <?= $practiceEnd ?></dd>
 
-		$tsql = "
-		SELECT
-		Machine.Id AS 'MachineId',
-		Machine.Name AS 'MachineName',
-		CompetitionMachine.Notes AS 'CompetitionMachineNotes',
-		Machine.OpdbId AS 'MachineOpdbId',
-		Machine.GuideUrl AS 'MachineGuideLink'
-		FROM CompetitionMachine
-		INNER JOIN Machine ON Machine.Id = CompetitionMachine.MachineId
-		WHERE CompetitionMachine.CompetitionId = ? -- $competitionId
-		";
+                        <dt class="info-label">Competition</dt>
+                        <dd class="info-value"><?= $competitionStart ?> – <?= $competitionEnd ?></dd>
+                        <?php endif; ?>
 
-		// Perform query with parameterised values.
-		$result= sqlsrv_query($conn, $tsql, array($competitionId));
-		if ($result == FALSE)
-		{
-			echo "query borken.";
-		}
+                        <dt class="info-label">Host</dt>
+                        <dd class="info-value"><?= $meetHost ?></dd>
 
-		if (sqlsrv_has_rows($result) === true)
-		{
-			// Planned or Rescheduled
-			if ($meetStatus == 1 || $meetStatus == 5) {
-				echo "<p>Subject to change.</p>";
-			}
+                        <dt class="info-label">Location</dt>
+                        <dd class="info-value">
+                            <?php if ($publicVenue === 1): ?>
+                                <?= $meetAddress ?>
+                                <a href="https://www.google.com/maps?saddr=My+Location&daddr=<?= urlencode($meetAddress) ?>"
+                                   class="directions-link" target="_blank" rel="noopener">Directions →</a>
+                                <span class="venue-note">Public venue</span>
+                            <?php else: ?>
+                                <?= $meetLocation ?>
+                                <?php if ($showTimes): ?>
+                                    <span class="venue-note">Private venue — email <?= $regionDirector ?> for the full address: <?= $regionDirectorEmailLink ?></span>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </dd>
 
-			echo "	<div class='table-holder'>
-						<table >
-				
-							<col style='width:64%'>
-							<col style='width:12%'>
-							<col style='width:12%'>
-							<col style='width:12%'>
+                    </dl>
+                </div>
+            </div>
 
-							<thead>
-								<tr class='white'>
-									<th>Game</th>
-									<th>&nbsp;</th>
-									<th>&nbsp;</th>
-									<th class='padright'>&nbsp;</th>
-								</tr>
-							</thead>
-							<tbody>
-						";
-			while ($machineRow = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) 
-			{
-				$machineId = $machineRow['MachineId'];
-				$machineName = $machineRow['MachineName'];
-				$machineNotes = $machineRow['CompetitionMachineNotes'];
-				$machineOpdbId = $machineRow['MachineOpdbId'];
-				$machineGuideLink = $machineRow['MachineGuideLink'];
-				$tipsLink = "https://pintips.net/opdb/$machineOpdbId";
-				$videosLink = "https://pinballvideos.com/m/?q=$machineOpdbId";
+            <!-- Machines card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-accent"></div>
+                    <h2>League Games</h2>
+                </div>
 
-				echo "<tr>
-						<td><a href='machine-info.php?machineid=$machineId' class='player-link'>$machineName</a>";
-						if ($machineNotes != null) {
-							echo " ($machineNotes)";
-						}
-						echo "</td>";
+                <?php if (!$hasMachines): ?>
+                    <div class="card-body">
+                        <p class="no-schedule">To be determined.</p>
+                    </div>
 
-						echo "<td><a href=\"$tipsLink\" class='player-link' target='_blank'>Tips</a></td>
-						<td><a href=\"$videosLink\" class='player-link' target='_blank'>Videos</a></td>";
+                <?php else: ?>
+                    <?php if ($showTimes): ?>
+                        <p class="subject-to-change">Machine list subject to change.</p>
+                    <?php endif; ?>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="resources-table">
+                            <thead>
+                                <tr>
+                                    <th>Machine</th>
+                                    <th class="th-resources">Resources</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($m = sqlsrv_fetch_array($machinesResult, SQLSRV_FETCH_ASSOC)):
+                                    $mId    = $m['MachineId'];
+                                    $mName  = htmlspecialchars($m['MachineName']);
+                                    $mNotes = htmlspecialchars((string)$m['Notes']);
+                                    $opdbId = htmlspecialchars((string)$m['OpdbId']);
+                                    $guide  = $m['GuideUrl'];
+                                    $tipsUrl   = "https://pintips.net/opdb/{$opdbId}";
+                                    $videosUrl = "https://pinballvideos.com/m/?q={$opdbId}";
+                                ?>
+                                <tr>
+                                    <td>
+                                        <a href="machine-info.php?machineid=<?= $mId ?>" class="machine-name-link"><?= $mName ?></a>
+                                        <?php if ($mNotes): ?>
+                                            <span class="machine-notes">(<?= $mNotes ?>)</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="td-resources">
+                                        <a href="<?= $tipsUrl ?>"   class="resource-link" target="_blank" rel="noopener">Tips</a>
+                                        <a href="<?= $videosUrl ?>" class="resource-link" target="_blank" rel="noopener">Videos</a>
+                                        <?php if ($guide): ?>
+                                            <a href="<?= htmlspecialchars($guide) ?>" class="resource-link" target="_blank" rel="noopener">Guide</a>
+                                        <?php else: ?>
+                                            <span class="resource-link-placeholder"></span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
 
-						if ($machineGuideLink != null) {
-							echo "<td><a href=\"$machineGuideLink\" class='player-link' target='_blank'>Guide</a></td>";
-						}
-						else {
-							echo "<td>&nbsp;</td>";
-						}
+        <?php endif; ?>
 
-				echo "</tr>";
-			}
+    </main>
 
-			echo "</tbody>
-					</table>
-					</div>
-					";
-		}
-		else 
-		{
-			echo "<p>To be determined.</p>";
-		}
-
-		echo "</div>"; // end panel
-
-	} // end if ($meetConfirmed === true)
-?>
-
-
-<!-- Header and menu -->
-<?php include("includes/footer.inc"); ?>
-
-</body>
-</html>
+<?php require_once('includes/footer-modern.inc'); ?>
