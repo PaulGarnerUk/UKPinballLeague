@@ -131,7 +131,7 @@ $result = sqlsrv_query($sqlConnection, $tsql);
                         <tbody>
                             <tr>
                                 <td><span class="contact-role">Overall Coordinator</span>Paul Garner</td>
-                                <td><?= obfuscateEmailLink('paul@ukpinball.com') ?></td>
+                                <td><?= obfuscateEmailLink('ukpinball@paulg.uk') ?></td>
                             </tr>
                             <tr>
                                 <td><span class="contact-role">Vice-Overall Coordinator</span>Kate Rothwell-Jackson</td>
@@ -147,7 +147,7 @@ $result = sqlsrv_query($sqlConnection, $tsql);
                             </tr>
                             <tr>
                                 <td><span class="contact-role">Website</span>Paul Garner</td>
-                                <td><?= obfuscateEmailLink('paul@ukpinball.com') ?></td>
+                                <td><?= obfuscateEmailLink('ukpinball@paulg.uk') ?></td>
                             </tr>
                             <tr>
                                 <td colspan="2"><span class="contact-role">Facebook</span><a href="https://www.facebook.com/UKPinballLeague" target="_blank" rel="noopener">UK Pinball League Facebook group</a></td>

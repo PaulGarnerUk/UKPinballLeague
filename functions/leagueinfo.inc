@@ -199,6 +199,11 @@ function GetSouthWestLeagueInfo($season)
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			break;
+		case 19:
+			$info->aQualifyingPlaces = 3;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			$info->numberOfQualifyingMeets = 3;
+			break;
 	}
 
 	return $info;
@@ -357,6 +362,12 @@ function GetLondonSouthEastLeagueInfo($season)
 			$info->bQualifyingPlaces = 6;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
+		case 19:
+			$info->aQualifyingPlaces = 3;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			$info->bQualifyingPlaces = 5;
+			$info->bQualifyingDescription = "Regional finals qualifying place.";
+			break;
 	}
 
 	return $info;
@@ -505,6 +516,11 @@ function GetScottishLeagueInfo($season)
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			break;
+		case 19:
+			$info->numberOfQualifyingMeets = 4;
+			$info->aQualifyingPlaces = 3;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			break;
 	}
 
 	return $info;
@@ -524,6 +540,12 @@ function GetEastAnglianLeagueInfo($season)
 			$info->aQualifyingPlaces = 2;
 			$info->aQualifyingDescription = "National finals qualifying place.";
 			$info->bQualifyingPlaces = 8;
+			$info->bQualifyingDescription = "Regional finals qualifying place.";
+			break;
+		case 19:
+			$info->aQualifyingPlaces = 3;
+			$info->aQualifyingDescription = "National finals qualifying place.";
+			$info->bQualifyingPlaces = 7;
 			$info->bQualifyingDescription = "Regional finals qualifying place.";
 			break;
 		default:
