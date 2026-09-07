@@ -4,6 +4,7 @@ include("functions/leagueinfo.inc");
 
 $region = htmlspecialchars($_GET["region"] ?? '');
 $season = htmlspecialchars($_GET['season'] ?? $currentseason);
+$ifpa = ($_GET['ifpa'] ?? '') === 'true';
 
 // --- Query 1: region name, season year, total completed meets, finals competition ---
 $tsql = "
@@ -135,6 +136,7 @@ Finals.Position AS 'finals_pos',
 RANK() OVER (ORDER BY -Finals.Position DESC, best4 DESC, best5 DESC, best6 DESC) AS 'pos'
 FROM LeagueResults
 LEFT OUTER JOIN Result AS Finals ON Finals.PlayerId = LeagueResults.PlayerId AND Finals.CompetitionId = @finalsCompetitionId
+" . ($ifpa ? "WHERE LeagueResults.played >= 3" : "") . "
 ORDER BY -Finals.Position DESC, best4 DESC, best5 DESC, best6 DESC, played ASC
 ";
 
